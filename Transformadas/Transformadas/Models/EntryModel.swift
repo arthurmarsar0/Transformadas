@@ -15,23 +15,52 @@ class EntryModel {
         self.context = context
     }
     
-    func getEntries() -> [Entry] {
+    func getEntries() throws -> [Entry] {
         let request = FetchDescriptor<Entry>()
+        return try context.fetch(request)
         
-        do {
-            return try context.fetch(request)
-        } catch {
-            print("Erro ao obter registros: \(error)")
-            return []
+    }
+    
+    func getEntry(date: Date) throws -> Entry {
+        let request = FetchDescriptor<Entry>(
+            predicate: #Predicate{$0.date == date}
+        )
+        
+        let entries = try context.fetch(request)
+        guard let entry = entries.first else {
+            throw ModelError.notFound
         }
+        
+        return entry
+        
     }
     
-    func saveEntry(entry: Entry) {
+    func editEntry(entry: Entry) throws {
+        guard let entryDate = entry.date else {
+            throw ModelError.invalidField
+        }
+        var oldEntry = try getEntry(date: entryDate)
+        
+        oldEntry.date = entry.date
+        oldEntry.mood = entry.mood
+        oldEntry.note = entry.note
+        oldEntry.audio = entry.audio
+        oldEntry.photo = entry.photo
+        oldEntry.effects = entry.effects
+        oldEntry.pdf = entry.pdf
+        
+        try context.save()
+        
+    }
+    
+    func addEntry(entry: Entry) throws {
         context.insert(entry)
+        try context.save()
     }
     
-    func deleteEntry(entry: Entry) {
+    func deleteEntry(entry: Entry) throws {
         context.delete(entry)
+        try context.save()
     }
     
     
