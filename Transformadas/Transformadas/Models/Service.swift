@@ -5,31 +5,10 @@
 //  Created by Pedro Vitor de Oliveira Monte on 25/10/24.
 //
 
-import SwiftData
 import Foundation
 
-enum Category {
-    case all
-    case medical
-    case psychological
-    case judicial
-    case protection
-    case social
-}
-
-struct Address {
-    var city: String
-    var street: String
-    var neighborhood: String
-}
-
-struct Coordinate {
-    var latitude: Double
-    var longitude: Double
-}
-
 class Service {
-    var ID: String
+    var ID: String?
     var name: String
     var categories: [Category]
     var email: String
