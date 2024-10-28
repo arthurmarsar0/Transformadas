@@ -22,15 +22,14 @@ enum UserPronoun: Codable {
 @Model
 class User {
     
-    var userID: String
-    var name: String
-    var weight: Double
-    var transitionStart: Date
-    var hormonalTherapyType: HormonalTherapyType
-    var pronouns: [UserPronoun]
+    var ID: UUID = UUID()
+    var name: String?
+    var weight: Double?
+    var transitionStart: Date?
+    var hormonalTherapyType: HormonalTherapyType?
+    var pronouns: [UserPronoun]?
     
-    init(userID: String, name: String, weight: Double, transitionStart: Date, hormonalTherapyType: HormonalTherapyType, pronouns: [UserPronoun]) {
-        self.userID = userID
+    init(name: String?, weight: Double?, transitionStart: Date?, hormonalTherapyType: HormonalTherapyType?, pronouns: [UserPronoun]?) {
         self.name = name
         self.weight = weight
         self.transitionStart = transitionStart
