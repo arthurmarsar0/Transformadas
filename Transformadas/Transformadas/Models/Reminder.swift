@@ -8,13 +8,9 @@
 import SwiftData
 import Foundation
 
-enum Repetition {
-    case daily
-}
-
 @Model
 class Reminder {
-    var ID: UUID = UUID()
+    var modelID: UUID = UUID()
     var startDate: Date?
     var endDate: Date?
     var repetition: Repetition?

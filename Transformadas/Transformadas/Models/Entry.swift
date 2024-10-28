@@ -35,7 +35,7 @@ class Entry {
     var note: String?
     var audio: String? // MUDAR
     var photo: String? // MUDAR
-    var effects: [Effect]?
+    @Relationship var effects: [Effect]?
     var pdf: String? // MUDAR
     
     init(date: Date?, mood: Mood?, note: String?, audio: String?, photo: String?, effects: [Effect]?, pdf: String?) {

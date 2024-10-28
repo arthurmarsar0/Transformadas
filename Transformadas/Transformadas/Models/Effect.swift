@@ -10,10 +10,20 @@ import SwiftData
 
 @Model
 class Effect {
-    var ID: UUID = UUID()
+    var modelID: UUID = UUID()
     var name: String?
     
     init(name: String?) {
         self.name = name
+    }
+}
+
+enum EffectEnum: Codable {
+    case insomnia
+    
+    var effect: Effect {
+        switch self {
+            case .insomnia: return Effect(name: "Insônia")
+        }
     }
 }

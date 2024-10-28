@@ -23,7 +23,7 @@ class EffectModel {
     
     func getEffect(ID: UUID) throws -> Effect {
         let request = FetchDescriptor<Effect>(
-            predicate: #Predicate{$0.ID == ID}
+            predicate: #Predicate{$0.modelID == ID}
         )
         
         let effects = try context.fetch(request)
@@ -35,7 +35,7 @@ class EffectModel {
     }
     
     func editEffect(effect: Effect) throws {
-        var oldEffect = try getEffect(ID: effect.ID)
+        var oldEffect = try getEffect(ID: effect.modelID)
         
         oldEffect.name = effect.name
         

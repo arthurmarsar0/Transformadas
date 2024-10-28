@@ -22,7 +22,7 @@ enum UserPronoun: Codable {
 @Model
 class User {
     
-    var ID: UUID = UUID()
+    var modelID: UUID = UUID()
     var name: String?
     var weight: Double?
     var transitionStart: Date?

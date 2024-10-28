@@ -23,7 +23,7 @@ class ReminderModel {
     
     func getReminder(ID: UUID) throws -> Reminder {
         let request = FetchDescriptor<Reminder>(
-            predicate: #Predicate{$0.ID == ID}
+            predicate: #Predicate{$0.modelID == ID}
         )
         
         let reminders = try context.fetch(request)
@@ -36,7 +36,7 @@ class ReminderModel {
     }
     
     func editReminder(reminder: Reminder) throws {
-        var oldReminder = try getReminder(ID: reminder.ID)
+        var oldReminder = try getReminder(ID: reminder.modelID)
         
         oldReminder.startDate = reminder.startDate
         oldReminder.endDate = reminder.endDate
