@@ -12,16 +12,16 @@ enum Repetition {
     case daily
 }
 
+@Model
 class Reminder {
-    var ID: String
-    var startDate: Date
+    var ID: UUID = UUID()
+    var startDate: Date?
     var endDate: Date?
-    var repetition: Repetition
-    var time: Date
-    var daysCompleted: [Date]
+    var repetition: Repetition?
+    var time: Date?
+    var daysCompleted: [Date]?
     
-    init(ID: String, startDate: Date, endDate: Date? = nil, repetition: Repetition, time: Date, daysCompleted: [Date]) {
-        self.ID = ID
+    init(startDate: Date?, endDate: Date? = nil, repetition: Repetition?, time: Date?, daysCompleted: [Date]?) {
         self.startDate = startDate
         self.endDate = endDate
         self.repetition = repetition
