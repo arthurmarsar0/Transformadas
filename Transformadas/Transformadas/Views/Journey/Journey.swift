@@ -1,14 +1,13 @@
 //
-//  Diary.swift
+//  Journey.swift
 //  Transformadas
 //
-//  Created by Pedro Vitor de Oliveira Monte on 29/10/24.
+//  Created by Alice Barbosa on 29/10/24.
 //
 
 import SwiftUI
-import SwiftData
 
-struct Diary: View {
+struct Journey: View {
     var body: some View {
         NavigationStack {
             VStack {
@@ -17,17 +16,9 @@ struct Diary: View {
             .toolbar {
                 
                 ToolbarItem(placement: .topBarLeading){
-                    Text("Diário")
+                    Text("Jornada")
                         .font(.system(size: 28, weight: .semibold))
                     
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        
-                    }) {
-                        Image(systemName: "plus")
-                            .foregroundStyle(.black)
-                    }
                 }
                 ToolbarItem(placement: .topBarTrailing){
                     Button(action: {
@@ -54,5 +45,5 @@ struct Diary: View {
 }
 
 #Preview {
-    Diary()
+    Journey()
 }

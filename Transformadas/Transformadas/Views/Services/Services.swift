@@ -1,14 +1,13 @@
 //
-//  Diary.swift
+//  Services.swift
 //  Transformadas
 //
-//  Created by Pedro Vitor de Oliveira Monte on 29/10/24.
+//  Created by Alice Barbosa on 29/10/24.
 //
 
 import SwiftUI
-import SwiftData
 
-struct Diary: View {
+struct Services: View {
     var body: some View {
         NavigationStack {
             VStack {
@@ -17,7 +16,7 @@ struct Diary: View {
             .toolbar {
                 
                 ToolbarItem(placement: .topBarLeading){
-                    Text("Diário")
+                    Text("Serviços")
                         .font(.system(size: 28, weight: .semibold))
                     
                 }
@@ -25,7 +24,7 @@ struct Diary: View {
                     Button(action: {
                         
                     }) {
-                        Image(systemName: "plus")
+                        Image(systemName: "map.fill")
                             .foregroundStyle(.black)
                     }
                 }
@@ -33,15 +32,7 @@ struct Diary: View {
                     Button(action: {
                         
                     }) {
-                        Image(systemName: "calendar")
-                            .foregroundStyle(.black)
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        
-                    }) {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "info.circle")
                             .foregroundStyle(.black)
                     }
                 }
@@ -54,5 +45,5 @@ struct Diary: View {
 }
 
 #Preview {
-    Diary()
+    Services()
 }
