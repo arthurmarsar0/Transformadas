@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct Diary: View {
+    @State var showSheet: Bool = false
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -33,8 +35,16 @@ struct Diary: View {
                     Image(systemName: "ellipsis.circle")
                 }
             }
-            Text("Hello, World!")
+            Button(action: {
+                showSheet.toggle()
+            }, label:{
+                Text("Abrir sheet registro")
+            }
+            )
         }
+        .sheet(isPresented: $showSheet, content: {
+            LembreteSheet(isPresented: $showSheet)
+        })
         
     }
     
