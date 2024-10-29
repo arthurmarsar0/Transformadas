@@ -36,10 +36,7 @@ class EntryModel {
     }
     
     func editEntry(entry: Entry) throws {
-        guard let entryDate = entry.date else {
-            throw ModelError.invalidField
-        }
-        var oldEntry = try getEntry(date: entryDate)
+        var oldEntry = try getEntry(date: entry.date)
         
         oldEntry.date = entry.date
         oldEntry.mood = entry.mood

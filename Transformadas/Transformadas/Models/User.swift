@@ -23,13 +23,13 @@ enum UserPronoun: Codable {
 class User {
     
     var modelID: UUID = UUID()
-    var name: String?
+    var name: String = ""
     var weight: Double?
     var transitionStart: Date?
-    var hormonalTherapyType: HormonalTherapyType?
-    var pronouns: [UserPronoun]?
+    var hormonalTherapyType: HormonalTherapyType = HormonalTherapyType.feminization
+    var pronouns: [UserPronoun] = []
     
-    init(name: String?, weight: Double?, transitionStart: Date?, hormonalTherapyType: HormonalTherapyType?, pronouns: [UserPronoun]?) {
+    init(name: String, weight: Double?, transitionStart: Date?, hormonalTherapyType: HormonalTherapyType, pronouns: [UserPronoun]) {
         self.name = name
         self.weight = weight
         self.transitionStart = transitionStart

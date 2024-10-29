@@ -30,7 +30,7 @@ enum Mood: Codable {
 
 @Model
 class Entry {
-    var date: Date?
+    var date: Date = Date.now
     var mood: Mood?
     var note: String?
     var audio: String? // MUDAR
@@ -38,7 +38,7 @@ class Entry {
     @Relationship var effects: [Effect]?
     var pdf: String? // MUDAR
     
-    init(date: Date?, mood: Mood?, note: String?, audio: String?, photo: String?, effects: [Effect]?, pdf: String?) {
+    init(date: Date, mood: Mood?, note: String?, audio: String?, photo: String?, effects: [Effect]?, pdf: String?) {
         self.date = date
         self.mood = mood
         self.note = note
