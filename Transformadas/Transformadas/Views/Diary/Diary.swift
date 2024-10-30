@@ -42,7 +42,7 @@ struct Diary: View {
                         
                     }) {
                         Image(systemName: "ellipsis.circle")
-                            .foregroundStyle(.black)
+                        
                     }
                 }
             }
