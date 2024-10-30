@@ -12,6 +12,7 @@ struct ListView: View {
         VStack{
             ScrollView(.vertical){
                 
+                
                 ListComponent()
                 ListComponent()
                 ListComponent()

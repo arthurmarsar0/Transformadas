@@ -24,6 +24,8 @@ struct Services: View {
     
     var body: some View {
         NavigationStack {
+            
+            
             VStack {
                 ScrollView(.horizontal){
                     HStack{
@@ -35,7 +37,7 @@ struct Services: View {
                             }) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 8)
-                                        .foregroundStyle(selectedFilter == index ? .purple : .gray) 
+                                        .foregroundStyle(selectedFilter == index ? .purple : .gray)
                                         .frame(height: 32)
                                     
                                     HStack(spacing: 8) {
@@ -55,19 +57,20 @@ struct Services: View {
                     
                 }
                 
-                List{
-                    
-                    
-                }
-                .searchable(text: $searchText)
+                //                List{
+                //
+                //
+                //                }
+                //                .searchable(text: $searchText)
                 
                 
                 if(viewType == false){
                     MapView()
                 }else{
-                    ListView()
+                    ListView().searchable(text: $searchText)
                 }
             }
+            
             .toolbar{
                 
                 ToolbarItem(placement: .topBarLeading){
@@ -92,12 +95,15 @@ struct Services: View {
                     }
                 }
             }
+            //.toolbarBackground(.red)
+            
+            
         }
-        
     }
-    
 }
 
+
 #Preview {
+    
     Services()
 }
