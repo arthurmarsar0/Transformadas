@@ -10,30 +10,51 @@ import SwiftUI
 struct MoodPreviewComponent: View {
     var mood: Mood
     var entryDate: Date
-    var isReduced: Bool
+    var isPreview: Bool
     
     var body: some View {
         HStack (spacing: 12) {
             Text(mood.emoji).font(.system(size: 32))
             
-            VStack (alignment: .leading){
-                Text(entryDate.hourFormatted)
-                    .font(.system(size: 11, weight: .regular))
-                Text(mood.name)
-                    .font(.system(size: 15, weight: .regular))
-                    .lineLimit(1)
+            VStack (alignment: .leading, spacing: 2){
+                
+                if isPreview {
+                    Text(entryDate.hourFormatted)
+                        .font(.system(size: 11, weight: .regular))
+                    Text(mood.name)
+                        .font(.system(size: 15, weight: .regular))
+                        .lineLimit(1...2)
+                } else {
+                    Text("COMO ESTOU ME SENTINDO")
+                        .font(.system(size: 11, weight: .regular))
+                    Text(mood.name)
+                        .font(.system(size: 20, weight: .medium))
+                        .lineLimit(1...2)
+                }
+                
+                
             }.foregroundStyle(.white)
-            if !isReduced {
-                Spacer()
-            }
-        }.padding(.vertical, 12)
+            
+            Spacer()
+            
+        }
+        .padding(.vertical, 12)
         .padding(.horizontal, 8)
         .background{
-            RoundedRectangle(cornerRadius: 8).fill(.rosaMedio)
-        }.frame(maxWidth: isReduced ? 164.5 : 337)
+            RoundedRectangle(cornerRadius: 8).fill(backgroundFill)
+        }
+        
+    }
+    
+    private var backgroundFill: AnyShapeStyle {
+        if isPreview {
+            return AnyShapeStyle(Color.rosaMedio)
+        } else {
+            return AnyShapeStyle(degradeRosa())
+        }
     }
 }
 
 #Preview {
-    MoodPreviewComponent(mood: .moreOrLess, entryDate: Date.now, isReduced: true)
+    MoodPreviewComponent(mood: .moreOrLess, entryDate: Date.now, isPreview: false)
 }

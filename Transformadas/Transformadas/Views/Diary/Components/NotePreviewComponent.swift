@@ -9,31 +9,26 @@ import SwiftUI
 
 struct NotePreviewComponent: View {
     var note: String
-    var isReduced: Bool
-    
+    var isPreview: Bool
+
     var body: some View {
-        HStack (spacing: 12) {
+        HStack(alignment: .top, spacing: 12) {
             Text(note)
-                .font(.system(size: 13, weight: .regular))
+                .font(.system(size: isPreview ? 13 : 17, weight: .regular))
                 .multilineTextAlignment(.leading)
-                .lineLimit(1...6)
+                .lineLimit(isPreview ? 6 : nil)
                 .truncationMode(.tail)
                 .foregroundStyle(.cinzaEscuro)
                 .lineSpacing(2)
-                .background(.cinzaMuitoClaro)
-            
-            
-            if !isReduced {
-                Spacer()
-            }
         }
         .padding(8)
-        .background{
+        .background {
             RoundedRectangle(cornerRadius: 8).fill(.cinzaMuitoClaro)
-        }.frame(maxWidth: isReduced ? 164.5 : 337)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
 #Preview {
-    NotePreviewComponent(note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", isReduced: true)
+    NotePreviewComponent(note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", isPreview: false)
 }

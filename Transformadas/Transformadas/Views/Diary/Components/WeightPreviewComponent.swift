@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WeightPreviewComponent: View {
     var weight: Double
-    var isReduced: Bool
+    var isPreview: Bool
     
     var body: some View {
         HStack (spacing: 12) {
@@ -21,19 +21,20 @@ struct WeightPreviewComponent: View {
                     .font(.system(size: 11, weight: .regular))
                     .foregroundStyle(.cinzaClaro)
                 Text(String(format: "%.1f kg", weight))
-                    .font(.system(size: 15, weight: .regular))
+                    .font(.system(size: isPreview ? 15 : 18, weight: .medium))
                     .foregroundStyle(.cinzaEscuro)
             }.foregroundStyle(.white)
-            if !isReduced {
-                Spacer()
-            }
+            
+            Spacer()
+            
         }.padding(8)
         .background{
             RoundedRectangle(cornerRadius: 8).fill(.cinzaMuitoClaro)
-        }.frame(maxWidth: isReduced ? 164.5 : 337)
+        }
+        
     }
 }
 
 #Preview {
-    WeightPreviewComponent(weight: 63.7, isReduced: false)
+    WeightPreviewComponent(weight: 63.7, isPreview: false)
 }

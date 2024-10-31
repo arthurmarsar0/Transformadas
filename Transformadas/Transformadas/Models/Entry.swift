@@ -26,11 +26,11 @@ enum Mood: Codable, CaseIterable {
   }
   var emoji: String {
     switch self {
-      case .bad: return ":arrependido:"
-      case .moreOrLess: return ":confuso:"
-      case .ok: return ":expressão_neutra:"
-      case .well: return ":feliz:"
-      case .excellent: return ":rindo:"
+      case .bad: return "😔"
+      case .moreOrLess: return "😕"
+      case .ok: return "😐"
+      case .well: return "☺️"
+      case .excellent: return "😀"
     }
   }
 }

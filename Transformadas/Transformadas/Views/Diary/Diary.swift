@@ -59,7 +59,7 @@ struct Diary: View {
                     
                     todayReminders()
                     
-                    entryPreview()
+                    entryArea()
                     
                     if entries.isEmpty {
                         addEntryButton()
@@ -187,8 +187,8 @@ struct Diary: View {
         }
     }
     
-    func entryPreview() -> some View {
-        VStack {
+    func entryArea() -> some View {
+        VStack (spacing: 8){
             HStack {
                 Text("Como está se sentindo?")
                     .foregroundStyle(.marrom)
@@ -206,49 +206,60 @@ struct Diary: View {
                 }
             } else {
                 if let entry = entries.first {
-                    entryButton(entry: entry)
+                    entryPreview(entry: entry)
                 }
             }
             
         }
+    }
+    
+    func entryPreview(entry: Entry) -> some View {
+        
+        VStack (spacing: 16) {
+            
+            entryButton(entry: entry)
+            
+            HStack {
+                Spacer()
+                pullDownButton()
+            }
+            
+        }.padding(12)
+        .background(.white)
+        
+        
+        
     }
     
     func entryButton(entry: Entry) -> some View {
         Button(action: {
             isShowingEntrySheet = true
         }) {
-            VStack (spacing: 12){
-                
-                if entry.photos.isEmpty {
-                    entrySemFoto(entry: entry, isReduced: false)
-                } else if let data = entry.photos.first, let photo = EntryModel.dataToImage(data: data) {
-                    entryComFoto(entry: entry, photo: photo)
-                }
-                
-                HStack {
-                    Spacer()
-                    pullDownButton()
-                }
-                
-            }.padding(12)
-                .background(.white)
+            if entry.photos.isEmpty {
+                entrySemFoto(entry: entry)
+            } else if let data = entry.photos.first, let photo = EntryModel.dataToImage(data: data) {
+                entryComFoto(entry: entry, photo: photo)
+            }
+        }.sheet(isPresented: $isShowingEntrySheet) {
+            EntryView(entry: entry)
         }
     }
     
     func pullDownButton() -> some View {
         Menu{
-            Button ("Editar") {
-                
-            }
             Button ("Apagar", role: .destructive) {
                 isShowingDeleteEntry = true
             }
+            Button ("Editar") {
+                
+            }
+            
         } label: {
             Image(systemName: "ellipsis")
                 .foregroundStyle(.cinzaClaro)
-        }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry) {
+        }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry, titleVisibility: .visible) {
             
-            Button ("Apagar", role: .destructive) {
+            Button ("Apagar Registro", role: .destructive) {
                 
             }
             
@@ -263,58 +274,74 @@ struct Diary: View {
             photo
                 .resizable()
                 .scaledToFill()
-                .frame(width: 164.5, height: 260)
-            VStack {
-                entrySemFoto(entry: entry, isReduced: true)
-            }
+            
+            entrySemFoto(entry: entry)
+            
         }
     }
     
-    func entrySemFoto(entry: Entry, isReduced: Bool) -> some View {
+    func entrySemFoto(entry: Entry) -> some View {
         VStack (spacing: 8){
             if let mood = entry.mood {
-                MoodPreviewComponent(mood: mood, entryDate: entry.date, isReduced: isReduced)
+                MoodPreviewComponent(mood: mood, entryDate: entry.date, isPreview: true)
             }
             
             if let audio = entry.audio {
-                AudioPreviewComponent(audio: audio, isReduced: isReduced)
+                AudioPreviewComponent(audio: audio, isPreview: true)
             }
             if let weight = entry.weight {
-                WeightPreviewComponent(weight: weight, isReduced: isReduced)
+                WeightPreviewComponent(weight: weight, isPreview: true)
             }
             if let note = entry.note {
-                NotePreviewComponent(note: note, isReduced: isReduced)
+                NotePreviewComponent(note: note, isPreview: true)
             }
             
             if let effects = entry.effects {
-                EffectPreviewComponent(effects: effects, isReduced: isReduced)
+                //EffectPreviewComponent(effects: effects, isPreview: true)
             }
             
             if let documents = entry.documents {
-                DocumentPreviewComponent(documents: documents, isReduced: isReduced)
+                DocumentPreviewComponent(documents: documents, isPreview: true)
             }
         }
     }
     
     func addEntryButton() -> some View {
-        HStack (spacing: 8){
-            Image(systemName: "plus.circle.fill")
-                .font(.system(size: 20, weight: .semibold))
-            Text("Registrar Dia")
-                .font(.system(size: 17, weight: .semibold))
-        }.foregroundStyle(.white)
-            .frame(maxWidth: .infinity)
-            .padding(14)
-            .background {
-                RoundedRectangle(cornerRadius: 10)
-                    .fill(.rosa)
-            }
+        Button(action: {
+            addEntry()
+        }) {
+            HStack (spacing: 8){
+                Image(systemName: "plus.circle.fill")
+                    .font(.system(size: 20, weight: .semibold))
+                Text("Registrar Dia")
+                    .font(.system(size: 17, weight: .semibold))
+            }.foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(14)
+                .background {
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(.rosa)
+                }
+        }
+        
     }
     
     /// DATA  FUNCS
     
+    func addEntry() {
+        modelContext.insert(Entry(date: Date.now, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 67.5))
+    }
+    
 }
 
 #Preview {
-    Diary()
+        Diary()
+            .modelContainer(for: [
+                Effect.self,
+                User.self,
+                Entry.self,
+                Reminder.self
+            ], inMemory: true)
+    
+    
 }
