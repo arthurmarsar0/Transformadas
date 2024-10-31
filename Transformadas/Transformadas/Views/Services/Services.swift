@@ -24,50 +24,17 @@ struct Services: View {
     
     var body: some View {
         NavigationStack {
-            
-            
             VStack {
                 ScrollView(.horizontal){
-                    HStack{
-                        ForEach(0..<categories.count, id: \.self) { index in
-                            let (title, symbol) = categories[index]
-                            
-                            Button(action: {
-                                selectedFilter = index
-                            }) {
-                                ZStack {
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .foregroundStyle(selectedFilter == index ? .purple : .gray)
-                                        .frame(height: 32)
-                                    
-                                    HStack(spacing: 8) {
-                                        if let symbol = symbol {
-                                            Image(systemName: symbol)
-                                                .foregroundColor(selectedFilter == index ? .white : .black)
-                                        }
-                                        Text(title)
-                                            .font(.system(size: 16, weight: .medium))
-                                            .foregroundColor(selectedFilter == index ? .white : .black)
-                                    }
-                                    .padding(.horizontal, 12)
-                                }
-                            }
-                        }
-                    }
+                    categorySection
+                        .padding()
                     
                 }
-                
-                //                List{
-                //
-                //
-                //                }
-                //                .searchable(text: $searchText)
-                
                 
                 if(viewType == false){
                     MapView()
                 }else{
-                    ListView().searchable(text: $searchText)
+                    ListView()
                 }
             }
             
@@ -98,6 +65,37 @@ struct Services: View {
             //.toolbarBackground(.red)
             
             
+        }
+    }
+}
+
+extension Services {
+    var categorySection: some View {
+        HStack{
+            ForEach(0..<categories.count, id: \.self) { index in
+                let (title, symbol) = categories[index]
+                
+                Button(action: {
+                    selectedFilter = index
+                }) {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .foregroundStyle(selectedFilter == index ? .rosa : .cinzaMuitoClaro)
+                            .frame(height: 32)
+                        
+                        HStack(spacing: 8) {
+                            if let symbol = symbol {
+                                Image(systemName: symbol)
+                                    .foregroundColor(selectedFilter == index ? .white : .cinzaEscuro)
+                            }
+                            Text(title)
+                                .font(.system(size: 16, weight: .medium))
+                                .foregroundColor(selectedFilter == index ? .white : .cinzaEscuro)
+                        }
+                        .padding(.horizontal, 12)
+                    }
+                }
+            }
         }
     }
 }

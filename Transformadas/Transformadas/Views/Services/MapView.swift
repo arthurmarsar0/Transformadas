@@ -9,8 +9,22 @@ import SwiftUI
 import MapKit
 
 struct MapView: View {
+    @State private var locationManager = LocationManager()
+    
     var body: some View {
-        Map()
+        ZStack {
+            if(locationManager.isAuthorized){
+                Map(){
+                    UserAnnotation()
+                }.mapControls {
+                    MapUserLocationButton()
+                }
+            }
+        }.onAppear {
+            locationManager.startLocationServices()
+        }
+        
+    
     }
 }
 

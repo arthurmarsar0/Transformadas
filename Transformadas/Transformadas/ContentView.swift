@@ -15,11 +15,11 @@ struct ContentView: View {
         TabView (selection: $selectedTab){
             Group {
                 Journey().tabItem {
-                    Label("Check-in", systemImage: "person.fill")
+                    Label("Perfil", systemImage: "person.fill")
                 }
                 .tag(0)
                 Diary().tabItem {
-                    Label("Venda", systemImage: "calendar")
+                    Label("Diário", systemImage: "calendar")
                 }
                 
                 .tag(1)
