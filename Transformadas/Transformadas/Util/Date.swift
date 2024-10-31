@@ -13,6 +13,10 @@ extension Date {
         return Calendar.current.component(.day, from: self)
     }
     
+    var monthNumber: Int {
+        return Calendar.current.component(.month, from: self)
+    }
+    
     var yearNumber: Int {
         return Calendar.current.component(.year, from: self)
     }
@@ -30,7 +34,12 @@ extension Date {
         dateFormatter.dateFormat = "MMMM"
         return dateFormatter.string(from: self)
     }
-    
+    var hourFormatted: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale.current
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: self)
+    }
 }
 
 func datesInCurrentMonth() -> [Date] {
