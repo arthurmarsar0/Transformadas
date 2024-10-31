@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		93D26DFD2CD3A6BF00AC4B90 /* ShimmeringUiView in Frameworks */ = {isa = PBXBuildFile; productRef = 93D26DFC2CD3A6BF00AC4B90 /* ShimmeringUiView */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		93D26A3F2CCC165900AC4B90 /* Transformadas.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Transformadas.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -36,6 +40,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				93D26DFD2CD3A6BF00AC4B90 /* ShimmeringUiView in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +83,7 @@
 			);
 			name = Transformadas;
 			packageProductDependencies = (
+				93D26DFC2CD3A6BF00AC4B90 /* ShimmeringUiView */,
 			);
 			productName = Transformadas;
 			productReference = 93D26A3F2CCC165900AC4B90 /* Transformadas.app */;
@@ -107,6 +113,9 @@
 			);
 			mainGroup = 93D26A362CCC165900AC4B90;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				93D26DFB2CD3A6BF00AC4B90 /* XCRemoteSwiftPackageReference "swiftui-shimmeringview" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 93D26A402CCC165900AC4B90 /* Products */;
 			projectDirPath = "";
@@ -347,6 +356,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		93D26DFB2CD3A6BF00AC4B90 /* XCRemoteSwiftPackageReference "swiftui-shimmeringview" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Ninise/swiftui-shimmeringview";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		93D26DFC2CD3A6BF00AC4B90 /* ShimmeringUiView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93D26DFB2CD3A6BF00AC4B90 /* XCRemoteSwiftPackageReference "swiftui-shimmeringview" */;
+			productName = ShimmeringUiView;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 93D26A372CCC165900AC4B90 /* Project object */;
 }

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CloudKit
 
 class Service {
     var ID: String?
@@ -15,9 +16,9 @@ class Service {
     var telephone: String
     var description: String
     var address: Address
-    var coordinate: Coordinate
+    var coordinate: CLLocationCoordinate2D
     
-    init(ID: String, name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: Coordinate) {
+    init(ID: String, name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: CLLocationCoordinate2D) {
         self.ID = ID
         self.name = name
         self.categories = categories
