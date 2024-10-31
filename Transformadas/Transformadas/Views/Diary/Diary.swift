@@ -21,7 +21,7 @@ struct Diary: View {
     }) var monthEntries: [Entry]
     
     ///VIEW DATA
-    @State var selectedDay  = Calendar.current.dateComponents([.day, .month], from: Date.now).day
+    @State var selectedDay: Int = Calendar.current.dateComponents([.day, .month], from: Date.now).day ?? 1
     
     var currentMonthString: String {
         return Date.now.monthString
@@ -41,6 +41,7 @@ struct Diary: View {
     }
     
     @State var isShowingDeleteEntry: Bool = false
+    @State var isShowingEntrySheet: Bool = false
     
     ///VIEW
     
@@ -58,7 +59,9 @@ struct Diary: View {
                     
                     todayReminders()
                     
-                    entryButton()
+                    entryPreview()
+                    
+                    addEntryButton()
                     
                     Spacer()
                 }.padding(16)
@@ -134,50 +137,54 @@ struct Diary: View {
     }
     
     func dateCarousel() -> some View {
-        VStack (spacing: 8){
-            HStack {
-                Text("\(currentMonthString.prefix(3)) \(currentYear)").foregroundStyle(.marrom)
-                
-                Spacer()
-                
-                Button(action: {
-                    selectedDay = currentDay
-                }) {
-                    Text("Hoje")
-                        .foregroundStyle(selectedDay == currentDay ? .cinzaClaro : .vermelho)
-                }
-                
-            }
-            ScrollViewReader { scrollViewProxy in
-                ScrollView(.horizontal) {
-                    HStack(spacing: 8) {
-                        ForEach(monthDates, id: \.self) { date in
-                            Button(action: {
-                                selectedDay = date.dayNumber
-                                withAnimation {
-                                    scrollViewProxy.scrollTo(date.dayNumber, anchor: .center) // Rola até o dia selecionado
-                                }
-                            }) {
-                                CarouselDayComponent(date: date, state: .noEntry, isSelected: selectedDay == date.dayNumber, todayReminders: [])
-                                    .padding(.vertical, 4)
-                            }
-                            .id(date.dayNumber) // Define o ID do botão para rolagem
+        ScrollViewReader { scrollViewProxy in
+            VStack(spacing: 8) {
+                HStack {
+                    Text("\(currentMonthString.prefix(3)) \(currentYear)")
+                        .foregroundStyle(.marrom)
+                    
+                    Spacer()
+                    
+                    Button(action: {
+                        selectedDay = currentDay
+                        withAnimation {
+                            
+                            scrollViewProxy.scrollTo(currentDay, anchor: .center)
                         }
+                    }) {
+                        Text("Hoje")
+                            .foregroundStyle(selectedDay == currentDay ? .cinzaClaro : .vermelho)
                     }
                 }
-                .onAppear {
-                    if let selectedDay = selectedDay {
-                        // Centraliza no selectedDay quando a view aparece
-                        scrollViewProxy.scrollTo(selectedDay, anchor: .center)
+                
+                carouselScroll(scrollViewProxy: scrollViewProxy)
+            }
+        }
+    }
+
+    func carouselScroll(scrollViewProxy: ScrollViewProxy) -> some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                ForEach(monthDates, id: \.self) { date in
+                    Button(action: {
+                        selectedDay = date.dayNumber
+                        withAnimation {
+                            scrollViewProxy.scrollTo(date.dayNumber, anchor: .center)
+                        }
+                    }) {
+                        CarouselDayComponent(date: date, state: .noEntry, isSelected: selectedDay == date.dayNumber, todayReminders: [])
+                            .padding(.vertical, 4)
                     }
+                    .id(date.dayNumber)
                 }
             }
-            
-            
+        }
+        .onAppear {
+            scrollViewProxy.scrollTo(selectedDay, anchor: .center)
         }
     }
     
-    func entryButton() -> some View {
+    func entryPreview() -> some View {
         VStack {
             HStack {
                 Text("Como está se sentindo?")
@@ -196,41 +203,55 @@ struct Diary: View {
                 }
             } else {
                 if let entry = entries.first {
-                    VStack (spacing: 12){
-                        
-                        if entry.photos.isEmpty {
-                            entrySemFoto(entry: entry, isReduced: false)
-                        } else if let data = entry.photos.first, let photo = EntryModel.dataToImage(data: data) {
-                            entryComFoto(entry: entry, photo: photo)
-                        }
-                        
-                        Menu{
-                            Button ("Editar") {
-                                
-                            }
-                            Button ("Apagar", role: .destructive) {
-                                
-                            }
-                        } label: {
-                            Image(systemName: "ellipsis")
-                                .foregroundStyle(.cinzaClaro)
-                        }
-                    }.padding(12)
-                        .background(.white)
-                        .confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry) {
-                            
-                            Button ("Apagar", role: .destructive) {
-                                
-                            }
-                            
-                            Button ("Cancelar", role: .cancel) {
-                                
-                            }
-                        }
-                    
+                    entryButton(entry: entry)
                 }
             }
             
+        }
+    }
+    
+    func entryButton(entry: Entry) -> some View {
+        Button(action: {
+            isShowingEntrySheet = true
+        }) {
+            VStack (spacing: 12){
+                
+                if entry.photos.isEmpty {
+                    entrySemFoto(entry: entry, isReduced: false)
+                } else if let data = entry.photos.first, let photo = EntryModel.dataToImage(data: data) {
+                    entryComFoto(entry: entry, photo: photo)
+                }
+                
+                HStack {
+                    Spacer()
+                    pullDownButton()
+                }
+                
+            }.padding(12)
+                .background(.white)
+        }
+    }
+    
+    func pullDownButton() -> some View {
+        Menu{
+            Button ("Editar") {
+                
+            }
+            Button ("Apagar", role: .destructive) {
+                isShowingDeleteEntry = true
+            }
+        } label: {
+            Image(systemName: "ellipsis")
+                .foregroundStyle(.cinzaClaro)
+        }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry) {
+            
+            Button ("Apagar", role: .destructive) {
+                
+            }
+            
+            Button ("Cancelar", role: .cancel) {
+                
+            }
         }
     }
     
@@ -270,6 +291,21 @@ struct Diary: View {
                 DocumentPreviewComponent(documents: documents, isReduced: isReduced)
             }
         }
+    }
+    
+    func addEntryButton() -> some View {
+        HStack (spacing: 8){
+            Image(systemName: "plus.circle.fill")
+                .font(.system(size: 20, weight: .semibold))
+            Text("Registrar Dia")
+                .font(.system(size: 17, weight: .semibold))
+        }.foregroundStyle(.white)
+            .frame(maxWidth: .infinity)
+            .padding(14)
+            .background {
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(.rosa)
+            }
     }
     
     /// DATA  FUNCS
