@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MapKit
 
 enum Category: CaseIterable {
     case all
@@ -59,19 +60,17 @@ struct Address {
 
 
 
-struct Coordinate {
-    var latitude: Double
-    var longitude: Double
+extension CLLocationCoordinate2D {
     
     func coordinateToList() -> [Double] {
-        return [latitude, longitude]
+        return [self.latitude, self.longitude]
     }
     
-    static func listToCoordinate(list: [Double]) -> Coordinate {
+    static func listToCoordinate(list: [Double]) -> CLLocationCoordinate2D {
         let latitude = list[0]
         let longitude = list[1]
         
-        return Coordinate(latitude: latitude, longitude: longitude)
+        return CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
     }
     
 }

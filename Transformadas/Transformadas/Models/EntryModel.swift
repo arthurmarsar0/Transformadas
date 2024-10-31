@@ -7,12 +7,25 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 class EntryModel {
     let context: ModelContext
 
     init(context: ModelContext) {
         self.context = context
+    }
+    
+    static func imageToData(image: UIImage) -> Data? {
+        return image.jpegData(compressionQuality: 0.8)
+    }
+    
+    static func dataToImage(data: Data) -> Image? {
+        if let uiImage = UIImage(data: data) {
+            return Image(uiImage: uiImage)
+        }
+        
+        return nil
     }
     
     func getEntries() throws -> [Entry] {
@@ -42,9 +55,9 @@ class EntryModel {
         oldEntry.mood = entry.mood
         oldEntry.note = entry.note
         oldEntry.audio = entry.audio
-        oldEntry.photo = entry.photo
+        oldEntry.photos = entry.photos
         oldEntry.effects = entry.effects
-        oldEntry.pdf = entry.pdf
+        oldEntry.documents = entry.documents
         
         try context.save()
         

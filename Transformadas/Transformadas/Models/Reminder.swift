@@ -10,6 +10,7 @@ import Foundation
 
 @Model
 class Reminder {
+    var name: String = ""
     var modelID: UUID = UUID()
     var startDate: Date = Date.distantPast
     var endDate: Date?
@@ -17,7 +18,8 @@ class Reminder {
     var time: Date = Date.now
     var daysCompleted: [Date] = []
     
-    init(startDate: Date, endDate: Date?, repetition: Repetition, time: Date, daysCompleted: [Date]) {
+    init(name: String, startDate: Date, endDate: Date?, repetition: Repetition, time: Date, daysCompleted: [Date]) {
+        self.name = name
         self.startDate = startDate
         self.endDate = endDate
         self.repetition = repetition

@@ -31,7 +31,7 @@ class ServiceModel {
             telephone: telephone,
             description: description,
             address: Address.listToAddress(list: address),
-            coordinate: Coordinate.listToCoordinate(list: coordinate)
+            coordinate: CLLocationCoordinate2D.listToCoordinate(list: coordinate)
             )
         
         return service
