@@ -61,7 +61,10 @@ struct Diary: View {
                     
                     entryPreview()
                     
-                    addEntryButton()
+                    if entries.isEmpty {
+                        addEntryButton()
+                    }
+                        
                     
                     Spacer()
                 }.padding(16)
