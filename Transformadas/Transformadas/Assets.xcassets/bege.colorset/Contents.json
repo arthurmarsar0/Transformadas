@@ -11,6 +11,7 @@
         }
       },
       "idiom" : "universal"
+<<<<<<< HEAD
     },
     {
       "appearances" : [
@@ -29,6 +30,8 @@
         }
       },
       "idiom" : "universal"
+=======
+>>>>>>> dev
     }
   ],
   "info" : {
