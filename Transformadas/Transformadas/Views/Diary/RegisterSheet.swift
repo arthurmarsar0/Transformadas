@@ -13,12 +13,16 @@ struct RegisterSheet: View {
     @Binding var isPresented: Bool
     //    @Binding var details: String
     @State var audioRecorded: Bool = false
-//    var day: Entry
+//    @State var day: Entry = .init(
+    
+    
+    @State var moodChosen: Mood?
     
     @Query var effects: [Effect]
     @Environment(\.modelContext) var modelContext
     
     @State var effectsBool: [Effect:Bool] = [:]
+    @State var pdfNames: [String] = []
     
     var body: some View {
         NavigationStack{
@@ -28,6 +32,10 @@ struct RegisterSheet: View {
                 List {
                     Section("COMO ESTOU ME SENTINDO?"){
                         moodView()
+                    }
+                    
+                    Section{
+                       Text("teste") //adição do text field para escrever
                     }
                     
                     Section("Mudanças Físicas") {
@@ -55,10 +63,22 @@ struct RegisterSheet: View {
                                 Image(systemName: "chevron.right")
                             }
                         })
+                        //TODO: Ver como fica se mais de uma foto for adicionada
                     }
+                    .foregroundStyle(Color.gray)
                     
                     Section("Efeitos"){
                         effectView()
+                    }
+                    
+                    Section("Arquivos anexos"){
+                        pdfView()
+                        Button(action: {
+                            
+                        }, label: {
+                            Text("Adicionar anexo...")
+                        })
+                        .foregroundStyle(Color.gray)
                     }
                     //                .scrollContentBackground(.hidden)
                 }
@@ -77,7 +97,8 @@ struct RegisterSheet: View {
                     ToolbarItem {
                         Button(action: {
 //                            self.isPresented.toggle()
-                            addEffect()
+//                            addEffect()
+                            print(moodChosen!)
                         }) {
                             Text("Registrar")
                                 .foregroundStyle(Color.red)
@@ -99,13 +120,12 @@ struct RegisterSheet: View {
     
     func moodView() -> some View {
         
-        
-        
         return HStack(alignment: .top,spacing: 20){
             ForEach(Mood.allCases, id: \.self){ mood in
                 VStack{
                     RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.blue.opacity(0.3))
+                        .fill(moodChosen == mood ? Color.red : Color.gray) //ver como fazer a troca de cor
+                    
                         .frame(width: 56, height: 56)
                         .overlay(content: {
                             Text(mood.emoji)
@@ -113,6 +133,8 @@ struct RegisterSheet: View {
                         })
                         .onTapGesture {
                             print(mood.name)
+                            moodChosen = mood
+//                            day.mood = mood
                         }
                     Text(mood.name)
                         .font(.system(size: 11))
@@ -120,7 +142,10 @@ struct RegisterSheet: View {
             }
             
         }
-        .listRowBackground(Color.clear) //estudar como alterar o frame
+        .listRowBackground(Color.clear)
+        .frame(height: 88)
+        // TODO: alterar o tamanho do frame de uma forma que se aumentar o tamanho da fonte ainda fique esteticamente legal
+        
     }
     
     func effectView() -> some View {
@@ -129,8 +154,18 @@ struct RegisterSheet: View {
         }
     }
     
-    func addEffect() {
+    func addEffect() { //Consultar com Pv como ele fez
         modelContext.insert(Effect(name: "teste"))
+    }
+    
+    func addRegister() { //salvar o registro no ngc
+        
+    }
+    
+    func pdfView() -> some View {
+        ForEach(pdfNames, id: \.self) {register in
+            Text(register)
+        }
     }
 }
 
