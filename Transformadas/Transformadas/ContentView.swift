@@ -9,12 +9,6 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-<<<<<<< HEAD
-    @State var showSheet: Bool = false
-    
-    var body: some View {
-        RegisterSheet(isPresented: $showSheet)
-=======
     @State var selectedTab: Int = 1
     
     var body: some View {
@@ -37,7 +31,6 @@ struct ContentView: View {
         }.onAppear{
             //setupTabBarAppearance(modo: true)
         }
->>>>>>> dev
     }
     
 }

@@ -9,9 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct Diary: View {
-<<<<<<< HEAD
     @State var showSheet: Bool = false
-=======
     ///DATA
     @Environment(\.modelContext) var modelContext
     @Query var entries: [Entry]
@@ -33,7 +31,6 @@ struct Diary: View {
     var monthDates: [Date] {
         return datesInCurrentMonth()
     }
->>>>>>> dev
     
     var body: some View {
         NavigationStack {
@@ -152,15 +149,12 @@ struct Diary: View {
                     }
                 }
             }
-<<<<<<< HEAD
             Button(action: {
                 showSheet.toggle()
             }, label:{
                 Text("Abrir sheet registro")
             }
             )
-=======
->>>>>>> dev
         }
         .sheet(isPresented: $showSheet, content: {
             RegisterSheet(isPresented: $showSheet)
