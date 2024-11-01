@@ -7,64 +7,59 @@
 
 import SwiftUI
 
-let categories = [
-    ("Todos", nil),
-    ("Médicos", "cross.fill"),
-    ("Psicológicos", "brain.fill"),
-    ("Jurídicos", "list.clipboard.fill"),
-    ("Proteção", "light.beacon.min.fill"),
-    ("Sociais", "person.2.fill")
-]
-
 
 struct Services: View {
     @State var viewType: Bool = false
     @State var searchText: String = ""
-    @State var selectedFilter: Int = 0
+    @State var selectedFilter: String = "Todos"
     
     var body: some View {
         NavigationStack {
-            VStack {
-                ScrollView(.horizontal){
-                    categorySection
-                        .padding()
-                    
-                }
+            ZStack{
                 
-                if(viewType == false){
-                    MapView()
-                }else{
-                    ListView()
-                }
-            }
-            
-            .toolbar{
+                Color.bege.ignoresSafeArea()
                 
-                ToolbarItem(placement: .topBarLeading){
-                    Text("Guia de Serviços")
-                        .font(.system(size: 28, weight: .semibold))
-                    
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        viewType.toggle()
-                    }) {
-                        Image(systemName: "map.fill")
-                            .foregroundStyle(.black)
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
+                VStack {
+                    ScrollView(.horizontal){
+                        categorySection
+                            .padding(.vertical, 8)
                         
-                    }) {
-                        Image(systemName: "info.circle")
-                            .foregroundStyle(.black)
+                    }
+                    
+                    if(viewType == false){
+                        MapView()
+                            .background(Color.bege)
+                    }else{
+                        ListView()
                     }
                 }
+                
+                .toolbar{
+                    
+                    ToolbarItem(placement: .topBarLeading){
+                        Text("Guia de Serviços")
+                            .font(.system(size: 28, weight: .semibold))
+                        
+                    }
+                    ToolbarItem(placement: .topBarTrailing){
+                        Button(action: {
+                            viewType.toggle()
+                        }) {
+                            Image(systemName: "map.fill")
+                                .foregroundStyle(.black)
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing){
+                        Button(action: {
+                            
+                        }) {
+                            Image(systemName: "info.circle")
+                                .foregroundStyle(.black)
+                        }
+                    }
+                }
+                
             }
-            //.toolbarBackground(.red)
-            
-            
         }
     }
 }
@@ -72,27 +67,21 @@ struct Services: View {
 extension Services {
     var categorySection: some View {
         HStack{
-            ForEach(0..<categories.count, id: \.self) { index in
-                let (title, symbol) = categories[index]
-                
+            ForEach(Category.allCases, id: \.self){ category in
                 Button(action: {
-                    selectedFilter = index
-                }) {
-                    ZStack {
+                    selectedFilter = category.name
+                }){
+                    ZStack{
                         RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(selectedFilter == index ? .rosa : .cinzaMuitoClaro)
+                            .foregroundStyle(selectedFilter == category.name ? .rosa : .cinzaMuitoClaro)
                             .frame(height: 32)
-                        
                         HStack(spacing: 8) {
-                            if let symbol = symbol {
-                                Image(systemName: symbol)
-                                    .foregroundColor(selectedFilter == index ? .white : .cinzaEscuro)
-                            }
-                            Text(title)
+                            Image(systemName: category.symbol)
+                                .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
+                            Text(category.name)
                                 .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(selectedFilter == index ? .white : .cinzaEscuro)
-                        }
-                        .padding(.horizontal, 12)
+                                .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
+                        }.padding(.horizontal, 8)
                     }
                 }
             }

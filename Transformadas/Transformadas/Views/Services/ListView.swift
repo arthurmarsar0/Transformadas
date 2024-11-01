@@ -8,20 +8,19 @@
 import SwiftUI
 
 struct ListView: View {
+    @State var isSheetPresented: Bool = false
     var body: some View {
         VStack{
             ScrollView(.vertical){
+                Button(action: {
+                    isSheetPresented.toggle()
+                }){
+                    ListComponent()
+                }
                 
-                
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
+                .sheet(isPresented: $isSheetPresented){
+                    SheetDetailView()
+                }
             }
             
             //TODO: Adicionar lógica pra ForEach service in services etc com cloudkit e cada componente ser um botão que abre uma sheet

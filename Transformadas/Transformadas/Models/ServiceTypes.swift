@@ -26,6 +26,17 @@ enum Category: CaseIterable {
         }
     }
     
+    var symbol: String{
+        switch self{
+        case .all: return ""
+        case .medical: return "cross.fill"
+        case .psychological: return "brain.fill"
+        case .judicial: return "list.clipboard.fill"
+        case .protection: return "light.beacon.min.fill"
+        case .social: return "person.2.fill"
+        }
+    }
+    
     static func nameToCategory(name: String) -> Category {
         for category in Category.allCases {
             if name == category.name {
