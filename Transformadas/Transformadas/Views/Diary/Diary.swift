@@ -43,7 +43,7 @@ struct Diary: View {
             )
         }
         .sheet(isPresented: $showSheet, content: {
-            LembreteSheet(isPresented: $showSheet)
+            RegisterSheet(isPresented: $showSheet)
         })
         
     }

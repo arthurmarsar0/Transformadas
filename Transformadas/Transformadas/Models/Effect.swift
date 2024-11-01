@@ -18,12 +18,14 @@ class Effect {
     }
 }
 
-enum EffectEnum: Codable {
+enum EffectEnum: Codable, CaseIterable {
     case insomnia
+    case fatigue
     
     var effect: Effect {
         switch self {
             case .insomnia: return Effect(name: "Insônia")
+            case .fatigue: return Effect(name: "Fadiga")
         }
     }
 }

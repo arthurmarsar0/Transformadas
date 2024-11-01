@@ -9,13 +9,14 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-
+    @State var showSheet: Bool = false
+    
     var body: some View {
-       Text("Hello World")
+        RegisterSheet(isPresented: $showSheet)
     }
 
 }
 
 #Preview {
-    ContentView()
+    ContentView().modelContainer(for: [Effect.self])
 }

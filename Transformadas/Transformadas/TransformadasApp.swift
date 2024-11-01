@@ -13,6 +13,7 @@ struct TransformadasApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             User.self,
+            Effect.self,
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
