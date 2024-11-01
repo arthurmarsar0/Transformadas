@@ -51,9 +51,9 @@ struct Diary: View {
                 Color.bege.ignoresSafeArea()
                 
                 VStack (spacing: 16){
-                    //                    Image("background")
-                    //                        .offset(y: -195)
-                    //                    Spacer()
+//                    Image("background")
+//                        .offset(y: -195)
+//                   
                     
                     dateCarousel()
                     
@@ -221,11 +221,14 @@ struct Diary: View {
             
             HStack {
                 Spacer()
-                pullDownButton()
+                pullDownButton(entry: entry)
             }
             
         }.padding(12)
-        .background(.white)
+            .background {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.white)
+            }
         
         
         
@@ -241,11 +244,11 @@ struct Diary: View {
                 entryComFoto(entry: entry, photo: photo)
             }
         }.sheet(isPresented: $isShowingEntrySheet) {
-            EntryView(entry: entry)
+            EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
         }
     }
     
-    func pullDownButton() -> some View {
+    func pullDownButton(entry: Entry) -> some View {
         Menu{
             Button ("Apagar", role: .destructive) {
                 isShowingDeleteEntry = true
@@ -257,10 +260,11 @@ struct Diary: View {
         } label: {
             Image(systemName: "ellipsis")
                 .foregroundStyle(.cinzaClaro)
+                .font(.system(size: 17))
         }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry, titleVisibility: .visible) {
             
             Button ("Apagar Registro", role: .destructive) {
-                
+                deleteEntry(entry: entry)
             }
             
             Button ("Cancelar", role: .cancel) {
@@ -329,7 +333,11 @@ struct Diary: View {
     /// DATA  FUNCS
     
     func addEntry() {
-        modelContext.insert(Entry(date: Date.now, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 67.5))
+        modelContext.insert(Entry(date: Date.now, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
+    }
+    
+    func deleteEntry(entry: Entry) {
+        modelContext.delete(entry)
     }
     
 }

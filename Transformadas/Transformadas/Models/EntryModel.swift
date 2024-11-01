@@ -28,6 +28,19 @@ class EntryModel {
         return nil
     }
     
+    static func dataToImages(dataset: [Data]) -> [Image] {
+        var images: [Image] = []
+        
+        for data in dataset {
+            if let uiImage = UIImage(data: data) {
+                images.append(Image(uiImage: uiImage))
+            }
+        }
+        
+        return images
+
+    }
+    
     func getEntries() throws -> [Entry] {
         let request = FetchDescriptor<Entry>()
         return try context.fetch(request)

@@ -156,7 +156,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Transformadas/Preview Content\"";
-				DEVELOPMENT_TEAM = 5A7HBC56XQ;
+				DEVELOPMENT_TEAM = 9CU34TXH45;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Transformadas/Info.plist;
@@ -173,7 +173,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = br.ufpe.cin.abm6.Transformadas;
+				PRODUCT_BUNDLE_IDENTIFIER = br.ufpe.cin.pvom.Transformadas;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -190,7 +190,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Transformadas/Preview Content\"";
-				DEVELOPMENT_TEAM = 5A7HBC56XQ;
+				DEVELOPMENT_TEAM = 9CU34TXH45;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Transformadas/Info.plist;
@@ -207,7 +207,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = br.ufpe.cin.abm6.Transformadas;
+				PRODUCT_BUNDLE_IDENTIFIER = br.ufpe.cin.pvom.Transformadas;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
