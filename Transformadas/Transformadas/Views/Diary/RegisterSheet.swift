@@ -28,6 +28,7 @@ struct RegisterSheet: View {
         NavigationStack{
             ZStack{
                 // TODO: Adicionar a cor bege de fundo
+                Color.rosa
                 
                 List {
                     Section("COMO ESTOU ME SENTINDO?"){
@@ -80,8 +81,9 @@ struct RegisterSheet: View {
                         })
                         .foregroundStyle(Color.gray)
                     }
-                    //                .scrollContentBackground(.hidden)
+                    
                 }
+                .scrollContentBackground(.hidden)
                 .navigationTitle("Seu Dia")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
@@ -96,7 +98,7 @@ struct RegisterSheet: View {
                     
                     ToolbarItem {
                         Button(action: {
-//                            self.isPresented.toggle()
+                            self.isPresented.toggle()
 //                            addEffect()
                             print(moodChosen!)
                         }) {
@@ -105,6 +107,9 @@ struct RegisterSheet: View {
                         }
                     }
                 }
+                .toolbarBackground(.bege)
+                .toolbarBackgroundVisibility(.visible)
+                
             }
         }.onAppear {
             for effect in effects {
@@ -123,9 +128,9 @@ struct RegisterSheet: View {
         return HStack(alignment: .top,spacing: 20){
             ForEach(Mood.allCases, id: \.self){ mood in
                 VStack{
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(moodChosen == mood ? Color.red : Color.gray) //ver como fazer a troca de cor
-                    
+                    RoundedRectangle(cornerRadius: 24)
+                        .stroke(moodChosen == mood ? Color.red : .clear, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                        .fill(.white.opacity(0.5)) //ver como fazer a troca de cor
                         .frame(width: 56, height: 56)
                         .overlay(content: {
                             Text(mood.emoji)
@@ -138,6 +143,7 @@ struct RegisterSheet: View {
                         }
                     Text(mood.name)
                         .font(.system(size: 11))
+                        .foregroundStyle(moodChosen == mood ? .blue : .black)
                 }
             }
             
