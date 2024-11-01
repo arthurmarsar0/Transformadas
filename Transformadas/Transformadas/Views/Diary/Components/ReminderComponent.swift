@@ -12,44 +12,74 @@ struct ReminderComponent: View
     @Environment(\.modelContext) var modelContext
     
     var reminder: Reminder
+    @Binding var selectedDate: Date
+    
+    @State var isChecked: Bool = false
     
     var body: some View
     {
-        VStack (spacing: 4){
-            HStack {
-                Text(reminder.time.hourFormatted)
-                    .foregroundStyle(.cinzaEscuro)
-                    .font(.system(size: 15, weight: .regular))
-                Spacer()
+        VStack {
+            HStack (alignment: .top, spacing: 4) {
+                VStack (alignment: .leading, spacing: 4) {
+                    //Spacer()
+                    
+                    Text(reminder.time.hourFormatted)
+                        .foregroundStyle(.cinzaEscuro)
+                        .font(.system(size: 15, weight: .regular))
+                    
+                    Text(reminder.name)
+                        .font(.system(size: 12, weight: .medium))
+                        .multilineTextAlignment(.leading)
+                        .lineLimit(1...2)
+                        //.truncationMode(.tail)
+                        .lineSpacing(4)
+                        .foregroundStyle(reminder.repetition.frequency == 0 ? .azul : .rosa)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }.frame(maxHeight: .infinity, alignment: .bottom)
+                
                 Button(action: {
-                    toggleReminder()
+                    isChecked.toggle()
                 }) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.azul)
+                    Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
+                        .foregroundStyle(isChecked ? .azul : .cinzaClaro)
                 }
+                
+                
             }
-            Text(reminder.name)
-                .font(.system(size: 12, weight: .medium))
-                    .multilineTextAlignment(.leading)
-                    .lineLimit(1...2)
-                    .truncationMode(.tail)
-                    .lineSpacing(4)
-                    .foregroundStyle(reminder.repetition.frequency == 0 ? .azul : .rosa)
-                    .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .padding(12)
         .background {
             RoundedRectangle(cornerRadius: 8).fill(.white)
                 //.stroke(.gray, lineWidth: 1)
         }
-        .frame(width: 189, height: 90)
+        .frame(width: 189, height: 80)
+        .onAppear {
+            self.isChecked = reminder.daysCompleted.contains(where: {isSameDay($0, selectedDate)})
+        }
+        .onChange(of: isChecked) {
+            toggleReminder(isChecked: isChecked)
+        }
     }
     
-    func toggleReminder() {
+    func toggleReminder(isChecked: Bool) {
+        var reminderModel = ReminderModel(context: modelContext)
         
+        
+        if isChecked {
+            reminder.daysCompleted.append(selectedDate)
+        } else {
+            reminder.daysCompleted = reminder.daysCompleted.filter({isSameDay($0, selectedDate)})
+        }
+        
+        do {
+            try reminderModel.editReminder(reminder: reminder)
+        } catch {
+            print(error.localizedDescription)
+        }
     }
 }
 
 #Preview() {
-    ReminderComponent(reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), time: Date.now, daysCompleted: []))
+    ReminderComponent(reminder: (Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), time: Date.now, daysCompleted: [])), selectedDate: .constant(Date.now))
 
 }

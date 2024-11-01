@@ -9,7 +9,7 @@ import SwiftData
 import Foundation
 
 @Model
-class Reminder {
+class Reminder: Identifiable {
     var name: String = ""
     var modelID: UUID = UUID()
     var startDate: Date = Date.distantPast

@@ -59,3 +59,12 @@ func datesInCurrentMonth() -> [Date] {
     
     return dates
 }
+
+func isSameDay(_ date1: Date, _ date2: Date) -> Bool {
+    let calendar = Calendar.current
+    return calendar.isDate(date1, equalTo: date2, toGranularity: .day)
+}
+
+func isFutureDate(_ date: Date) -> Bool {
+    return date > Date.now
+}

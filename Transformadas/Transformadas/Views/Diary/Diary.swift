@@ -21,20 +21,7 @@ struct Diary: View {
     }) var monthEntries: [Entry]
     
     ///VIEW DATA
-    @State var selectedDay: Int = Calendar.current.dateComponents([.day, .month], from: Date.now).day ?? 1
-    
-    var currentMonthString: String {
-        return Date.now.monthString
-    }
-    var currentDay: Int {
-        return Date.now.dayNumber
-    }
-    var currentMonth: Int {
-        return Date.now.monthNumber
-    }
-    var currentYear: Int {
-        return Date.now.yearNumber
-    }
+    @State var selectedDate: Date = Date.now
     
     var monthDates: [Date] {
         return datesInCurrentMonth()
@@ -42,6 +29,10 @@ struct Diary: View {
     
     @State var isShowingDeleteEntry: Bool = false
     @State var isShowingEntrySheet: Bool = false
+    
+    var selectedDayReminders: [Reminder] {
+        return reminders.filter({isSameDay($0.startDate, selectedDate)})
+    }
     
     ///VIEW
     
@@ -61,8 +52,8 @@ struct Diary: View {
                     
                     entryArea()
                     
-                    if entries.isEmpty {
-                        addEntryButton()
+                    if !entries.contains(where: { isSameDay($0.date, selectedDate) }) {
+                        addEntryButton(selectedDate: selectedDate)
                     }
                         
                     
@@ -121,7 +112,7 @@ struct Diary: View {
             }
             
             ///TO-DO
-            if reminders.isEmpty {
+            if !reminders.contains(where: { isSameDay($0.startDate, selectedDate) }) {
                 VStack {
                     Spacer()
                     Text("Sem lembretes")
@@ -131,8 +122,10 @@ struct Diary: View {
                 }
             } else {
                 ScrollView(.horizontal) {
-                    ForEach(reminders) { reminder in
-                        ReminderComponent(reminder: reminder)
+                    HStack (spacing: 16) {
+                        ForEach(selectedDayReminders) { reminder in
+                            ReminderComponent(reminder: reminder, selectedDate: $selectedDate)
+                        }
                     }
                 }
             }
@@ -143,21 +136,21 @@ struct Diary: View {
         ScrollViewReader { scrollViewProxy in
             VStack(spacing: 8) {
                 HStack {
-                    Text("\(currentMonthString.prefix(3)) \(currentYear)")
+                    Text("\(Date.now.monthString.prefix(3)) \(Date.now.yearNumber)")
                         .foregroundStyle(.marrom)
                     
                     Spacer()
                     
                     Button(action: {
-                        selectedDay = currentDay
+                        selectedDate = Date.now
                         withAnimation {
                             
-                            scrollViewProxy.scrollTo(currentDay, anchor: .center)
+                            scrollViewProxy.scrollTo(Date.now.dayNumber, anchor: .center)
                         }
                     }) {
                         Text("Hoje")
-                            .foregroundStyle(selectedDay == currentDay ? .cinzaClaro : .vermelho)
-                    }
+                            .foregroundStyle(isSameDay(selectedDate, Date.now) ? .cinzaClaro : .vermelho)
+                    }.disabled(isSameDay(selectedDate, Date.now))
                 }
                 
                 carouselScroll(scrollViewProxy: scrollViewProxy)
@@ -170,12 +163,12 @@ struct Diary: View {
             HStack(spacing: 8) {
                 ForEach(monthDates, id: \.self) { date in
                     Button(action: {
-                        selectedDay = date.dayNumber
+                        selectedDate = date
                         withAnimation {
                             scrollViewProxy.scrollTo(date.dayNumber, anchor: .center)
                         }
                     }) {
-                        CarouselDayComponent(date: date, state: .noEntry, isSelected: selectedDay == date.dayNumber, todayReminders: [])
+                        CarouselDayComponent(date: date, state: getDateState(date: date), isSelected: isSameDay(selectedDate, date), todayReminders: [])
                             .padding(.vertical, 4)
                     }
                     .id(date.dayNumber)
@@ -183,7 +176,7 @@ struct Diary: View {
             }
         }
         .onAppear {
-            scrollViewProxy.scrollTo(selectedDay, anchor: .center)
+            scrollViewProxy.scrollTo(selectedDate.dayNumber, anchor: .center)
         }
     }
     
@@ -196,7 +189,7 @@ struct Diary: View {
                 Spacer()
             }
             
-            if entries.isEmpty {
+            if !entries.contains(where: { isSameDay($0.date, selectedDate) }) {
                 VStack {
                     Spacer()
                     Text("Sem registros")
@@ -205,7 +198,7 @@ struct Diary: View {
                     Spacer()
                 }
             } else {
-                if let entry = entries.first {
+                if let entry = entries.filter({ isSameDay($0.date, selectedDate)}).first {
                     entryPreview(entry: entry)
                 }
             }
@@ -218,20 +211,20 @@ struct Diary: View {
         VStack (spacing: 16) {
             
             entryButton(entry: entry)
+                .frame(maxHeight: 260)
+                .clipped()
             
             HStack {
                 Spacer()
                 pullDownButton(entry: entry)
             }
             
-        }.padding(12)
-            .background {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.white)
-            }
-        
-        
-        
+        }
+        .padding(12)
+        .background {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(.white)
+        }
     }
     
     func entryButton(entry: Entry) -> some View {
@@ -260,7 +253,7 @@ struct Diary: View {
         } label: {
             Image(systemName: "ellipsis")
                 .foregroundStyle(.cinzaClaro)
-                .font(.system(size: 17))
+                .font(.system(size: 24, weight: .regular))
         }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry, titleVisibility: .visible) {
             
             Button ("Apagar Registro", role: .destructive) {
@@ -277,7 +270,7 @@ struct Diary: View {
         HStack (spacing: 8){
             photo
                 .resizable()
-                .scaledToFill()
+                .scaledToFit()
             
             entrySemFoto(entry: entry)
             
@@ -286,6 +279,7 @@ struct Diary: View {
     
     func entrySemFoto(entry: Entry) -> some View {
         VStack (spacing: 8){
+            Spacer()
             if let mood = entry.mood {
                 MoodPreviewComponent(mood: mood, entryDate: entry.date, isPreview: true)
             }
@@ -307,12 +301,13 @@ struct Diary: View {
             if let documents = entry.documents {
                 DocumentPreviewComponent(documents: documents, isPreview: true)
             }
+            
         }
     }
     
-    func addEntryButton() -> some View {
+    func addEntryButton(selectedDate: Date) -> some View {
         Button(action: {
-            addEntry()
+            addEntry(selectedDate: selectedDate)
         }) {
             HStack (spacing: 8){
                 Image(systemName: "plus.circle.fill")
@@ -324,20 +319,53 @@ struct Diary: View {
                 .padding(14)
                 .background {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(.rosa)
+                        .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
                 }
-        }
+        }.disabled(isFutureDate(selectedDate))
         
     }
     
     /// DATA  FUNCS
     
-    func addEntry() {
-        modelContext.insert(Entry(date: Date.now, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
+    func addEntry(selectedDate: Date) {
+        modelContext.insert(Entry(date: Date.now, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
+        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), time: Date.now, daysCompleted: []))
     }
     
     func deleteEntry(entry: Entry) {
         modelContext.delete(entry)
+    }
+    
+    func getDateState(date: Date) -> DayComponentState {
+        var hasEntries = false
+        var isToday = false
+        
+        if isFutureDate(date) {
+            return .future
+        }
+        
+        if entries.contains(where: { isSameDay($0.date, date) }) {
+            hasEntries = true
+        }
+        
+        if isSameDay(date, Date.now) {
+            isToday = true
+        }
+        
+        if !hasEntries && !isToday {
+            return .noEntry
+        }
+        if hasEntries && !isToday {
+            return .withEntry
+        }
+        if !hasEntries && isToday {
+            return .todayNoEntry
+        }
+        if hasEntries && isToday {
+            return .todayWithEntry
+        }
+        
+        return .noEntry
     }
     
 }

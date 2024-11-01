@@ -36,9 +36,6 @@ struct PhotosView: View {
             
             
         }.toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Text("Fechar")
-            }
             ToolbarItem(placement: .principal) {
                 Text("\(entryDate.dayNumber) \(entryDate.monthString.prefix(3)) \(entryDate.yearNumber)")
                     .font(.system(size: 17, weight: .semibold))
