@@ -37,4 +37,10 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .modelContainer(for: [
+            Effect.self,
+            User.self,
+            Entry.self,
+            Reminder.self
+        ], inMemory: true)
 }

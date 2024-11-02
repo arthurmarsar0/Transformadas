@@ -9,23 +9,30 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum Mood: Codable {
-    case bad
-    case moreOrLess
-    case ok
-    case well
-    case excellent
-    
-    var name: String {
-        switch self {
-            case .bad: return "Mal"
-            case .moreOrLess: return "Mais ou menos"
-            case .ok: return "Ok"
-            case .well: return "Bem"
-            case .excellent: return "Excelente"
-        }
+enum Mood: Codable, CaseIterable {
+  case excellent
+  case well
+  case ok
+  case moreOrLess
+  case bad
+  var name: String {
+    switch self {
+      case .bad: return "Mal"
+      case .moreOrLess: return "Mais ou menos"
+      case .ok: return "Ok"
+      case .well: return "Bem"
+      case .excellent: return "Excelente"
     }
-
+  }
+  var emoji: String {
+    switch self {
+      case .bad: return "😔"
+      case .moreOrLess: return "😕"
+      case .ok: return "😐"
+      case .well: return "☺️"
+      case .excellent: return "😀"
+    }
+  }
 }
 
 @Model
@@ -34,17 +41,19 @@ class Entry {
     var mood: Mood?
     var note: String?
     var audio: String? // MUDAR
-    var photo: String? // MUDAR
+    var photos: [Data] = [] // MUDAR
     @Relationship var effects: [Effect]?
-    var pdf: String? // MUDAR
+    var documents: [String]? // MUDAR
+    var weight: Double?
     
-    init(date: Date, mood: Mood?, note: String?, audio: String?, photo: String?, effects: [Effect]?, pdf: String?) {
+    init(date: Date, mood: Mood?, note: String?, audio: String?, photos: [Data], effects: [Effect]?, documents: [String]?, weight: Double?) {
         self.date = date
         self.mood = mood
         self.note = note
         self.audio = audio
-        self.photo = photo
+        self.photos = photos
         self.effects = effects
-        self.pdf = pdf
+        self.documents = documents
+        self.weight = weight
     }
 }

@@ -38,6 +38,7 @@ class ReminderModel {
     func editReminder(reminder: Reminder) throws {
         var oldReminder = try getReminder(ID: reminder.modelID)
         
+        oldReminder.name = reminder.name
         oldReminder.startDate = reminder.startDate
         oldReminder.endDate = reminder.endDate
         oldReminder.repetition = reminder.repetition
