@@ -41,62 +41,67 @@ struct Diary: View {
             ZStack {
                 Color.bege.ignoresSafeArea()
                 
-                VStack (spacing: 16){
-//                    Image("background")
-//                        .offset(y: -195)
-//                   
-                    
-                    dateCarousel()
-                    
-                    todayReminders()
-                    
-                    entryArea()
-                    
-                    if !entries.contains(where: { isSameDay($0.date, selectedDate) }) {
-                        addEntryButton(selectedDate: selectedDate)
-                    }
+                ScrollView {
+                    VStack (spacing: 16){
                         
-                    
-                    Spacer()
-                }.padding(16)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            Text("Diário")
-                                .font(.largeTitle)
-                                .fontWeight(.medium)
+                        dateCarousel()
+                        
+                        todayReminders()
+                        
+                        entryArea()
+                        
+                        
+                        if !entries.contains(where: { isSameDay($0.date, selectedDate) }) {
+                            addEntryButton(selectedDate: selectedDate)
                         }
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button(action: {
+                        
+                        
+                        //Spacer()
+                    }.padding(16)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Text("Diário")
+                                    .font(.largeTitle)
+                                    .fontWeight(.medium)
+                            }
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(action: {
+                                    
+                                }) {
+                                    Image(systemName: "plus")
+                                    
+                                }
+                            }
+                            
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(action: {
+                                    
+                                }) {
+                                    Image(systemName: "calendar")
+                                    
+                                }
+                            }
+                            
+                            ToolbarItem(placement: .topBarTrailing) {
+                                Button(action: {
+                                    
+                                }) {
+                                    Image(systemName: "ellipsis.circle")
+                                    
+                                }
                                 
-                            }) {
-                                Image(systemName: "plus")
                                 
                             }
-                        }
-                        
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button(action: {
-                                
-                            }) {
-                                Image(systemName: "calendar")
-                                
-                            }
-                        }
-                        
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button(action: {
-                                
-                            }) {
-                                Image(systemName: "ellipsis.circle")
-                                
-                            }
-                        }
-                        
-                    }.foregroundStyle(.black)
+                            
+                        }.foregroundStyle(.black)
+                }
+                    
                 
             }
             
         }
+        .navigationBarWithImageBackground(UIImage(named: "navBarImage")!)
+        
         
     }
     
@@ -120,6 +125,7 @@ struct Diary: View {
                         .foregroundStyle(.cinzaEscuro)
                     Spacer()
                 }
+                .frame(height: 80)
             } else {
                 ScrollView(.horizontal) {
                     HStack (spacing: 16) {
@@ -157,7 +163,7 @@ struct Diary: View {
             }
         }
     }
-
+    
     func carouselScroll(scrollViewProxy: ScrollViewProxy) -> some View {
         ScrollView(.horizontal) {
             HStack(spacing: 8) {
@@ -208,7 +214,7 @@ struct Diary: View {
     
     func entryPreview(entry: Entry) -> some View {
         
-        VStack (spacing: 16) {
+        VStack (spacing: 32) {
             
             entryButton(entry: entry)
                 .frame(maxHeight: 260)
@@ -221,6 +227,7 @@ struct Diary: View {
             
         }
         .padding(12)
+        .padding(.bottom, 8)
         .background {
             RoundedRectangle(cornerRadius: 16)
                 .fill(.white)
@@ -236,9 +243,11 @@ struct Diary: View {
             } else if let data = entry.photos.first, let photo = EntryModel.dataToImage(data: data) {
                 entryComFoto(entry: entry, photo: photo)
             }
-        }.sheet(isPresented: $isShowingEntrySheet) {
+        }
+        .sheet(isPresented: $isShowingEntrySheet) {
             EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
         }
+        
     }
     
     func pullDownButton(entry: Entry) -> some View {
@@ -253,7 +262,7 @@ struct Diary: View {
         } label: {
             Image(systemName: "ellipsis")
                 .foregroundStyle(.cinzaClaro)
-                .font(.system(size: 24, weight: .regular))
+                .font(.system(size: 32, weight: .regular))
         }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry, titleVisibility: .visible) {
             
             Button ("Apagar Registro", role: .destructive) {
@@ -328,7 +337,7 @@ struct Diary: View {
     /// DATA  FUNCS
     
     func addEntry(selectedDate: Date) {
-        modelContext.insert(Entry(date: Date.now, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
+        modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
         modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), time: Date.now, daysCompleted: []))
     }
     
@@ -371,13 +380,13 @@ struct Diary: View {
 }
 
 #Preview {
-        Diary()
-            .modelContainer(for: [
-                Effect.self,
-                User.self,
-                Entry.self,
-                Reminder.self
-            ], inMemory: true)
+    Diary()
+        .modelContainer(for: [
+            Effect.self,
+            User.self,
+            Entry.self,
+            Reminder.self
+        ], inMemory: true)
     
     
 }

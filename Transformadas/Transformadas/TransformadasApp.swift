@@ -32,4 +32,5 @@ struct TransformadasApp: App {
         }
         .modelContainer(sharedModelContainer)
     }
+    
 }

@@ -77,18 +77,19 @@ struct EntryView: View {
                             
                         }
                         .font(.system(size: 17, weight: .regular))
-                            .foregroundStyle(.cinzaEscuro)
+                        .foregroundStyle(.cinzaEscuro)
                     }
                     ToolbarItem(placement: .cancellationAction) {
                         Button("OK") {
                             isShowingEntrySheet = false
                         }
                         .font(.system(size: 17, weight: .semibold))
-                            .foregroundStyle(.verde)
+                        .foregroundStyle(.verde)
                     }
                 }
             }
         }
+        .navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
     }
     
     func entryDate() -> some View {
