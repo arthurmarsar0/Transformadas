@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ListView: View {
     @State var isSheetPresented: Bool = false
-    @State var filteredServices: [Service] = []
+    //@State var filteredServices: [Service] = []
     @StateObject var viewModel = ServiceViewModel()
     var selectedFilter: String
 

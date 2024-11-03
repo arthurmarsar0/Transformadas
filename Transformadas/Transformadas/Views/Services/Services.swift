@@ -27,7 +27,7 @@ struct Services: View {
                     }
                     
                     if(viewType == false){
-                        MapView()
+                        MapView(selectedFilter: selectedFilter)
                             .background(Color.bege)
                     }else{
                         ListView(selectedFilter: selectedFilter)
