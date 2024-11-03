@@ -24,7 +24,6 @@ class ServiceModel {
         }
         
         let service = Service(
-            ID: record.recordID.recordName,
             name: name,
             categories: categories.map({Category.nameToCategory(name: $0)}),
             email: email,
@@ -47,7 +46,7 @@ class ServiceModel {
         serviceRecord["telephone"] = service.telephone
         serviceRecord["description"] = service.description
         serviceRecord["address"] = service.address.addressToList()
-        serviceRecord["coordinates"] = service.coordinate.coordinateToList()
+        serviceRecord["coordinate"] = service.coordinate.coordinateToList()
         
         let addedRecord = try await database.save(serviceRecord)
         

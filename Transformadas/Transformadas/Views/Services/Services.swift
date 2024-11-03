@@ -22,7 +22,7 @@ struct Services: View {
                 VStack {
                     ScrollView(.horizontal){
                         categorySection
-                            .padding(.vertical, 8)
+                            //.padding(.vertical, 8)
                         
                     }
                     
@@ -77,7 +77,8 @@ extension Services {
                             .frame(height: 32)
                         HStack(spacing: 8) {
                             Image(systemName: category.symbol)
-                                .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
+                                .foregroundColor(selectedFilter == category.name ? .white : .rosa)
+                                
                             Text(category.name)
                                 .font(.system(size: 16, weight: .medium))
                                 .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
@@ -86,6 +87,7 @@ extension Services {
                 }
             }
         }
+        .padding()
     }
 }
 

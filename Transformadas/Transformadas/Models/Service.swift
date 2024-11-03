@@ -17,8 +17,7 @@ class Service {
     var address: Address
     var coordinate: Coordinate
     
-    init(ID: String, name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: Coordinate) {
-        self.ID = ID
+    init(name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: Coordinate) {
         self.name = name
         self.categories = categories
         self.email = email
