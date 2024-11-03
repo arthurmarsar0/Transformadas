@@ -12,6 +12,7 @@ struct Services: View {
     @State var viewType: Bool = false
     @State var searchText: String = ""
     @State var selectedFilter: String = "Todos"
+    @StateObject var viewModel = ServiceViewModel()
     
     var body: some View {
         NavigationStack {
@@ -21,8 +22,7 @@ struct Services: View {
                 
                 VStack {
                     ScrollView(.horizontal){
-                        categorySection
-                            //.padding(.vertical, 8)
+                        categorySection()
                         
                     }
                     
@@ -30,7 +30,7 @@ struct Services: View {
                         MapView()
                             .background(Color.bege)
                     }else{
-                        ListView()
+                        ListView(selectedFilter: selectedFilter)
                     }
                 }
                 
@@ -64,12 +64,15 @@ struct Services: View {
     }
 }
 
+
 extension Services {
-    var categorySection: some View {
+    func categorySection() -> some View {
         HStack{
             ForEach(Category.allCases, id: \.self){ category in
                 Button(action: {
                     selectedFilter = category.name
+                    viewModel.filterServices(by: selectedFilter)
+                    print(selectedFilter)
                 }){
                     ZStack{
                         RoundedRectangle(cornerRadius: 8)
@@ -77,7 +80,7 @@ extension Services {
                             .frame(height: 32)
                         HStack(spacing: 8) {
                             Image(systemName: category.symbol)
-                                .foregroundColor(selectedFilter == category.name ? .white : .rosa)
+                                .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
                                 
                             Text(category.name)
                                 .font(.system(size: 16, weight: .medium))

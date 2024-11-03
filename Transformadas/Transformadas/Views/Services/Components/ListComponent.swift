@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ListComponent: View {
     var service: Service
+    
     var body: some View {
         ZStack(alignment: .leading){
                 RoundedRectangle(cornerRadius: 8)
@@ -39,9 +40,7 @@ struct ListComponent: View {
                         .lineLimit(1)
                 }
                 .padding()
-                
         }
-
     }
 }
 

@@ -10,13 +10,15 @@ import SwiftUI
 
 struct ListView: View {
     @State var isSheetPresented: Bool = false
-    @State var services: [Service] = []
+    @State var filteredServices: [Service] = []
+    @StateObject var viewModel = ServiceViewModel()
+    var selectedFilter: String
 
     var body: some View {
         VStack {
             ScrollView(.vertical) {
-                ForEach(0 ..< services.count, id: \.self) { index in
-                    let service = services[index]
+                ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
+                    let service = viewModel.filteredServices[index]
                     
                     Button(action: {
                         isSheetPresented.toggle()
@@ -30,18 +32,18 @@ struct ListView: View {
             }
             .onAppear {
                 Task {
-                    do {
-                        services = try await ServiceModel.getServices()
-                    } catch {
-                        print("Erro ao carregar serviços: \(error)")
-                    }
+                    await viewModel.loadServices()
+                    viewModel.filterServices(by: selectedFilter)
                 }
+            }
+            .onChange(of: selectedFilter){
+                viewModel.filterServices(by: selectedFilter)
             }
         }
         .padding()
     }
 }
-
-#Preview {
-    ListView()
-}
+//
+//#Preview {
+//    ListView()
+//}

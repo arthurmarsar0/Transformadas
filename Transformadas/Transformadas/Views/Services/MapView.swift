@@ -12,7 +12,6 @@ struct MapView: View {
     @State private var locationManager = LocationManager()
     @State var services: [Service] = []
     @State var isSheetPresented: Bool = false
-    
     var body: some View {
         ZStack {
             if(locationManager.isAuthorized){
@@ -24,10 +23,10 @@ struct MapView: View {
                                 Button(action: {
                                     isSheetPresented.toggle()
                                 }) {
-                                    Image(systemName: "pin.circle.fill")
+                                    Image(systemName: "mappin.and.ellipse")
                                         .resizable()
                                         .frame(width: 30, height: 30)
-                                        .foregroundColor(.rosa)
+                                        .foregroundColor(.verde)
                                 }
                                 .sheet(isPresented: $isSheetPresented){
                                     SheetDetailView(service: service)
@@ -50,6 +49,8 @@ struct MapView: View {
             }
             
         }
+        
+        
         
     
     }
