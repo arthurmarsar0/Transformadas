@@ -45,6 +45,3 @@ struct ListComponent: View {
     }
 }
 
-//#Preview {
-//    ListComponent()
-//}

@@ -58,6 +58,3 @@ struct SheetDetailView: View {
     }
 }
 
-//#Preview {
-//    SheetDetailView()
-//}
