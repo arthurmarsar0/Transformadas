@@ -17,18 +17,23 @@ struct RegisterSheet: View {
     
     
     @State var moodChosen: Mood?
+    @State var photosQuantity: Int = 0
     
     @Query var effects: [Effect]
     @Environment(\.modelContext) var modelContext
     
-    @State var effectsBool: [Effect:Bool] = [:]
+    @State var effectsBool: [Effect:State<Bool>] = [:]
+    
+    @State var effectsAdded: [Effect] = []
+    
     @State var pdfNames: [String] = []
     
     var body: some View {
         NavigationStack{
             ZStack{
                 // TODO: Adicionar a cor bege de fundo
-                Color.rosa
+                Color.bege
+                    .ignoresSafeArea()
                 
                 List {
                     Section("COMO ESTOU ME SENTINDO?"){
@@ -36,11 +41,17 @@ struct RegisterSheet: View {
                     }
                     
                     Section{
-                       Text("teste") //adição do text field para escrever
-                    }
+                       Text("Placeholder do text field...")
+                        Text(" ")
+                        Text(" ")//adição do text field para escrever
+                    }.listSectionSpacing(16)
                     
                     Section("Mudanças Físicas") {
-                        Button(action: {}, label:{
+                        Button(action: {
+                            addEffect()
+                            print(effects.first?.name ?? "Vazio")
+                            print(effectsBool.keys)
+                        }, label:{
                             HStack {
                                 Text("Gravar voz")
                                 Spacer()
@@ -66,6 +77,7 @@ struct RegisterSheet: View {
                         })
                         //TODO: Ver como fica se mais de uma foto for adicionada
                     }
+                    .listSectionSpacing(8)
                     .foregroundStyle(Color.gray)
                     
                     Section("Efeitos"){
@@ -103,7 +115,8 @@ struct RegisterSheet: View {
                             print(moodChosen!)
                         }) {
                             Text("Registrar")
-                                .foregroundStyle(Color.red)
+                                .foregroundStyle(moodChosen != nil ? Color.rosa : .blue)
+                                .font(.system(size: 17, weight: .semibold))
                         }
                     }
                 }
@@ -113,13 +126,15 @@ struct RegisterSheet: View {
             }
         }.onAppear {
             for effect in effects {
-                effectsBool[effect] = false
+                effectsBool[effect]?.wrappedValue = false
             }
         }
         .onChange(of: effects) {
+            effectsBool.removeAll()
             for effect in effects {
-                effectsBool[effect] = false
+                effectsBool[effect]?.wrappedValue = false
             }
+            //print(eff)
         }
     }
     
@@ -129,12 +144,12 @@ struct RegisterSheet: View {
             ForEach(Mood.allCases, id: \.self){ mood in
                 VStack{
                     RoundedRectangle(cornerRadius: 24)
-                        .stroke(moodChosen == mood ? Color.red : .clear, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                        .stroke(moodChosen == mood ? Color.rosa : .clear, style: StrokeStyle(lineWidth: 2, lineCap: .round))
                         .fill(.white.opacity(0.5)) //ver como fazer a troca de cor
                         .frame(width: 56, height: 56)
                         .overlay(content: {
                             Text(mood.emoji)
-                                .font(.system(size: 32))
+                                .font(.system(size: 32, weight: .semibold))
                         })
                         .onTapGesture {
                             print(mood.name)
@@ -142,8 +157,8 @@ struct RegisterSheet: View {
 //                            day.mood = mood
                         }
                     Text(mood.name)
-                        .font(.system(size: 11))
-                        .foregroundStyle(moodChosen == mood ? .blue : .black)
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(moodChosen == mood ? .rosa : .black)
                 }
             }
             
@@ -155,13 +170,21 @@ struct RegisterSheet: View {
     }
     
     func effectView() -> some View {
-        ForEach(effects, id: \.self) {effect in
-            Text(effect.name)
+        ForEach(Array(effectsBool.keys), id: \.self) { key in
+//            Toggle(isOn: effectsBool[key] ?? .constant(false)) {
+//                Text(key.name)
+//            }
+//            
+            Text(key.name)
         }
     }
     
     func addEffect() { //Consultar com Pv como ele fez
-        modelContext.insert(Effect(name: "teste"))
+        DispatchQueue.main.async {
+            modelContext.insert(Effect(name: "teste"))
+            modelContext.insert(Effect(name: "teste2"))
+            modelContext.insert(Effect(name: "teste3"))
+        }
     }
     
     func addRegister() { //salvar o registro no ngc
