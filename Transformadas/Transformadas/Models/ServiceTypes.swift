@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUICore
 
 enum Category: CaseIterable {
     case all
@@ -34,6 +35,17 @@ enum Category: CaseIterable {
         case .judicial: return "list.clipboard.fill"
         case .protection: return "light.beacon.min.fill"
         case .social: return "person.2.fill"
+        }
+    }
+    
+    var color: Color{
+        switch self{
+        case .all: return .verde
+        case .medical: return .rosa
+        case .psychological: return .verde
+        case .judicial: return .rosaMedio
+        case .protection: return .vermelho
+        case .social: return .verdeMedio
         }
     }
     

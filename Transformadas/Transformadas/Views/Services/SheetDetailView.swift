@@ -7,7 +7,26 @@
 
 import SwiftUI
 
+
+
 struct SheetDetailView: View {
+    
+    @State var selectedFilter: String = "Todos"
+    
+    private func openInWaze() {
+        let urlString = "waze://?ll=\(service.coordinate.latitude),\(service.coordinate.longitude)&navigate=yes"
+            if let url = URL(string: urlString), UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url)
+            } else {
+                // Caso Waze não esteja instalado
+                let fallbackURL = "https://www.waze.com/ul?ll=\(service.coordinate.latitude),\(service.coordinate.longitude)&navigate=yes"
+                if let fallbackURL = URL(string: fallbackURL) {
+                    UIApplication.shared.open(fallbackURL)
+                }
+            }
+        }
+    
+    
     var service: Service
     
     var body: some View {
@@ -20,7 +39,7 @@ struct SheetDetailView: View {
                         ForEach(service.categories , id: \.self) { category in
                             if !category.symbol.isEmpty{
                                 Image(systemName: category.symbol)
-                                    .foregroundStyle(.verde)
+                                    .foregroundStyle(category.color)
                             }
                         }
                     }
@@ -50,6 +69,20 @@ struct SheetDetailView: View {
                     Text("Sobre")
                         .font(.system(size: 18, weight: .bold))
                     Text(service.description)
+                }
+                
+                ZStack{
+                    RoundedRectangle(cornerRadius: 16)
+                        .frame(height: 180)
+                        .foregroundStyle(.black)
+                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(.black, lineWidth: 2))
+                    MapView(selectedFilter: $selectedFilter, showFilters: false)
+                        .frame(height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
+                    
+                }
+                .onTapGesture {
+                    openInWaze()
                 }
             }
             .padding()

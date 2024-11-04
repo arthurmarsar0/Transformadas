@@ -10,23 +10,27 @@ import SwiftUI
 
 struct ListView: View {
     @State var isSheetPresented: Bool = false
-    //@State var filteredServices: [Service] = []
     @StateObject var viewModel = ServiceViewModel()
-    var selectedFilter: String
+    @Binding var selectedFilter: String 
+    @State var selectedService: Service?
 
     var body: some View {
+        CategoryFilter(selectedFilter: $selectedFilter)
         VStack {
             ScrollView(.vertical) {
                 ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
                     let service = viewModel.filteredServices[index]
                     
                     Button(action: {
+                        selectedService = service
                         isSheetPresented.toggle()
                     }) {
                         ListComponent(service: service)
                     }
                     .sheet(isPresented: $isSheetPresented) {
-                        SheetDetailView(service: service)
+                        if let service = selectedService{
+                            SheetDetailView(service: service)
+                        }
                     }
                 }
             }
@@ -43,7 +47,4 @@ struct ListView: View {
         .padding()
     }
 }
-//
-//#Preview {
-//    ListView()
-//}
+

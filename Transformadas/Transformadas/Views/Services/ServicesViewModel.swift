@@ -8,27 +8,33 @@
 import SwiftUI
 import Combine
 
+@MainActor
 class ServiceViewModel: ObservableObject {
     @Published var allServices: [Service] = []
     @Published var filteredServices: [Service] = []
+    @Published var selectedFilter: String = "Todos"
+    
+    
     
     func loadServices() async {
-        do {
-            allServices = try await ServiceModel.getServices()
-            filteredServices = allServices // Inicialmente, todos os serviços são filtrados
-        } catch {
-            print("Erro ao carregar serviços: \(error)")
-        }
+            do {
+                
+                allServices = try await ServiceModel.getServices()
+                filteredServices = allServices
+            } catch {
+                print("Erro ao carregar serviços: \(error)")
+            }
     }
-    
     
     func filterServices(by category: String) {
         if category == "Todos" {
-            filteredServices = allServices // Retorna todos os serviços se "Todos" for selecionado
+            filteredServices = allServices
         } else {
             filteredServices = allServices.filter { service in
                 service.categories.contains { $0.name == category }
             }
         }
     }
+    
+    
 }

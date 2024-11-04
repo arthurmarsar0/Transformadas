@@ -20,7 +20,7 @@ struct ListComponent: View {
                         ForEach(service.categories , id: \.self) { category in
                             if !category.symbol.isEmpty{
                                 Image(systemName: category.symbol)
-                                    .foregroundStyle(.verde)
+                                    .foregroundStyle(category.color)
                             }
                         }
                     }

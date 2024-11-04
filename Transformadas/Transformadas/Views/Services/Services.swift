@@ -9,7 +9,7 @@ import SwiftUI
 
 
 struct Services: View {
-    @State var viewType: Bool = false
+    @State var viewType: Bool = true
     @State var searchText: String = ""
     @State var selectedFilter: String = "Todos"
     @StateObject var viewModel = ServiceViewModel()
@@ -21,16 +21,11 @@ struct Services: View {
                 Color.bege.ignoresSafeArea()
                 
                 VStack {
-                    ScrollView(.horizontal){
-                        categorySection()
-                        
-                    }
                     
                     if(viewType == false){
-                        MapView(selectedFilter: selectedFilter)
-                            .background(Color.bege)
+                        MapView(selectedFilter: $selectedFilter, showFilters: true)
                     }else{
-                        ListView(selectedFilter: selectedFilter)
+                        ListView(selectedFilter: $selectedFilter)
                     }
                 }
                 
@@ -45,8 +40,13 @@ struct Services: View {
                         Button(action: {
                             viewType.toggle()
                         }) {
-                            Image(systemName: "map.fill")
-                                .foregroundStyle(.black)
+                            if(viewType == true){
+                                Image(systemName: "map.fill")
+                                    .foregroundStyle(.black)
+                            }else{
+                                Image(systemName: "list.bullet.circle.fill")
+                                    .foregroundStyle(.black)
+                            }
                         }
                     }
                     ToolbarItem(placement: .topBarTrailing){
@@ -61,36 +61,6 @@ struct Services: View {
                 
             }
         }
-    }
-}
-
-
-extension Services {
-    func categorySection() -> some View {
-        HStack{
-            ForEach(Category.allCases, id: \.self){ category in
-                Button(action: {
-                    selectedFilter = category.name
-                    viewModel.filterServices(by: selectedFilter)
-                    print(selectedFilter)
-                }){
-                    ZStack{
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(selectedFilter == category.name ? .rosa : .cinzaMuitoClaro)
-                            .frame(height: 32)
-                        HStack(spacing: 8) {
-                            Image(systemName: category.symbol)
-                                .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
-                                
-                            Text(category.name)
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)
-                        }.padding(.horizontal, 8)
-                    }
-                }
-            }
-        }
-        .padding()
     }
 }
 
