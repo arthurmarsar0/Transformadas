@@ -36,11 +36,10 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
-        .modelContainer(for: [
-            Effect.self,
-            User.self,
-            Entry.self,
-            Reminder.self
-        ], inMemory: true)
+    let preview = Preview()
+    preview.addEntriesExamples(EntryModel.samples)
+    preview.addEffectsExamples(EffectModel.samples)
+    preview.addRemindersExamples(ReminderModel.samples)
+    return ContentView()
+            .modelContainer(preview.modelContainer)
 }

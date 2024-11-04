@@ -22,11 +22,11 @@ struct PhotosView: View {
                     photos[i]
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        //.scaledToFill()
-                        //.frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
+                    //.scaledToFill()
+                    //.frame(width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height)
                         .clipped()
                         .tag(i)
-                        
+                    
                 }
             }
             .tabViewStyle(PageTabViewStyle())
@@ -35,19 +35,26 @@ struct PhotosView: View {
             
             
             
-        }.toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("\(entryDate.dayNumber) \(entryDate.monthString.prefix(3)) \(entryDate.yearNumber)")
-                    .font(.system(size: 17, weight: .semibold))
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("\(entryDate.dayNumber) \(entryDate.monthString.prefix(3)) \(entryDate.yearNumber)")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+            }.onAppear {
+                selectedPhoto = startingPhoto
             }
-        }.onAppear {
-            selectedPhoto = startingPhoto
-        }
+        }.navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
     }
 }
 
 #Preview {
-    NavigationStack {
+    let preview = Preview()
+    preview.addEntriesExamples(EntryModel.samples)
+    preview.addEffectsExamples(EffectModel.samples)
+    preview.addRemindersExamples(ReminderModel.samples)
+    return NavigationStack {
         PhotosView(entryDate: Date.now, photos: [Image(systemName: "calendar"), Image(systemName: "calendar"), Image(systemName: "calendar")], startingPhoto: 1)
     }
+    .modelContainer(preview.modelContainer)
+    
 }

@@ -9,32 +9,6 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum Mood: Codable, CaseIterable {
-  case excellent
-  case well
-  case ok
-  case moreOrLess
-  case bad
-  var name: String {
-    switch self {
-      case .bad: return "Mal"
-      case .moreOrLess: return "Mais ou menos"
-      case .ok: return "Ok"
-      case .well: return "Bem"
-      case .excellent: return "Excelente"
-    }
-  }
-  var emoji: String {
-    switch self {
-      case .bad: return "😔"
-      case .moreOrLess: return "😕"
-      case .ok: return "😐"
-      case .well: return "☺️"
-      case .excellent: return "😀"
-    }
-  }
-}
-
 @Model
 class Entry {
     var date: Date = Date.now
@@ -42,7 +16,7 @@ class Entry {
     var note: String?
     var audio: String? // MUDAR
     var photos: [Data] = [] // MUDAR
-    @Relationship var effects: [Effect]?
+    @Relationship(deleteRule: .nullify, inverse: .none) var effects: [Effect]?
     var documents: [String]? // MUDAR
     var weight: Double?
     

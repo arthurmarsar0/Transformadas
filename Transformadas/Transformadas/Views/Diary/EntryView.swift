@@ -88,8 +88,8 @@ struct EntryView: View {
                     }
                 }
             }
+            .navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
         }
-        .navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
     }
     
     func entryDate() -> some View {
@@ -118,7 +118,13 @@ struct EntryView: View {
 }
 
 #Preview {
-    NavigationStack {
+    let preview = Preview()
+    preview.addEntriesExamples(EntryModel.samples)
+    preview.addEffectsExamples(EffectModel.samples)
+    preview.addRemindersExamples(ReminderModel.samples)
+    return NavigationStack {
         EntryView(entry: Entry(date: Date.now, mood: .well, note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. Nunc et tortor quis orci tristique facilisis at eget nisi. Proin at aliquam augue. In pretium risus tortor, vitae mollis leo eleifend eu. Ut lacus mauris, accumsan et fringilla at, bibendum ut urna. Vivamus a sapien eu nunc suscipit aliquet. Sed rutrum et libero eget mattis. Ut ullamcorper enim in dolor dignissim, at facilisis enim lobortis. ", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 63.7), isShowingEntrySheet: .constant(true))
     }
+    .modelContainer(preview.modelContainer)
+    
 }

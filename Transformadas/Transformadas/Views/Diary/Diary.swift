@@ -29,6 +29,8 @@ struct Diary: View {
     
     @State var isShowingDeleteEntry: Bool = false
     @State var isShowingEntrySheet: Bool = false
+    @State var isShowingReminderSheet: Bool = false
+    @State var isCalendarView: Bool = false
     
     var selectedDayReminders: [Reminder] {
         return reminders.filter({isSameDay($0.startDate, selectedDate)})
@@ -44,7 +46,11 @@ struct Diary: View {
                 ScrollView {
                     VStack (spacing: 16){
                         
-                        dateCarousel()
+                        if !isCalendarView {
+                            dateCarousel()
+                        } else {
+                            calendar()
+                        }
                         
                         todayReminders()
                         
@@ -55,8 +61,6 @@ struct Diary: View {
                             addEntryButton(selectedDate: selectedDate)
                         }
                         
-                        
-                        //Spacer()
                     }.padding(16)
                         .toolbar {
                             ToolbarItem(placement: .topBarLeading) {
@@ -75,9 +79,9 @@ struct Diary: View {
                             
                             ToolbarItem(placement: .topBarTrailing) {
                                 Button(action: {
-                                    
+                                    isCalendarView.toggle()
                                 }) {
-                                    Image(systemName: "calendar")
+                                    Image(systemName: isCalendarView ? "10.circle" : "calendar")
                                     
                                 }
                             }
@@ -130,7 +134,12 @@ struct Diary: View {
                 ScrollView(.horizontal) {
                     HStack (spacing: 16) {
                         ForEach(selectedDayReminders) { reminder in
-                            ReminderComponent(reminder: reminder, selectedDate: $selectedDate)
+                            
+                                ReminderComponent(reminder: reminder, selectedDate: $selectedDate)
+                            
+                                
+                            
+                            
                         }
                     }
                 }
@@ -184,6 +193,11 @@ struct Diary: View {
         .onAppear {
             scrollViewProxy.scrollTo(selectedDate.dayNumber, anchor: .center)
         }
+    }
+    
+    func calendar() -> some View {
+        DatePicker("Select Date", selection: $selectedDate, displayedComponents: [.date])
+                .datePickerStyle(.graphical)
     }
     
     func entryArea() -> some View {
@@ -280,6 +294,9 @@ struct Diary: View {
             photo
                 .resizable()
                 .scaledToFit()
+                .mask {
+                    RoundedRectangle(cornerRadius: 8)
+                }
             
             entrySemFoto(entry: entry)
             
@@ -338,7 +355,7 @@ struct Diary: View {
     
     func addEntry(selectedDate: Date) {
         modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
-        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), time: Date.now, daysCompleted: []))
+        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: selectedDate, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"))
     }
     
     func deleteEntry(entry: Entry) {
@@ -380,13 +397,10 @@ struct Diary: View {
 }
 
 #Preview {
-    Diary()
-        .modelContainer(for: [
-            Effect.self,
-            User.self,
-            Entry.self,
-            Reminder.self
-        ], inMemory: true)
-    
-    
+    let preview = Preview()
+    preview.addEntriesExamples(EntryModel.samples)
+    preview.addEffectsExamples(EffectModel.samples)
+    preview.addRemindersExamples(ReminderModel.samples)
+    return Diary()
+            .modelContainer(preview.modelContainer)
 }
