@@ -67,7 +67,7 @@ struct CarouselDayComponent: View {
             HStack (spacing: 4) {
                 ForEach(todayReminders, id: \.self) { reminder in
                     
-                    Circle().fill(reminder.repetition.frequency == 0 ? .azul :
+                    Circle().fill(reminder.type == .event ? .azul :
                         .rosa).frame(width: 4, height: 4)
                     
                 }

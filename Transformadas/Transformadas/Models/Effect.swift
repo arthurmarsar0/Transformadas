@@ -17,13 +17,3 @@ class Effect {
         self.name = name
     }
 }
-
-enum EffectEnum: Codable {
-    case insomnia
-    
-    var effect: Effect {
-        switch self {
-            case .insomnia: return Effect(name: "Insônia")
-        }
-    }
-}

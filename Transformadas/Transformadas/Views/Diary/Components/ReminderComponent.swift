@@ -9,57 +9,78 @@ import SwiftUI
 
 struct ReminderComponent: View
 {
-    @Environment(\.modelContext) var modelContext
-    
+    // MARK: - EXTERNAL
     var reminder: Reminder
     @Binding var selectedDate: Date
     
-    @State var isChecked: Bool = false
+    // MARK: - DATA
+    @Environment(\.modelContext) var modelContext
     
+    // MARK: - VIEW DATA
+    @State var isChecked: Bool = false
+    @State var isShowingReminderSheet = false
+    @State var isShowingEditReminderSheet = false
+    
+    // MARK: - VIEW
     var body: some View
     {
-        VStack {
-            HStack (alignment: .top, spacing: 4) {
-                VStack (alignment: .leading, spacing: 4) {
-                    //Spacer()
-                    
-                    Text(reminder.time.hourFormatted)
-                        .foregroundStyle(.cinzaEscuro)
-                        .font(.system(size: 15, weight: .regular))
-                    
-                    Text(reminder.name)
-                        .font(.system(size: 12, weight: .medium))
-                        .multilineTextAlignment(.leading)
-                        .lineLimit(1...2)
+            VStack {
+                HStack (alignment: .top, spacing: 4) {
+                    VStack (alignment: .leading, spacing: 4) {
+                        //Spacer()
+                        
+                        Text(reminder.time.hourFormatted)
+                            .foregroundStyle(.cinzaEscuro)
+                            .font(.system(size: 15, weight: .regular))
+                        
+                        Text(reminder.name)
+                            .font(.system(size: 12, weight: .medium))
+                            .multilineTextAlignment(.leading)
+                            .lineLimit(1...2)
                         //.truncationMode(.tail)
-                        .lineSpacing(4)
-                        .foregroundStyle(reminder.repetition.frequency == 0 ? .azul : .rosa)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }.frame(maxHeight: .infinity, alignment: .bottom)
-                
-                Button(action: {
-                    isChecked.toggle()
-                }) {
-                    Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
-                        .foregroundStyle(isChecked ? .azul : .cinzaClaro)
+                            .lineSpacing(4)
+                            .foregroundStyle(reminder.type == .event ? .azul : .rosa)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                    }.frame(maxHeight: .infinity, alignment: .bottom)
+                    
+                    Button(action: {
+                        isChecked.toggle()
+                    }) {
+                        Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
+                            .foregroundStyle(isChecked ? .azul : .cinzaClaro)
+                    }
+                    
+                    
                 }
-                
-                
             }
-        }
-        .padding(12)
-        .background {
-            RoundedRectangle(cornerRadius: 8).fill(.white)
+            .padding(12)
+            .background {
+                RoundedRectangle(cornerRadius: 8).fill(.white)
                 //.stroke(.gray, lineWidth: 1)
-        }
-        .frame(width: 189, height: 80)
-        .onAppear {
-            self.isChecked = reminder.daysCompleted.contains(where: {isSameDay($0, selectedDate)})
-        }
-        .onChange(of: isChecked) {
-            toggleReminder(isChecked: isChecked)
-        }
+            }
+            .frame(width: 189, height: 80)
+            .onAppear {
+                self.isChecked = reminder.daysCompleted.contains(where: {isSameDay($0, selectedDate)})
+            }
+            .onChange(of: isChecked) {
+                toggleReminder(isChecked: isChecked)
+            }.onTapGesture {
+                isShowingReminderSheet = true
+            }.sheet(isPresented: $isShowingReminderSheet, onDismiss: {
+                addNavBarBackground()
+            }) {
+                ReminderSheetView(isShowingReminderSheet: $isShowingReminderSheet, isShowingEditReminderSheet: $isShowingEditReminderSheet, reminder: reminder, isChecked: $isChecked)
+                    .presentationDetents([.medium])
+            }.sheet(isPresented: $isShowingEditReminderSheet, onDismiss: {
+                addNavBarBackground()
+            }) {
+                AddReminder(isShowingAddReminderSheet: $isShowingEditReminderSheet, existingReminder: reminder)
+            }
+        
+        
     }
+    
+    // MARK: - DATA FUNC
     
     func toggleReminder(isChecked: Bool) {
         var reminderModel = ReminderModel(context: modelContext)
@@ -68,7 +89,7 @@ struct ReminderComponent: View
         if isChecked {
             reminder.daysCompleted.append(selectedDate)
         } else {
-            reminder.daysCompleted = reminder.daysCompleted.filter({isSameDay($0, selectedDate)})
+            reminder.daysCompleted = reminder.daysCompleted.filter({!isSameDay($0, selectedDate)})
         }
         
         do {
@@ -80,6 +101,6 @@ struct ReminderComponent: View
 }
 
 #Preview() {
-    ReminderComponent(reminder: (Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), time: Date.now, daysCompleted: [])), selectedDate: .constant(Date.now))
-
+    ReminderComponent(reminder: (Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg")), selectedDate: .constant(Date.now))
+    
 }
