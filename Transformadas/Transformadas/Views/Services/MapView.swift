@@ -11,8 +11,6 @@ import MapKit
 
 struct MapView: View {
     @State private var locationManager = LocationManager()
-    @State var services: [Service] = []
-    @State var isSheetPresented: Bool = false
     @StateObject var viewModel = ServiceViewModel()
     @State var selectedService: Service?
     @Binding var selectedFilter: String
@@ -34,18 +32,16 @@ struct MapView: View {
                         let service = viewModel.filteredServices[index]
                         Annotation(service.name, coordinate: CLLocationCoordinate2D(latitude: service.coordinate.latitude, longitude: service.coordinate.longitude)){
                                 Button(action: {
-                                    selectedService = service
-                                    isSheetPresented.toggle()
+                                            selectedService = service
                                 }) {
                                     Image("pin")
                                         .resizable()
                                         .foregroundColor(.verde)
                                 }
-                                .sheet(isPresented: $isSheetPresented) {
-                                    if let service = selectedService {
+                                .sheet(item: $selectedService) { service in
                                         SheetDetailView(service: service)
-                                    }
                                 }
+                            
                         }
                         }
                 
@@ -72,10 +68,8 @@ struct MapView: View {
         }
         .onChange(of: selectedFilter){
             viewModel.filterServices(by: selectedFilter)
+            selectedService = nil
         }
-        
-        
-    
     }
 }
 

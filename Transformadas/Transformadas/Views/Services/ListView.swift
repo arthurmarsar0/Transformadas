@@ -9,7 +9,6 @@
 import SwiftUI
 
 struct ListView: View {
-    @State var isSheetPresented: Bool = false
     @StateObject var viewModel = ServiceViewModel()
     @Binding var selectedFilter: String 
     @State var selectedService: Service?
@@ -23,14 +22,12 @@ struct ListView: View {
                     
                     Button(action: {
                         selectedService = service
-                        isSheetPresented.toggle()
                     }) {
                         ListComponent(service: service)
                     }
-                    .sheet(isPresented: $isSheetPresented) {
-                        if let service = selectedService{
+
+                    .sheet(item: $selectedService) { service in
                             SheetDetailView(service: service)
-                        }
                     }
                 }
             }
@@ -42,6 +39,7 @@ struct ListView: View {
             }
             .onChange(of: selectedFilter){
                 viewModel.filterServices(by: selectedFilter)
+                selectedService = nil
             }
         }
         .padding()

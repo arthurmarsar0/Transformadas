@@ -23,9 +23,10 @@ struct CategoryFilter: View {
                                 .foregroundStyle(selectedFilter == category.name ? .rosa : .cinzaMuitoClaro)
                                 .frame(height: 32)
                             HStack(spacing: 8) {
-                                Image(systemName: category.symbol)
-                                    .foregroundColor(selectedFilter == category.name ? .white : category.color)
-                                
+                                if !category.symbol.isEmpty{
+                                    Image(systemName: category.symbol)
+                                        .foregroundColor(selectedFilter == category.name ? .white : category.color)
+                                }
                                 Text(category.name)
                                     .font(.system(size: 16, weight: .medium))
                                     .foregroundColor(selectedFilter == category.name ? .white : .cinzaEscuro)

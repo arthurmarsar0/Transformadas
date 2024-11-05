@@ -7,7 +7,8 @@
 
 import Foundation
 
-class Service {
+class Service :  Identifiable{
+    var id: String
     var ID: String?
     var name: String
     var categories: [Category]
@@ -17,7 +18,8 @@ class Service {
     var address: Address
     var coordinate: Coordinate
     
-    init(name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: Coordinate) {
+    init(id: String = UUID().uuidString, name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: Coordinate) {
+        self.id = id
         self.name = name
         self.categories = categories
         self.email = email
