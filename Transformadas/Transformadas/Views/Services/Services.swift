@@ -7,94 +7,58 @@
 
 import SwiftUI
 
-let categories = [
-    ("Todos", nil),
-    ("Médicos", "cross.fill"),
-    ("Psicológicos", "brain.fill"),
-    ("Jurídicos", "list.clipboard.fill"),
-    ("Proteção", "light.beacon.min.fill"),
-    ("Sociais", "person.2.fill")
-]
-
 
 struct Services: View {
-    @State var viewType: Bool = false
+    @State var viewType: Bool = true
     @State var searchText: String = ""
-    @State var selectedFilter: Int = 0
+    @State var selectedFilter: String = "Todos"
+    @StateObject var viewModel = ServiceViewModel()
     
     var body: some View {
         NavigationStack {
-            VStack {
-                ScrollView(.horizontal){
-                    categorySection
-                        .padding()
-                    
-                }
+            ZStack{
                 
-                if(viewType == false){
-                    MapView()
-                }else{
-                    ListView()
-                }
-            }
-            
-            .toolbar{
+                Color.bege.ignoresSafeArea()
                 
-                ToolbarItem(placement: .topBarLeading){
-                    Text("Guia de Serviços")
-                        .font(.system(size: 28, weight: .semibold))
+                VStack {
                     
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        viewType.toggle()
-                    }) {
-                        Image(systemName: "map.fill")
-                            .foregroundStyle(.rosa)
+                    if(viewType == false){
+                        MapView(selectedFilter: $selectedFilter, showFilters: true)
+                    }else{
+                        ListView(selectedFilter: $selectedFilter)
                     }
                 }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        
-                    }) {
-                        Image(systemName: "info.circle")
-                            .foregroundStyle(.black)
-                    }
-                }
-            }
-            //.toolbarBackground(.red)
-            
-            
-        }
-    }
-}
-
-extension Services {
-    var categorySection: some View {
-        HStack{
-            ForEach(0..<categories.count, id: \.self) { index in
-                let (title, symbol) = categories[index]
                 
-                Button(action: {
-                    selectedFilter = index
-                }) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8)
-                            .foregroundStyle(selectedFilter == index ? .rosa : .cinzaMuitoClaro)
-                            .frame(height: 32)
+                .toolbar{
+                    
+                    ToolbarItem(placement: .topBarLeading){
+                        Text("Guia de Serviços")
+                            .font(.system(size: 28, weight: .semibold))
                         
-                        HStack(spacing: 8) {
-                            if let symbol = symbol {
-                                Image(systemName: symbol)
-                                    .foregroundColor(selectedFilter == index ? .white : .cinzaEscuro)
+                    }
+                    ToolbarItem(placement: .topBarTrailing){
+                        Button(action: {
+                            viewType.toggle()
+                        }) {
+                            if(viewType == true){
+                                Image(systemName: "map.fill")
+                                    .foregroundStyle(.black)
+                            }else{
+                                Image(systemName: "list.bullet.circle.fill")
+                                    .foregroundStyle(.black)
                             }
-                            Text(title)
-                                .font(.system(size: 16, weight: .medium))
-                                .foregroundColor(selectedFilter == index ? .white : .cinzaEscuro)
                         }
-                        .padding(.horizontal, 12)
+                    }
+                    ToolbarItem(placement: .topBarTrailing){
+                        Button(action: {
+                            
+                        }) {
+                            Image(systemName: "info.circle")
+                                .foregroundStyle(.black)
+                        }
                     }
                 }
+                
             }
         }
     }

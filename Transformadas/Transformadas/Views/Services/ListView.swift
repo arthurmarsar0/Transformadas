@@ -5,30 +5,45 @@
 //  Created by Alice Barbosa on 29/10/24.
 //
 
+
 import SwiftUI
 
 struct ListView: View {
+    @StateObject var viewModel = ServiceViewModel()
+    @Binding var selectedFilter: String 
+    @State var selectedService: Service?
+
     var body: some View {
-        VStack{
-            ScrollView(.vertical){
-                
-                
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
-                ListComponent()
+        VStack {
+            ServiceFilter()
+            CategoryFilter(selectedFilter: $selectedFilter)
+            ScrollView(.vertical) {
+                ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
+                    let service = viewModel.filteredServices[index]
+                    
+                    Button(action: {
+                        selectedService = service
+                    }) {
+                        ListComponent(service: service)
+                    }
+
+                    .sheet(item: $selectedService) { service in
+                            SheetDetailView(service: service)
+                    }
+                }
             }
-            
-            //TODO: Adicionar lógica pra ForEach service in services etc com cloudkit e cada componente ser um botão que abre uma sheet
-        }.padding()
+            .onAppear {
+                Task {
+                    await viewModel.loadServices()
+                    viewModel.filterServices(by: selectedFilter)
+                }
+            }
+            .onChange(of: selectedFilter){
+                viewModel.filterServices(by: selectedFilter)
+                selectedService = nil
+            }
+        }
+        .padding()
     }
 }
 
-#Preview {
-    ListView()
-}
