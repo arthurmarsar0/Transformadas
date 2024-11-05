@@ -9,42 +9,25 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum Mood: Codable {
-    case bad
-    case moreOrLess
-    case ok
-    case well
-    case excellent
-    
-    var name: String {
-        switch self {
-            case .bad: return "Mal"
-            case .moreOrLess: return "Mais ou menos"
-            case .ok: return "Ok"
-            case .well: return "Bem"
-            case .excellent: return "Excelente"
-        }
-    }
-
-}
-
 @Model
 class Entry {
     var date: Date = Date.now
     var mood: Mood?
     var note: String?
     var audio: String? // MUDAR
-    var photo: String? // MUDAR
-    @Relationship var effects: [Effect]?
-    var pdf: String? // MUDAR
+    var photos: [Data] = [] // MUDAR
+    @Relationship(deleteRule: .nullify, inverse: .none) var effects: [Effect]?
+    var documents: [String]? // MUDAR
+    var weight: Double?
     
-    init(date: Date, mood: Mood?, note: String?, audio: String?, photo: String?, effects: [Effect]?, pdf: String?) {
+    init(date: Date, mood: Mood?, note: String?, audio: String?, photos: [Data], effects: [Effect]?, documents: [String]?, weight: Double?) {
         self.date = date
         self.mood = mood
         self.note = note
         self.audio = audio
-        self.photo = photo
+        self.photos = photos
         self.effects = effects
-        self.pdf = pdf
+        self.documents = documents
+        self.weight = weight
     }
 }

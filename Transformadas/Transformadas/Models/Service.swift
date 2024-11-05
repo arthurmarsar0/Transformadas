@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CloudKit
 
 class Service :  Identifiable{
     var id: String
@@ -16,9 +17,9 @@ class Service :  Identifiable{
     var telephone: String
     var description: String
     var address: Address
-    var coordinate: Coordinate
+    var coordinate: CLLocationCoordinate2D
     
-    init(id: String = UUID().uuidString, name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: Coordinate) {
+    init(id: String = UUID().uuidString, name: String, categories: [Category], email: String, telephone: String, description: String, address: Address, coordinate: CLLocationCoordinate2D) {
         self.id = id
         self.name = name
         self.categories = categories

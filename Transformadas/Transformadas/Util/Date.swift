@@ -13,24 +13,33 @@ extension Date {
         return Calendar.current.component(.day, from: self)
     }
     
+    var monthNumber: Int {
+        return Calendar.current.component(.month, from: self)
+    }
+    
     var yearNumber: Int {
         return Calendar.current.component(.year, from: self)
     }
     
     var dayOfWeekString: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.current
+        dateFormatter.locale = Locale(identifier: "pt_BR")
         dateFormatter.dateFormat = "EEEE"
         return dateFormatter.string(from: self)
     }
     
     var monthString: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.current
+        dateFormatter.locale = Locale(identifier: "pt_BR")
         dateFormatter.dateFormat = "MMMM"
         return dateFormatter.string(from: self)
     }
-    
+    var hourFormatted: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "pt_BR")
+        dateFormatter.dateFormat = "HH:mm"
+        return dateFormatter.string(from: self)
+    }
 }
 
 func datesInCurrentMonth() -> [Date] {
@@ -49,4 +58,13 @@ func datesInCurrentMonth() -> [Date] {
     }
     
     return dates
+}
+
+func isSameDay(_ date1: Date, _ date2: Date) -> Bool {
+    let calendar = Calendar.current
+    return calendar.isDate(date1, equalTo: date2, toGranularity: .day)
+}
+
+func isFutureDate(_ date: Date) -> Bool {
+    return date > Date.now
 }
