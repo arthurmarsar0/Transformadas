@@ -8,17 +8,6 @@
 import Foundation
 import SwiftData
 
-enum HormonalTherapyType: Codable {
-    case feminization
-    case masculization
-}
-
-enum UserPronoun: Codable {
-    case eleDele
-    case elaDela
-    case eluDelu
-}
-
 @Model
 class User {
     

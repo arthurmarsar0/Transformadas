@@ -12,8 +12,10 @@ import SwiftData
 struct TransformadasApp: App {
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            User.self,
             Effect.self,
+            User.self,
+            Entry.self,
+            Reminder.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -30,4 +32,5 @@ struct TransformadasApp: App {
         }
         .modelContainer(sharedModelContainer)
     }
+    
 }
