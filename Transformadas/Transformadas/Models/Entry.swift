@@ -9,12 +9,12 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum Mood: Codable {
-    case bad
-    case moreOrLess
-    case ok
-    case well
-    case excellent
+enum Mood: Int, Codable {
+    case bad = 1,
+         moreOrLess,
+     ok,
+     well,
+     excellent
     
     var name: String {
         switch self {
@@ -23,6 +23,16 @@ enum Mood: Codable {
             case .ok: return "Ok"
             case .well: return "Bem"
             case .excellent: return "Excelente"
+        }
+    }
+    
+    var emoji: String {
+        switch self {
+            case .bad: return "️😔"
+            case .moreOrLess: return "😕"
+            case .ok: return "😐"
+            case .well: return "☺️"
+            case .excellent: return "😀"
         }
     }
 
