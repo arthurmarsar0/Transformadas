@@ -12,10 +12,11 @@ struct ListView: View {
     @StateObject var viewModel = ServiceViewModel()
     @Binding var selectedFilter: String 
     @State var selectedService: Service?
+    @State var searchText: String = ""
 
     var body: some View {
         VStack {
-            ServiceFilter()
+            ServiceFilter(searchText: $searchText)
             CategoryFilter(selectedFilter: $selectedFilter)
             ScrollView(.vertical) {
                 ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
@@ -35,12 +36,15 @@ struct ListView: View {
             .onAppear {
                 Task {
                     await viewModel.loadServices()
-                    viewModel.filterServices(by: selectedFilter)
+                    viewModel.filterServices(by: selectedFilter, searchText: searchText)
                 }
             }
             .onChange(of: selectedFilter){
-                viewModel.filterServices(by: selectedFilter)
+                viewModel.filterServices(by: selectedFilter, searchText: searchText)
                 selectedService = nil
+            }
+            .onChange(of: searchText) {
+                viewModel.filterServices(by: selectedFilter, searchText: searchText)
             }
         }
         .padding()

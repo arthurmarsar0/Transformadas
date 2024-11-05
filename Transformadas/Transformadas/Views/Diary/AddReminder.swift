@@ -231,11 +231,11 @@ struct AddReminder: View {
 
 }
 
-#Preview {
-    let preview = Preview()
-    preview.addEntriesExamples(EntryModel.samples)
-    preview.addEffectsExamples(EffectModel.samples)
-    preview.addRemindersExamples(ReminderModel.samples)
-    return AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
-        .modelContainer(preview.modelContainer)
-}
+//#Preview {
+//    let preview = Preview()
+//    preview.addEntriesExamples(EntryModel.samples)
+//    preview.addEffectsExamples(EffectModel.samples)
+//    preview.addRemindersExamples(ReminderModel.samples)
+//    return AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
+//        .modelContainer(preview.modelContainer)
+//}

@@ -17,22 +17,23 @@ class ServiceViewModel: ObservableObject {
     
     
     func loadServices() async {
-            do {
-                
-                allServices = try await ServiceModel.getServices()
-                filteredServices = allServices
-            } catch {
-                print("Erro ao carregar serviços: \(error)")
-            }
+        do {
+            
+            allServices = try await ServiceModel.getServices()
+            filteredServices = allServices
+        } catch {
+            print("Erro ao carregar serviços: \(error)")
+        }
     }
     
-    func filterServices(by category: String) {
-        if category == "Todos" {
-            filteredServices = allServices
-        } else {
-            filteredServices = allServices.filter { service in
-                service.categories.contains { $0.name == category }
-            }
+    
+    func filterServices(by category: String, searchText: String) {
+        filteredServices = allServices.filter { service in
+            // Filtra pela categoria, se selecionada, e pelo nome do serviço
+            let matchesCategory = category == "Todos" || service.categories.contains { $0.name == category }
+            let matchesSearchText = searchText.count < 3 || service.name.localizedCaseInsensitiveContains(searchText)
+            
+            return matchesCategory && matchesSearchText
         }
     }
     

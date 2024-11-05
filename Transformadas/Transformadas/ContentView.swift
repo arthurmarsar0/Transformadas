@@ -35,11 +35,11 @@ struct ContentView: View {
     
 }
 
-#Preview {
-    let preview = Preview()
-    preview.addEntriesExamples(EntryModel.samples)
-    preview.addEffectsExamples(EffectModel.samples)
-    preview.addRemindersExamples(ReminderModel.samples)
-    return ContentView()
-            .modelContainer(preview.modelContainer)
-}
+//#Preview {
+//    let preview = Preview()
+//    preview.addEntriesExamples(EntryModel.samples)
+//    preview.addEffectsExamples(EffectModel.samples)
+//    preview.addRemindersExamples(ReminderModel.samples)
+//    return ContentView()
+//            .modelContainer(preview.modelContainer)
+//}

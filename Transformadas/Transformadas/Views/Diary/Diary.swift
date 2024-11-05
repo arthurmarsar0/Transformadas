@@ -411,11 +411,11 @@ struct Diary: View {
     
 }
 
-#Preview {
-    let preview = Preview()
-    preview.addEntriesExamples(EntryModel.samples)
-    preview.addEffectsExamples(EffectModel.samples)
-    preview.addRemindersExamples(ReminderModel.samples)
-    return Diary()
-            .modelContainer(preview.modelContainer)
-}
+//#Preview {
+//    let preview = Preview()
+//    preview.addEntriesExamples(EntryModel.samples)
+//    preview.addEffectsExamples(EffectModel.samples)
+//    preview.addRemindersExamples(ReminderModel.samples)
+//    return Diary()
+//            .modelContainer(preview.modelContainer)
+//}

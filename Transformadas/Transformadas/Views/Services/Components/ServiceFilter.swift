@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ServiceFilter: View {
+    @Binding var searchText: String
+    
     var body: some View {
         ZStack (alignment: .leading){
             
@@ -18,13 +20,11 @@ struct ServiceFilter: View {
                 Image(systemName: "magnifyingglass")
                     .padding()
                 
-                Text("Buscar")
+                TextField("Buscar", text: $searchText)
             }
         }
-        //.padding()
+
     }
 }
 
-#Preview {
-    ServiceFilter()
-}
+

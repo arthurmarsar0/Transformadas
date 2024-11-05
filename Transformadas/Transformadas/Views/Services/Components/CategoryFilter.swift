@@ -10,13 +10,14 @@ import SwiftUI
 struct CategoryFilter: View {
     @Binding var selectedFilter: String
     @StateObject var viewModel = ServiceViewModel()
+    @State var searchText: String = ""
     var body: some View {
         ScrollView(.horizontal){
             HStack{
                 ForEach(Category.allCases, id: \.self){ category in
                     Button(action: {
                         selectedFilter = category.name
-                        viewModel.filterServices(by: selectedFilter)
+                        viewModel.filterServices(by: selectedFilter, searchText: searchText)
                     }){
                         ZStack{
                             RoundedRectangle(cornerRadius: 8)
@@ -35,7 +36,6 @@ struct CategoryFilter: View {
                     }
                 }
             }
-            //.padding()
         }
     }
 }
