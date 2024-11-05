@@ -50,7 +50,7 @@ struct Services: View {
                         viewType.toggle()
                     }) {
                         Image(systemName: "map.fill")
-                            .foregroundStyle(.black)
+                            .foregroundStyle(.rosa)
                     }
                 }
                 ToolbarItem(placement: .topBarTrailing){

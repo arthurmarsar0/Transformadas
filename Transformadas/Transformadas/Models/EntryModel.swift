@@ -62,7 +62,7 @@ class EntryModel {
     }
     
     func editEntry(entry: Entry) throws {
-        var oldEntry = try getEntry(date: entry.date)
+        let oldEntry = try getEntry(date: entry.date)
         
         oldEntry.date = entry.date
         oldEntry.mood = entry.mood

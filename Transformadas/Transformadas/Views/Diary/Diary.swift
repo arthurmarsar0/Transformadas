@@ -10,7 +10,7 @@ import SwiftData
 
 struct Diary: View {
     
-    // MARK: - DATA
+    // MARK - DATA
     @Environment(\.modelContext) var modelContext
     @Query var entries: [Entry]
     @Query var reminders: [Reminder]
@@ -32,6 +32,7 @@ struct Diary: View {
     @State var isShowingReminderSheet: Bool = false
     @State var isShowingAddReminderSheet: Bool = false
     @State var isCalendarView: Bool = false
+    @State var isShowingAddEntrySheet: Bool = false
     
     var selectedDayReminders: [Reminder] {
         return reminders.filter({isSameDay($0.startDate, selectedDate)})
@@ -344,7 +345,7 @@ struct Diary: View {
     
     func addEntryButton(selectedDate: Date) -> some View {
         Button(action: {
-            addEntry(selectedDate: selectedDate)
+            isShowingAddEntrySheet = true
         }) {
             HStack (spacing: 8){
                 Image(systemName: "plus.circle.fill")
@@ -359,6 +360,9 @@ struct Diary: View {
                         .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
                 }
         }.disabled(isFutureDate(selectedDate))
+        .sheet(isPresented: $isShowingAddEntrySheet, content: {
+            RegisterSheet(isPresented: $isShowingAddEntrySheet)
+        })
         
     }
     

@@ -9,11 +9,25 @@ import Foundation
 import SwiftData
 
 @Model
-class Effect {
+class Effect: Identifiable {
     var modelID: UUID = UUID()
     var name: String = ""
     
     init(name: String) {
         self.name = name
+    }
+}
+
+extension Effect: Comparable {
+    static func < (lhs: Effect, rhs: Effect) -> Bool {
+        lhs.modelID < rhs.modelID
+    }
+    
+    static func > (lhs: Effect, rhs: Effect) -> Bool {
+        lhs.modelID > rhs.modelID
+    }
+    
+    static func == (lhs: Effect, rhs: Effect) -> Bool {
+        lhs.modelID == rhs.modelID
     }
 }
