@@ -156,11 +156,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Transformadas/Preview Content\"";
-<<<<<<< HEAD
-				DEVELOPMENT_TEAM = F687NLG76R;
-=======
 				DEVELOPMENT_TEAM = 9CU34TXH45;
->>>>>>> dev
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Transformadas/Info.plist;
@@ -195,11 +191,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Transformadas/Preview Content\"";
-<<<<<<< HEAD
-				DEVELOPMENT_TEAM = F687NLG76R;
-=======
 				DEVELOPMENT_TEAM = 9CU34TXH45;
->>>>>>> dev
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Transformadas/Info.plist;
