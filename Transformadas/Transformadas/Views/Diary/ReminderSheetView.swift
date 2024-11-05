@@ -8,7 +8,11 @@
 import SwiftUI
 
 struct ReminderSheetView: View {
+    ///EXTERNAL
     @Binding var isShowingReminderSheet: Bool
+    @Binding var isShowingEditReminderSheet: Bool
+    
+    ///VIEW DATA
     var reminder: Reminder
     @Binding var isChecked: Bool
     
@@ -40,9 +44,9 @@ struct ReminderSheetView: View {
                 VStack (alignment: .leading, spacing: 8){
                     HStack (spacing: 4){
                         Image(systemName: "calendar")
-                        if let name = RepetitionEnum.toEnum(repetition: reminder.repetition)?.name {
-                            Text(name)
-                        }
+                    
+                            Text(reminder.repetition.name)
+                        
                         
                     }
                     .font(.system(size: 16, weight: .regular))
@@ -75,7 +79,8 @@ struct ReminderSheetView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Editar") {
-                        
+                        isShowingReminderSheet = false
+                        isShowingEditReminderSheet = true
                     }
                     .font(.system(size: 17, weight: .regular))
                     .foregroundStyle(.cinzaEscuro)
@@ -87,7 +92,11 @@ struct ReminderSheetView: View {
                     .font(.system(size: 17, weight: .semibold))
                     .foregroundStyle(colors[1])
                 }
-            }.navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
+            }
+            //.navigationBarWithImageBackground(createColorImage(size: CGSizeMake(100, 100), color: .white))
+            //.modifier(NavigationBarModifier(backgroundImage: createColorImage(size: CGSizeMake(100, 100), color: .white)))
+        }.onAppear {
+            removeNavBarBackground()
         }
     }
     
@@ -122,14 +131,15 @@ struct ReminderSheetView: View {
     }
 }
 
-#Preview {
-    let preview = Preview()
-    preview.addEntriesExamples(EntryModel.samples)
-    preview.addEffectsExamples(EffectModel.samples)
-    preview.addRemindersExamples(ReminderModel.samples)
-    return NavigationStack {
-        ReminderSheetView(isShowingReminderSheet: .constant(true), reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), type: .medicine, time: Date.now, daysCompleted: [], notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. ", dosage: "2mg"), isChecked: .constant(true))
-    }
-    .modelContainer(preview.modelContainer)
-    
-}
+//#Preview {
+//    let preview = Preview()
+//    preview.addEntriesExamples(EntryModel.samples)
+//    preview.addEffectsExamples(EffectModel.samples)
+//    preview.addRemindersExamples(ReminderModel.samples)
+//    
+//    NavigationStack {
+//        ReminderSheetView(isShowingReminderSheet: .constant(true), reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: Repetition.never, type: .medicine, time: Date.now, daysCompleted: [], notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. ", dosage: "2mg"), isChecked: .constant(true))
+//    }
+//    .modelContainer(preview.modelContainer)
+//    
+//}

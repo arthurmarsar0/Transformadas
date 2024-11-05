@@ -9,14 +9,19 @@ import SwiftUI
 
 struct ReminderComponent: View
 {
-    @Environment(\.modelContext) var modelContext
-    
+    // MARK: - EXTERNAL
     var reminder: Reminder
     @Binding var selectedDate: Date
     
+    // MARK: - DATA
+    @Environment(\.modelContext) var modelContext
+    
+    // MARK: - VIEW DATA
     @State var isChecked: Bool = false
     @State var isShowingReminderSheet = false
+    @State var isShowingEditReminderSheet = false
     
+    // MARK: - VIEW
     var body: some View
     {
             VStack {
@@ -61,13 +66,21 @@ struct ReminderComponent: View
                 toggleReminder(isChecked: isChecked)
             }.onTapGesture {
                 isShowingReminderSheet = true
-            }.sheet(isPresented: $isShowingReminderSheet) {
-                ReminderSheetView(isShowingReminderSheet: $isShowingReminderSheet, reminder: reminder, isChecked: $isChecked)
+            }.sheet(isPresented: $isShowingReminderSheet, onDismiss: {
+                addNavBarBackground()
+            }) {
+                ReminderSheetView(isShowingReminderSheet: $isShowingReminderSheet, isShowingEditReminderSheet: $isShowingEditReminderSheet, reminder: reminder, isChecked: $isChecked)
                     .presentationDetents([.medium])
+            }.sheet(isPresented: $isShowingEditReminderSheet, onDismiss: {
+                addNavBarBackground()
+            }) {
+                AddReminder(isShowingAddReminderSheet: $isShowingEditReminderSheet, existingReminder: reminder)
             }
         
         
     }
+    
+    // MARK: - DATA FUNC
     
     func toggleReminder(isChecked: Bool) {
         var reminderModel = ReminderModel(context: modelContext)
@@ -76,7 +89,7 @@ struct ReminderComponent: View
         if isChecked {
             reminder.daysCompleted.append(selectedDate)
         } else {
-            reminder.daysCompleted = reminder.daysCompleted.filter({isSameDay($0, selectedDate)})
+            reminder.daysCompleted = reminder.daysCompleted.filter({!isSameDay($0, selectedDate)})
         }
         
         do {
@@ -88,6 +101,6 @@ struct ReminderComponent: View
 }
 
 #Preview() {
-    ReminderComponent(reminder: (Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg")), selectedDate: .constant(Date.now))
+    ReminderComponent(reminder: (Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg")), selectedDate: .constant(Date.now))
     
 }

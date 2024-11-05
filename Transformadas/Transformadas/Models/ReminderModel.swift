@@ -36,14 +36,16 @@ class ReminderModel {
     }
     
     func editReminder(reminder: Reminder) throws {
-        var oldReminder = try getReminder(ID: reminder.modelID)
+        var foundReminder = try getReminder(ID: reminder.modelID)
         
-        oldReminder.name = reminder.name
-        oldReminder.startDate = reminder.startDate
-        oldReminder.endDate = reminder.endDate
-        oldReminder.repetition = reminder.repetition
-        oldReminder.time = reminder.time
-        oldReminder.daysCompleted = reminder.daysCompleted
+        foundReminder.name = reminder.name
+        foundReminder.startDate = reminder.startDate
+        foundReminder.repetition = reminder.repetition
+        foundReminder.type = reminder.type
+        foundReminder.time = reminder.time
+        foundReminder.daysCompleted = reminder.daysCompleted
+        foundReminder.notes = reminder.notes
+        foundReminder.dosage = reminder.dosage
         
         try context.save()
         
@@ -60,4 +62,26 @@ class ReminderModel {
     }
     
     
+}
+
+func copyReminder(toReminder: Reminder, reminder: Reminder) {
+    toReminder.name = reminder.name
+    toReminder.startDate = reminder.startDate
+    toReminder.repetition = reminder.repetition
+    toReminder.type = reminder.type
+    toReminder.time = reminder.time
+    toReminder.daysCompleted = reminder.daysCompleted
+    toReminder.notes = reminder.notes
+    toReminder.dosage = reminder.dosage
+}
+
+func hadChangesOnReminder(oldReminder: Reminder, newReminder: Reminder) -> Bool {
+    return oldReminder.name != newReminder.name ||
+    oldReminder.startDate != newReminder.startDate ||
+    oldReminder.repetition != newReminder.repetition ||
+    oldReminder.type != newReminder.type ||
+    oldReminder.time != newReminder.time ||
+    oldReminder.daysCompleted != newReminder.daysCompleted ||
+    oldReminder.notes != newReminder.notes ||
+    oldReminder.dosage != newReminder.dosage
 }

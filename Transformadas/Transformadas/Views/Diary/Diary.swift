@@ -9,9 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct Diary: View {
-    static var now: Date { Date.now }
     
-    ///DATA
+    // MARK: - DATA
     @Environment(\.modelContext) var modelContext
     @Query var entries: [Entry]
     @Query var reminders: [Reminder]
@@ -20,8 +19,9 @@ struct Diary: View {
         entry.date.monthNumber == now.monthNumber && entry.date.yearNumber == now.yearNumber
     }) var monthEntries: [Entry]
     
-    ///VIEW DATA
+    // MARK: - VIEW DATA
     @State var selectedDate: Date = Date.now
+    static var now: Date { Date.now }
     
     var monthDates: [Date] {
         return datesInCurrentMonth()
@@ -30,13 +30,14 @@ struct Diary: View {
     @State var isShowingDeleteEntry: Bool = false
     @State var isShowingEntrySheet: Bool = false
     @State var isShowingReminderSheet: Bool = false
+    @State var isShowingAddReminderSheet: Bool = false
     @State var isCalendarView: Bool = false
     
     var selectedDayReminders: [Reminder] {
         return reminders.filter({isSameDay($0.startDate, selectedDate)})
     }
     
-    ///VIEW
+    // MARK: - VIEW
     
     var body: some View {
         NavigationStack {
@@ -70,10 +71,14 @@ struct Diary: View {
                             }
                             ToolbarItem(placement: .topBarTrailing) {
                                 Button(action: {
-                                    
+                                    isShowingAddReminderSheet = true
                                 }) {
                                     Image(systemName: "plus")
                                     
+                                }.sheet(isPresented: $isShowingAddReminderSheet, onDismiss: {
+                                    addNavBarBackground()
+                                }) {
+                                    AddReminder(isShowingAddReminderSheet: $isShowingAddReminderSheet)
                                 }
                             }
                             
@@ -101,15 +106,19 @@ struct Diary: View {
                 }
                     
                 
+            }.onAppear {
+                addNavBarBackground()
             }
             
         }
-        .navigationBarWithImageBackground(UIImage(named: "navBarImage")!)
+        //.modifier(NavigationBarModifier(backgroundImage: UIImage(named: "navBarImage")!))
+        
+        //.navigationBarWithImageBackground(UIImage(named: "navBarImage")!)
         
         
     }
     
-    ///VIEW FUNCS
+    // MARK: - VIEW FUNCS
     
     func todayReminders() -> some View {
         VStack (spacing: 8){
@@ -258,7 +267,9 @@ struct Diary: View {
                 entryComFoto(entry: entry, photo: photo)
             }
         }
-        .sheet(isPresented: $isShowingEntrySheet) {
+        .sheet(isPresented: $isShowingEntrySheet, onDismiss: {
+            addNavBarBackground()
+        }) {
             EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
         }
         
@@ -351,11 +362,11 @@ struct Diary: View {
         
     }
     
-    /// DATA  FUNCS
+    // MARK: - DATA  FUNCS
     
     func addEntry(selectedDate: Date) {
         modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
-        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: selectedDate, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"))
+        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: selectedDate, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"))
     }
     
     func deleteEntry(entry: Entry) {

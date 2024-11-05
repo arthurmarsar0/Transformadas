@@ -33,8 +33,8 @@ extension EffectModel {
 extension ReminderModel {
     static var samples: [Reminder] {
         [
-            Reminder(name: "Consulta Endocrinologista", startDate: Date.now, endDate: Date.distantFuture, repetition: Repetition(frequency: 0), type: .event, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"),
-            Reminder(name: "Testosterona", startDate: Date.now, endDate: Date.distantFuture, repetition: RepetitionEnum.daily.repetition, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg")
+            Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: .never, type: .event, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"),
+            Reminder(name: "Testosterona", startDate: Date.now, repetition: .daily, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg")
         ]
     }
 }

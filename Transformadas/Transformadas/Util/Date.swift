@@ -23,20 +23,20 @@ extension Date {
     
     var dayOfWeekString: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.current
+        dateFormatter.locale = Locale(identifier: "pt_BR")
         dateFormatter.dateFormat = "EEEE"
         return dateFormatter.string(from: self)
     }
     
     var monthString: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.current
+        dateFormatter.locale = Locale(identifier: "pt_BR")
         dateFormatter.dateFormat = "MMMM"
         return dateFormatter.string(from: self)
     }
     var hourFormatted: String {
         let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale.current
+        dateFormatter.locale = Locale(identifier: "pt_BR")
         dateFormatter.dateFormat = "HH:mm"
         return dateFormatter.string(from: self)
     }

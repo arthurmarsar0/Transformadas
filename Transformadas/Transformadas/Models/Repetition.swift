@@ -5,9 +5,9 @@
 //  Created by Pedro Vitor de Oliveira Monte on 27/10/24.
 //
 
-import Foundation
-
-struct Repetition: Codable {
-    var frequency: Int
-    
-}
+//import Foundation
+//
+//struct Repetition: Codable {
+//    var frequency: Int
+//    
+//}

@@ -14,6 +14,8 @@ struct EntryView: View {
     var entry: Entry
     @Binding var isShowingEntrySheet: Bool
     
+    @State var isShowingDeleteEntry: Bool = false
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -88,7 +90,8 @@ struct EntryView: View {
                     }
                 }
             }
-            .navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
+        }.onAppear {
+            removeNavBarBackground()
         }
     }
     
@@ -102,10 +105,19 @@ struct EntryView: View {
     
     func deleteEntryButton() -> some View {
         Button(action: {
-            deleteEntry(entry: entry)
+            isShowingDeleteEntry = true
         }) {
             Text("Apagar Registro")
                 .foregroundStyle(.red)
+        }.confirmationDialog("Tem certeza de que deseja apagar este registro?", isPresented: $isShowingDeleteEntry, titleVisibility: .visible) {
+            
+            Button ("Apagar Registro", role: .destructive) {
+                deleteEntry(entry: entry)
+            }
+            
+            Button ("Cancelar", role: .cancel) {
+                
+            }
         }
     }
     

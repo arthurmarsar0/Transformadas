@@ -42,8 +42,9 @@ struct PhotosView: View {
                 }
             }.onAppear {
                 selectedPhoto = startingPhoto
+                removeNavBarBackground()
             }
-        }.navigationBarWithImageBackground(createWhiteImage(size: CGSizeMake(100, 100)))
+        }
     }
 }
 
