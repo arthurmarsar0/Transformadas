@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct Diary: View {
-    @State var showSheet: Bool = false
+    
     // MARK - DATA
     @Environment(\.modelContext) var modelContext
     @Query var entries: [Entry]
@@ -32,6 +32,7 @@ struct Diary: View {
     @State var isShowingReminderSheet: Bool = false
     @State var isShowingAddReminderSheet: Bool = false
     @State var isCalendarView: Bool = false
+    @State var isShowingAddEntrySheet: Bool = false
     
     var selectedDayReminders: [Reminder] {
         return reminders.filter({isSameDay($0.startDate, selectedDate)})
@@ -198,18 +199,7 @@ struct Diary: View {
                     .id(date.dayNumber)
                 }
             }
-            Button(action: {
-                showSheet.toggle()
-            }, label:{
-                Text("Abrir sheet registro")
-            }
-            )
         }
-<<<<<<< HEAD
-        .sheet(isPresented: $showSheet, content: {
-            RegisterSheet(isPresented: $showSheet)
-        })
-=======
         .onAppear {
             scrollViewProxy.scrollTo(selectedDate.dayNumber, anchor: .center)
         }
@@ -247,7 +237,6 @@ struct Diary: View {
     }
     
     func entryPreview(entry: Entry) -> some View {
->>>>>>> dev
         
         VStack (spacing: 32) {
             
@@ -356,7 +345,7 @@ struct Diary: View {
     
     func addEntryButton(selectedDate: Date) -> some View {
         Button(action: {
-            addEntry(selectedDate: selectedDate)
+            isShowingAddEntrySheet = true
         }) {
             HStack (spacing: 8){
                 Image(systemName: "plus.circle.fill")
@@ -371,6 +360,9 @@ struct Diary: View {
                         .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
                 }
         }.disabled(isFutureDate(selectedDate))
+        .sheet(isPresented: $isShowingAddEntrySheet, content: {
+            RegisterSheet(isPresented: $isShowingAddEntrySheet)
+        })
         
     }
     
