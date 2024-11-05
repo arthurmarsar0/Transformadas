@@ -22,41 +22,43 @@ struct MapView: View {
         span: MKCoordinateSpan(latitudeDelta: 0.0125, longitudeDelta: 0.0125)))
     
     var body: some View {
-        ZStack {
-            Color.bege.ignoresSafeArea()
-            if(locationManager.isAuthorized){
+            VStack{
                 
-                Map(position: $region){
-                    UserAnnotation()
-                    ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
-                        let service = viewModel.filteredServices[index]
-                        Annotation(service.name, coordinate: CLLocationCoordinate2D(latitude: service.coordinate.latitude, longitude: service.coordinate.longitude)){
+                if(locationManager.isAuthorized){
+                    
+                    Map(position: $region){
+                        UserAnnotation()
+                        ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
+                            let service = viewModel.filteredServices[index]
+                            Annotation(service.name, coordinate: CLLocationCoordinate2D(latitude: service.coordinate.latitude, longitude: service.coordinate.longitude)){
                                 Button(action: {
-                                            selectedService = service
+                                    selectedService = service
                                 }) {
                                     Image("pin")
                                         .resizable()
                                         .foregroundColor(.verde)
                                 }
                                 .sheet(item: $selectedService) { service in
-                                        SheetDetailView(service: service)
+                                    SheetDetailView(service: service)
                                 }
-                            
+                                
+                            }
                         }
-                        }
-                
-                }.mapControls {
-                    MapUserLocationButton()
-                }
-                .safeAreaInset(edge: .top){
-                    if showFilters {
                         
-                        CategoryFilter(selectedFilter: $selectedFilter)
+                    }.mapControls {
+                        MapUserLocationButton()
                     }
+                    .safeAreaInset(edge: .top){
+                        if showFilters {
+                            VStack{
+                                ServiceFilter()
+                                CategoryFilter(selectedFilter: $selectedFilter)
+                            }.padding()
+                        }
+                    }
+                    
                 }
-                
-            }
-        }.onAppear {
+            }.onAppear {
             Task {
                 await viewModel.loadServices()
                 viewModel.filterServices(by: selectedFilter)

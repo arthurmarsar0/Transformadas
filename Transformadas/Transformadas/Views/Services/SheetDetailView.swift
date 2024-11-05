@@ -30,7 +30,7 @@ struct SheetDetailView: View {
     var service: Service
     
     var body: some View {
-        ZStack{
+        ZStack(alignment: .top){
             Color.bege.ignoresSafeArea()
             VStack(alignment: .leading, spacing: 16){
                 

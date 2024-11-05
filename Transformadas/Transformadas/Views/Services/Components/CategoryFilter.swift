@@ -35,7 +35,7 @@ struct CategoryFilter: View {
                     }
                 }
             }
-            .padding()
+            //.padding()
         }
     }
 }

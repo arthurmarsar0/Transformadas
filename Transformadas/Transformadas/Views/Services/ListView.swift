@@ -14,8 +14,9 @@ struct ListView: View {
     @State var selectedService: Service?
 
     var body: some View {
-        CategoryFilter(selectedFilter: $selectedFilter)
         VStack {
+            ServiceFilter()
+            CategoryFilter(selectedFilter: $selectedFilter)
             ScrollView(.vertical) {
                 ForEach(0 ..< viewModel.filteredServices.count, id: \.self) { index in
                     let service = viewModel.filteredServices[index]
