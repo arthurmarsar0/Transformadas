@@ -10,7 +10,7 @@ import Foundation
 extension EntryModel {
     static var samples: [Entry] {
         [
-            Entry(date: Date.now, mood: .bad, note: "Dia ruim", audio: "", photos: [EntryModel.imageToData(image: .foto1)!, EntryModel.imageToData(image: .foto2)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga")], documents: [], weight: 70.0),
+            Entry(date: Date.now, mood: .bad, note: "Dia ruim", audio: nil, photos: [EntryModel.imageToData(image: .foto1)!, EntryModel.imageToData(image: .foto2)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga")], documents: [], weight: 70.0),
          Entry(date: Calendar.current.date(byAdding: .day, value: -1, to: .now) ?? Date.now, mood: .excellent, note: "Dia bom", audio: nil, photos: [EntryModel.imageToData(image: .foto3)!, EntryModel.imageToData(image: .foto4)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 71.1)
             
         ]

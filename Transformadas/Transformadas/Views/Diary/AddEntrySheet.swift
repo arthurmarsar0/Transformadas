@@ -40,7 +40,14 @@ struct AddEntrySheet: View {
     @State var selectedDocumentURL: URL?
     
     ///AUDIO
-    @State var audioRecorded: Bool = false
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State var isShowingRecordAudioSheet = false
+    @StateObject var audioRecorder = AudioRecorder()
+    @StateObject var audioPlayer = AudioPlayer()
+    @State var isShowingDeleteAudioConfirmation = false
+    
+    @State var timeElapsed: TimeInterval = 0
+    @State var startDate = Date.now
     
     var canAddEntry: Bool {
         return entry.mood != nil
@@ -69,7 +76,7 @@ struct AddEntrySheet: View {
                     }
                     
                     //Section {
-                        addImageView()
+                    addImageView()
                     //}
                     //.listSectionSpacing(8)
                     
@@ -173,14 +180,76 @@ struct AddEntrySheet: View {
     }
     
     func audioView() -> some View {
-        Button(action: {
-            
-        }) {
-            HStack {
-                Text("Gravar voz")
-                Spacer()
-                Image(systemName: "microphone.fill")
+        Section {
+            if let audio = entry.audio {
+                AnyView(
+                    HStack (spacing: 24){
+                        
+                        if !audioPlayer.isPlaying {
+                            Image(systemName: "play.fill")
+                                .foregroundStyle(.rosa)
+                                .onTapGesture {
+                                    audioPlayer.startPlayback(audio: audio.path)
+                                }
+                            
+                        } else {
+                            
+                            Image(systemName: "pause.fill")
+                                .foregroundStyle(.rosa)
+                                .onTapGesture {
+                                    audioPlayer.pausePlayback()
+                                }
+                            
+                        }
+                        
+                        if let time = audioPlayer.currentTime, audioPlayer.isPlaying {
+                            Text(time.minutesAndSeconds)
+                        } else {
+                            Text(audio.length.minutesAndSeconds)
+                        }
+                        
+                        ///TO-DO: AUDIO WAVELENGTH
+                        
+                        Spacer()
+                        
+                        
+                        Image(systemName: "trash.circle.fill")
+                            .foregroundStyle(.gray)
+                            .onTapGesture {
+                                isShowingDeleteAudioConfirmation = true
+                                
+                            }.confirmationDialog("Você tem certeza que quer deletar o áudio?", isPresented: $isShowingDeleteAudioConfirmation, titleVisibility: .visible) {
+                                Button ("Deletar", role: .destructive) {
+                                    entry.audio = nil
+                                }
+                                
+                                Button ("Manter", role: .cancel) {
+                                    
+                                }
+                            }
+                        
+                    }
+                )
+            } else {
+                AnyView(
+                    Button(action: {
+                        isShowingRecordAudioSheet = true
+                    }) {
+                        HStack {
+                            Text("Gravar voz")
+                            Spacer()
+                            Image(systemName: "microphone.fill")
+                        }
+                    }
+                )
             }
+        }.sheet(isPresented: $isShowingRecordAudioSheet, onDismiss: {
+            if audioRecorder.isRecording {
+                entry.audio = audioRecorder.stopRecording()
+            }
+        }) {
+            AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
+                .presentationDetents([.medium])
         }
     }
     
@@ -198,7 +267,8 @@ struct AddEntrySheet: View {
         }
         .listSectionSpacing(8)
         .sheet(isPresented: $isShowingCameraPicker) {
-            CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+            //PhotoPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+            ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
         }
         .onChange(of: selectedCameraPhoto) {
             if let selectedPhoto = selectedCameraPhoto {

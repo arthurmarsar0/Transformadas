@@ -40,6 +40,10 @@ extension Date {
         dateFormatter.dateFormat = "HH:mm"
         return dateFormatter.string(from: self)
     }
+    
+    var dayMonthYear: String {
+        return "\(dayNumber)-\(monthNumber)-\(yearNumber)"
+    }
 }
 
 func datesInCurrentMonth() -> [Date] {
@@ -67,4 +71,12 @@ func isSameDay(_ date1: Date, _ date2: Date) -> Bool {
 
 func isFutureDate(_ date: Date) -> Bool {
     return date > Date.now
+}
+
+extension TimeInterval {
+    var minutesAndSeconds: String {
+        let minutes = Int(self) / 60
+        let seconds = Int(self) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    }
 }
