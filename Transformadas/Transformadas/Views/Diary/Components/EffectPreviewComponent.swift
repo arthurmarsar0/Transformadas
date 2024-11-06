@@ -122,5 +122,9 @@ struct EffectComponent: View {
 }
 
 #Preview {
-    EffectPreviewComponent(effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Diminuição de pelos faciais")], isPreview: false)
+    EffectPreviewComponent(effects: [Effect(name: "Crescimento das mamas", status: .active), Effect(name: "Diminuição de pelos faciais", status: .active), Effect(name: "Fadiga", status: .active), Effect(name: "Insônia", status: .active), Effect(name: "Náusea", status: .active), Effect(name: "Diminuição de pelos faciais", status: .active), Effect(name: "Diminuição de pelos faciais", status: .active)], isPreview: false)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

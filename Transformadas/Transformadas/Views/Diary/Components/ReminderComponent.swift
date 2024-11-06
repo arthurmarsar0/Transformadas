@@ -102,5 +102,9 @@ struct ReminderComponent: View
 
 #Preview() {
     ReminderComponent(reminder: (Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg")), selectedDate: .constant(Date.now))
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
     
 }

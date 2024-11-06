@@ -54,4 +54,8 @@ struct AudioPreviewComponent: View {
 
 #Preview {
     AudioPreviewComponent(audio: "", isPreview: false)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

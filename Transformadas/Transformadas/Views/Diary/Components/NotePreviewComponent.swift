@@ -31,4 +31,8 @@ struct NotePreviewComponent: View {
 
 #Preview {
     NotePreviewComponent(note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", isPreview: false)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

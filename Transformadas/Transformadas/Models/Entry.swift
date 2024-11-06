@@ -13,14 +13,14 @@ import SwiftUI
 class Entry {
     var date: Date = Date.now
     var mood: Mood?
-    var note: String?
+    var note: String = ""
     var audio: String? // MUDAR
-    var photos: [Data] = [] // MUDAR
+    var photos: [Data] = []
     @Relationship(deleteRule: .nullify, inverse: .none) var effects: [Effect]?
-    var documents: [String]? // MUDAR
+    var documents: [Document] = []
     var weight: Double?
     
-    init(date: Date, mood: Mood?, note: String?, audio: String?, photos: [Data], effects: [Effect]?, documents: [String]?, weight: Double?) {
+    init(date: Date, mood: Mood?, note: String, audio: String?, photos: [Data], effects: [Effect]?, documents: [Document], weight: Double?) {
         self.date = date
         self.mood = mood
         self.note = note

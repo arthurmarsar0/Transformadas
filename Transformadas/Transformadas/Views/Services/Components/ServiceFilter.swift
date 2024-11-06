@@ -27,4 +27,8 @@ struct ServiceFilter: View {
 
 #Preview {
     ServiceFilter()
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

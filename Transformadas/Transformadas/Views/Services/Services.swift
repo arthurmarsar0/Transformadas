@@ -67,5 +67,8 @@ struct Services: View {
 
 #Preview {
     
-    Services()
+    Services().modelContainer(for: [Effect.self,
+                                    User.self,
+                                    Entry.self,
+                                    Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

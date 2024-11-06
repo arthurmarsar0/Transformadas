@@ -58,11 +58,14 @@ struct AddReminder: View {
                     List{
                         Section {
                             TextField(reminder.type == .event ? "Título do Evento" : "Nome do Medicamento", text: $reminder.name)
+                                .modifier(KeyboardDismiss())
                             
                             if reminder.type == .event {
                                 TextField("Notas", text: $reminder.notes)
+                                    .modifier(KeyboardDismiss())
                             } else {
                                 TextField("Dose", text: $reminder.dosage)
+                                    .modifier(KeyboardDismiss())
                             }
                         }
                         
@@ -71,6 +74,7 @@ struct AddReminder: View {
                             
                             Section {
                                 TextField("Notas", text: $reminder.notes)
+                                    .modifier(KeyboardDismiss())
                             }
                         }
                         
@@ -115,6 +119,8 @@ struct AddReminder: View {
                         }.disabled(!canAddReminder)
                     }
                 }
+                .toolbarBackground(.beginho)
+                .toolbarBackgroundVisibility(.visible)
         }.onAppear {
             removeNavBarBackground()
             if let existingReminder = existingReminder {
@@ -232,10 +238,9 @@ struct AddReminder: View {
 }
 
 #Preview {
-    let preview = Preview()
-    preview.addEntriesExamples(EntryModel.samples)
-    preview.addEffectsExamples(EffectModel.samples)
-    preview.addRemindersExamples(ReminderModel.samples)
-    return AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
-        .modelContainer(preview.modelContainer)
+    AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }
