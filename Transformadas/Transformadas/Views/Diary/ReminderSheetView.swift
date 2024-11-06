@@ -93,6 +93,8 @@ struct ReminderSheetView: View {
                     .foregroundStyle(colors[1])
                 }
             }
+            .toolbarBackground(.white)
+            .toolbarBackgroundVisibility(.visible)
             //.navigationBarWithImageBackground(createColorImage(size: CGSizeMake(100, 100), color: .white))
             //.modifier(NavigationBarModifier(backgroundImage: createColorImage(size: CGSizeMake(100, 100), color: .white)))
         }.onAppear {
@@ -131,15 +133,13 @@ struct ReminderSheetView: View {
     }
 }
 
-//#Preview {
-//    let preview = Preview()
-//    preview.addEntriesExamples(EntryModel.samples)
-//    preview.addEffectsExamples(EffectModel.samples)
-//    preview.addRemindersExamples(ReminderModel.samples)
-//    
-//    NavigationStack {
-//        ReminderSheetView(isShowingReminderSheet: .constant(true), reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: Repetition.never, type: .medicine, time: Date.now, daysCompleted: [], notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. ", dosage: "2mg"), isChecked: .constant(true))
-//    }
-//    .modelContainer(preview.modelContainer)
-//    
-//}
+#Preview {
+    NavigationStack {
+        ReminderSheetView(isShowingReminderSheet: .constant(true), isShowingEditReminderSheet: .constant(false), reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: Repetition.never, type: .medicine, time: Date.now, daysCompleted: [], notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. ", dosage: "2mg"), isChecked: .constant(true))
+    }
+    .modelContainer(for: [Effect.self,
+                          User.self,
+                          Entry.self,
+                          Reminder.self], inMemory: true, isAutosaveEnabled: false)
+    
+}

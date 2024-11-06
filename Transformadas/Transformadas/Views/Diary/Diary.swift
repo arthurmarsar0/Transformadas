@@ -328,17 +328,17 @@ struct Diary: View {
             if let weight = entry.weight {
                 WeightPreviewComponent(weight: weight, isPreview: true)
             }
-            if let note = entry.note {
-                NotePreviewComponent(note: note, isPreview: true)
-            }
+            //if let note = entry.note {
+            NotePreviewComponent(note: entry.note, isPreview: true)
+            //}
             
             if let effects = entry.effects {
                 //EffectPreviewComponent(effects: effects, isPreview: true)
             }
             
-            if let documents = entry.documents {
-                DocumentPreviewComponent(documents: documents, isPreview: true)
-            }
+            //if let documents = entry.documents {
+            DocumentPreviewComponent(documents: entry.documents, isPreview: true)
+            //}
             
         }
     }
@@ -360,16 +360,16 @@ struct Diary: View {
                         .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
                 }
         }.disabled(isFutureDate(selectedDate))
-        .sheet(isPresented: $isShowingAddEntrySheet, content: {
-            RegisterSheet(isPresented: $isShowingAddEntrySheet)
-        })
-        
+        .sheet(isPresented: $isShowingAddEntrySheet) {
+        AddEntrySheet(isPresented: $isShowingAddEntrySheet)
+    }
+    
     }
     
     // MARK: - DATA  FUNCS
     
     func addEntry(selectedDate: Date) {
-        modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], weight: 67.5))
+        modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 67.5))
         modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: selectedDate, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"))
     }
     
@@ -412,10 +412,9 @@ struct Diary: View {
 }
 
 #Preview {
-    let preview = Preview()
-    preview.addEntriesExamples(EntryModel.samples)
-    preview.addEffectsExamples(EffectModel.samples)
-    preview.addRemindersExamples(ReminderModel.samples)
-    return Diary()
-            .modelContainer(preview.modelContainer)
+    Diary()
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

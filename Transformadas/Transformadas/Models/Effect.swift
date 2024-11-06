@@ -12,10 +12,17 @@ import SwiftData
 class Effect: Identifiable {
     var modelID: UUID = UUID()
     var name: String = ""
+    var status: EffectStatus = EffectStatus.active
     @Relationship(deleteRule: .nullify, inverse: \Entry.effects) var entries: [Entry]?
+    
+    init(name: String, status: EffectStatus) {
+        self.name = name
+        self.status = status
+    }
     
     init(name: String) {
         self.name = name
+        self.status = .active
     }
 }
 
