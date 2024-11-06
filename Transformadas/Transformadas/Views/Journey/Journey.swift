@@ -9,43 +9,11 @@ import SwiftUI
 import Charts
 import UIKit
 
-struct efeitoTeste: Identifiable {
-    var id: UUID = UUID()
-    
-    var name: String
-    var count: Int
-}
-
-let efeitoss: [efeitoTeste] = [efeitoTeste(name: "fadiga", count: 10), efeitoTeste(name: "Aumento das mamas", count: 20), efeitoTeste(name: "Ansiedade", count: 10), efeitoTeste(name: "Diminuição pelos faciais", count: 8), efeitoTeste(name: "Sudorese", count: 13)]
-
-struct WeightData: Identifiable {
-    let id = UUID()
-    let date: Date
-    let weight: Double
-}
-
-let weightData = [
-    WeightData(date: Date().addingTimeInterval(-86400 * 5), weight: 71.0),
-    WeightData(date: Date().addingTimeInterval(-86400 * 4), weight: 70.8),
-    WeightData(date: Date().addingTimeInterval(-86400 * 3), weight: 71.2),
-    WeightData(date: Date().addingTimeInterval(-86400 * 2), weight: 70.7),
-    WeightData(date: Date().addingTimeInterval(-86400 * 1), weight: 70.4),
-    WeightData(date: Date(), weight: 70.0),
-    WeightData(date: Date().addingTimeInterval(86400 * 2), weight: 70.0),
-    WeightData(date: Date().addingTimeInterval(86400 * 3), weight: 70.5)
-]
-
-let entradasMock = [
-                Entry(date: Date.now.addingTimeInterval(-86400 * 3), mood: Mood.ok, note: "", audio: "audio 1", photo: "Foto 1", effects: [], pdf: "arquivo 1"),
-                Entry(date: Date.now.addingTimeInterval(-86400 * 2), mood: Mood.bad, note: "", audio: "Audio 2", photo: "foto 2", effects: [], pdf: "arquivo 2"),
-                Entry(date: Date.now.addingTimeInterval(-86400 * 1), mood: Mood.ok, note: "", audio: "audio 3", photo: "foto 3", effects: [], pdf: "arquivo 3"),
-                Entry(date: Date.now, mood: Mood.excellent, note: "", audio: "audio3", photo: "foto 4", effects: [], pdf: "arquivo 4")]
-
 struct Journey: View {
 
 //    @State var selectedMonthHumor: Date = Date()
-    @State var selectedMonthEfects: Date = Date()
-    @State var selectedMonthWeight: Date = Date()
+    @State private var selectedMonthFeelings: String = Date.now.monthString
+    @State private var selectedYearFeelings: Int = Date.now.yearNumber
     
     let datePicker = UIDatePicker()
     //datePicker.datePickerMode = .yearAndMonth
@@ -61,9 +29,13 @@ struct Journey: View {
                         transversaryView()
                         buttonsView()
                         feelingsCharts()
+                        
+                        
+                        
                         efectsCharts()
                         weightChart()
                         
+                        MonthYearPickerView(selectedMonth: $selectedMonthFeelings, selectedYear: $selectedYearFeelings)
                     }
                     .padding()
                 }
@@ -202,17 +174,57 @@ struct Journey: View {
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.gray)
                     Spacer()
-                    
+                    Button(action: {
+                        
+                    }){
+                        Text(selectedMonthFeelings.prefix(3) + " " + String(selectedYearFeelings))
+                    }
                 }
-                Chart(entradasMock, id: \.self) { entrada in
-                    LineMark(
-                        x: .value("Data", entrada.date),
-                        y: .value("Mood", entrada.mood?.emoji ?? "")
-                    )
-                }
-//                .chartYScale{
-                    
+//                Chart(entradasMock, id: \.self) { entrada in
+//                    LineMark(
+//                        x: .value("Data", entrada.date),
+//                        y: .value("Mood", entrada.mood!.emoji)
+//                    )
 //                }
+                
+                Chart(entradasMock, id: \.self) { entry in
+                            LineMark(
+                                x: .value("Dia", entry.date),
+                                y: .value("Sentimento", entry.mood!.rawValue)
+                            )
+                    
+                            PointMark(
+                                x: .value("Dia", entry.date),
+                                y: .value("Sentimento", entry.mood!.rawValue)
+                            )
+                            
+                            AreaMark(
+                                x: .value("Dia", entry.date),
+                                y: .value("Sentimento", entry.mood!.rawValue)
+                            )
+                            .foregroundStyle(LinearGradient(colors: [Color.rosa.opacity(0.2), Color.clear], startPoint: .top, endPoint: .bottom)) //TODO: Transformar nisso em uma função
+                    
+//                            .annotation(position: .top) {
+//                                Text(entry.mood!.emoji)
+//                                    .font(.system(size: 24)) // Tamanho do emoji
+//                            }
+                        }
+                        .foregroundStyle(.rosa)
+                        .frame(height: 300)
+                        .chartXAxis {
+                            AxisMarks(values: .stride(by: .day)) {
+                                AxisValueLabel(format: .dateTime.day())
+                            }
+                        }
+                        .chartYAxis {
+                            AxisMarks(values: Mood.allCases.map { $0.rawValue }) { value in
+                                if let mood = Mood(rawValue: value.as(Int.self) ?? 1) {
+                                    AxisGridLine()
+                                    AxisValueLabel(mood.emoji)
+                                        .font(.system(size: 15))// Mostra o emoji no eixo Y
+                                }
+                            }
+                        }
                 
             }
             .padding()
@@ -239,7 +251,7 @@ struct Journey: View {
                     )
                     .cornerRadius(6)
                 }
-                .foregroundStyle(LinearGradient(colors: [.white,.azul], startPoint: .leading, endPoint: .trailing))
+                .foregroundStyle(LinearGradient(colors: [.clear,.azul], startPoint: .leading, endPoint: .trailing))
                 
             }
             .padding()

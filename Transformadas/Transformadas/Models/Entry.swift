@@ -9,12 +9,12 @@ import Foundation
 import SwiftData
 import SwiftUI
 
-enum Mood: Int, Codable {
+enum Mood: Int, Codable, CaseIterable {
     case bad = 1,
          moreOrLess,
-     ok,
-     well,
-     excellent
+         ok,
+         well,
+         excellent
     
     var name: String {
         switch self {
