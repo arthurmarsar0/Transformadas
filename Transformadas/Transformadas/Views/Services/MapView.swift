@@ -38,15 +38,15 @@ struct MapView: View {
                                             .resizable()
                                             .foregroundColor(.verde)
                                     }
-                                    .sheet(item: $selectedService) { service in
-                                        SheetDetailView(service: service)
-                                    }
                                     
                                 }
                             }
                             
                         }
                         
+                        .sheet(item: $selectedService) { service in
+                            SheetDetailView(service: service)
+                        }
                         .mapControls {
                             MapUserLocationButton()
                         }

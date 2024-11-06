@@ -28,9 +28,9 @@ struct ListView: View {
                         ListComponent(service: service)
                     }
 
-                    .sheet(item: $selectedService) { service in
-                            SheetDetailView(service: service)
-                    }
+                }
+                .sheet(item: $selectedService) { service in
+                    SheetDetailView(service: service)
                 }
             }
             .onAppear {
