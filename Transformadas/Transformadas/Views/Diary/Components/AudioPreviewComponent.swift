@@ -10,12 +10,13 @@ import SwiftUI
 struct AudioPreviewComponent: View {
     var audio: Audio
     var isPreview: Bool
+    @StateObject var audioPlayer: AudioPlayer = AudioPlayer()
     
     var body: some View {
         HStack (spacing: 12) {
             VStack (alignment: .leading, spacing: 8) {
                 HStack {
-                    Image(systemName: "play.circle.fill")
+                    Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 13, weight: .regular))
                     Text(audio.length.minutesAndSeconds)
                         .font(.system(size: 11, weight: .regular))
@@ -38,6 +39,12 @@ struct AudioPreviewComponent: View {
         .padding(8)
         .background{
             RoundedRectangle(cornerRadius: 8).fill(backgroundFill)
+        }.onTapGesture {
+            if audioPlayer.isPlaying {
+                audioPlayer.pausePlayback()
+            } else {
+                audioPlayer.startPlayback(audio: audio.path)
+            }
         }
         
     }

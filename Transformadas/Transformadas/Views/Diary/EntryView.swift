@@ -16,6 +16,7 @@ struct EntryView: View {
     @Binding var isShowingEntrySheet: Bool
     
     @State var isShowingDeleteEntry: Bool = false
+    @State var isShowingEditEntrySheet = false
     
     var body: some View {
         NavigationStack {
@@ -81,8 +82,10 @@ struct EntryView: View {
                 .padding(16)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Editar") {
-                            
+                        Button ("Editar") {
+                            isShowingEditEntrySheet = true
+                        }.sheet(isPresented: $isShowingEditEntrySheet) {
+                            AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
                         }
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.cinzaEscuro)

@@ -12,6 +12,7 @@ import PhotosUI
 struct AddEntrySheet: View {
     // MARK: - EXTERNAL
     @Binding var isPresented: Bool
+    var existingEntry: Entry?
     
     // MARK: - DATA
     @Query var effects: [Effect]
@@ -20,6 +21,14 @@ struct AddEntrySheet: View {
     
     // MARK: - VIEW DATA
     @State var entry: Entry = Entry(date: Date.now, mood: nil, note: "", audio: nil, photos: [], effects: [], documents: [], weight: nil)
+    
+    var addTitle: String {
+        if existingEntry != nil {
+            return "Salvar"
+        } else {
+            return "Registrar"
+        }
+    }
     
     ///EFFECTS
     @State var activeEffects: [Effect] = []
@@ -56,7 +65,6 @@ struct AddEntrySheet: View {
     var body: some View {
         NavigationStack{
             ZStack{
-                // TODO: Adicionar a cor bege de fundo
                 Color.bege
                     .ignoresSafeArea()
                 
@@ -136,6 +144,11 @@ struct AddEntrySheet: View {
                 
             }
         }.onAppear {
+            
+            if let existingEntry = existingEntry {
+                copyEntry(toEntry: entry, entry: existingEntry)
+            }
+            
             activeEffects = effects.filter({$0.status != .inactive})
             chosenEffects = Array(repeating: false, count: activeEffects.count)
         }

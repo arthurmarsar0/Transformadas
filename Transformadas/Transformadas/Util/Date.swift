@@ -19,6 +19,10 @@ extension Date {
     
     var yearNumber: Int {
         return Calendar.current.component(.year, from: self)
+        
+    }
+    var weekDayNumber: Int {
+        return Calendar.current.component(.weekday, from: self)
     }
     
     var dayOfWeekString: String {
@@ -69,8 +73,17 @@ func isSameDay(_ date1: Date, _ date2: Date) -> Bool {
     return calendar.isDate(date1, equalTo: date2, toGranularity: .day)
 }
 
+func isAfterDate(startDate: Date, date: Date) -> Bool {
+    return date >= startDate || isSameDay(date, startDate)
+}
+
 func isFutureDate(_ date: Date) -> Bool {
     return date > Date.now
+}
+
+func isSameDayAndMonth(_ date1: Date, _ date2: Date) -> Bool {
+    let calendar = Calendar.current
+    return date1.dayNumber == date2.dayNumber && date1.monthNumber == date2.monthNumber
 }
 
 extension TimeInterval {

@@ -7,10 +7,11 @@
 
 import SwiftUI
 import SwiftData
+import ShimmeringUiView
 
 struct Diary: View {
     
-    // MARK - DATA
+    // MARK: - DATA
     @Environment(\.modelContext) var modelContext
     @Query var entries: [Entry]
     @Query var reminders: [Reminder]
@@ -20,6 +21,8 @@ struct Diary: View {
     }) var monthEntries: [Entry]
     
     // MARK: - VIEW DATA
+    
+    /// DATES
     @State var selectedDate: Date = Date.now
     static var now: Date { Date.now }
     
@@ -27,16 +30,23 @@ struct Diary: View {
         return datesInCurrentMonth()
     }
     
+    /// REMINDER
+    @State var selectedDayReminders: [Reminder] = []
+    @State var monthReminders: [Date:[Reminder]] = [:]
+    @State var isLoadingReminders: Bool = false
+    @State var isLoadingReminder: Bool = false
+    
+    /// SHEETS
     @State var isShowingDeleteEntry: Bool = false
     @State var isShowingEntrySheet: Bool = false
     @State var isShowingReminderSheet: Bool = false
     @State var isShowingAddReminderSheet: Bool = false
-    @State var isCalendarView: Bool = false
     @State var isShowingAddEntrySheet: Bool = false
+    @State var isShowingEditEntrySheet = false
     
-    var selectedDayReminders: [Reminder] {
-        return reminders.filter({isSameDay($0.startDate, selectedDate)})
-    }
+    @State var isCalendarView: Bool = false
+    
+    
     
     // MARK: - VIEW
     
@@ -109,13 +119,16 @@ struct Diary: View {
                 
             }.onAppear {
                 addNavBarBackground()
+                loadTodayReminders()
+                loadAllReminders()
+            }.onChange(of: selectedDate) {
+                loadTodayReminders()
+            }.onChange(of: reminders) {
+                loadTodayReminders()
+                loadAllReminders()
             }
             
         }
-        //.modifier(NavigationBarModifier(backgroundImage: UIImage(named: "navBarImage")!))
-        
-        //.navigationBarWithImageBackground(UIImage(named: "navBarImage")!)
-        
         
     }
     
@@ -130,8 +143,18 @@ struct Diary: View {
                 Spacer()
             }
             
-            ///TO-DO
-            if !reminders.contains(where: { isSameDay($0.startDate, selectedDate) }) {
+            if isLoadingReminder {
+                ScrollView(.horizontal) {
+                    HStack (spacing: 16) {
+                        RoundedRectangle(cornerRadius: 8)
+                           .frame(width: 189, height: 80)
+                           .shimmering()
+                        RoundedRectangle(cornerRadius: 8)
+                           .frame(width: 189, height: 80)
+                           .shimmering()
+                    }
+                }
+            } else if selectedDayReminders.isEmpty {
                 VStack {
                     Spacer()
                     Text("Sem lembretes")
@@ -146,10 +169,7 @@ struct Diary: View {
                         ForEach(selectedDayReminders) { reminder in
                             
                                 ReminderComponent(reminder: reminder, selectedDate: $selectedDate)
-                            
-                                
-                            
-                            
+
                         }
                     }
                 }
@@ -193,7 +213,7 @@ struct Diary: View {
                             scrollViewProxy.scrollTo(date.dayNumber, anchor: .center)
                         }
                     }) {
-                        CarouselDayComponent(date: date, state: getDateState(date: date), isSelected: isSameDay(selectedDate, date), todayReminders: [])
+                        CarouselDayComponent(date: date, state: getDateState(date: date), isSelected: isSameDay(selectedDate, date), todayReminders: monthReminders[date] ?? [])
                             .padding(.vertical, 4)
                     }
                     .id(date.dayNumber)
@@ -282,7 +302,7 @@ struct Diary: View {
                 isShowingDeleteEntry = true
             }
             Button ("Editar") {
-                
+                isShowingEditEntrySheet = true
             }
             
         } label: {
@@ -298,6 +318,8 @@ struct Diary: View {
             Button ("Cancelar", role: .cancel) {
                 
             }
+        }.sheet(isPresented: $isShowingEditEntrySheet) {
+            AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
         }
     }
     
@@ -407,6 +429,43 @@ struct Diary: View {
         }
         
         return .noEntry
+    }
+    
+    func remindersTodayAsync(date: Date, reminders: [Reminder], completion: @escaping ([Reminder]) -> Void) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let result = Repetition.remindersToday(date: date, reminders: reminders)
+            DispatchQueue.main.async {
+                completion(result)
+            }
+        }
+    }
+    
+    func loadAllReminders() {
+        isLoadingReminders = true
+        for day in monthDates {
+            remindersTodayAsync(date: day, reminders: reminders) { newReminders in
+                self.monthReminders[day] = newReminders.sorted(by: {$0.time < $1.time})
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    isLoadingReminders = false
+                }
+            }
+        }
+    }
+    
+    func loadTodayReminders() {
+        isLoadingReminder = true
+        remindersTodayAsync(date: selectedDate, reminders: reminders) { newReminders in
+            self.selectedDayReminders = newReminders.sorted(by: {$0.time < $1.time})
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                isLoadingReminder = false
+            }
+        }
+    }
+    
+    mutating func incorporateNewReminder(reminder: Reminder) {
+        for day in monthDates {
+            monthReminders[day]?.append(contentsOf: Repetition.remindersToday(date: day, reminders: [reminder]))
+        }
     }
     
 }
