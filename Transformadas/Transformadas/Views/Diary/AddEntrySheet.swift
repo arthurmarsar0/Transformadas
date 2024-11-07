@@ -76,7 +76,7 @@ struct AddEntrySheet: View {
                     Section {
                         TextField("Descreva este momento da sua transição...", text: $entry.note, axis: .vertical)
                             .lineLimit(6...7)
-                            .modifier(KeyboardDismiss())
+                            
                     }.listSectionSpacing(16)
                     
                     Section("Mudanças Físicas") {
@@ -141,6 +141,7 @@ struct AddEntrySheet: View {
                 }
                 .toolbarBackground(.bege)
                 .toolbarBackgroundVisibility(.visible)
+                .modifier(KeyboardDismiss())
                 
             }
         }.onAppear {

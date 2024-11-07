@@ -56,14 +56,14 @@ struct AddReminder: View {
                     List{
                         Section {
                             TextField(reminder.type == .event ? "Título do Evento" : "Nome do Medicamento", text: $reminder.name)
-                                .modifier(KeyboardDismiss())
+                                
                             
                             if reminder.type == .event {
                                 TextField("Notas", text: $reminder.notes)
-                                    .modifier(KeyboardDismiss())
+                                   
                             } else {
                                 TextField("Dose", text: $reminder.dosage)
-                                    .modifier(KeyboardDismiss())
+                                    
                             }
                         }
                         
@@ -72,7 +72,7 @@ struct AddReminder: View {
                             
                             Section {
                                 TextField("Notas", text: $reminder.notes)
-                                    .modifier(KeyboardDismiss())
+                                    
                             }
                         }
                         
@@ -119,6 +119,7 @@ struct AddReminder: View {
                 }
                 .toolbarBackground(.beginho)
                 .toolbarBackgroundVisibility(.visible)
+                .modifier(KeyboardDismiss())
         }.onAppear {
             removeNavBarBackground()
             if let existingReminder = existingReminder {
@@ -229,6 +230,7 @@ struct AddReminder: View {
         if let existingReminder = existingReminder {
             copyReminder(toReminder: existingReminder, reminder: reminder)
         } else {
+            reminder.startDate = Calendar.current.startOfDay(for: reminder.startDate)
             modelContext.insert(reminder)
         }
     }
