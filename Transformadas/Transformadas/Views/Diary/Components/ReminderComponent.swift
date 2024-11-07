@@ -74,7 +74,7 @@ struct ReminderComponent: View
             }.sheet(isPresented: $isShowingEditReminderSheet, onDismiss: {
                 addNavBarBackground()
             }) {
-                AddReminder(isShowingAddReminderSheet: $isShowingEditReminderSheet, existingReminder: reminder)
+                AddReminder(existingReminder: reminder)
             }
         
         

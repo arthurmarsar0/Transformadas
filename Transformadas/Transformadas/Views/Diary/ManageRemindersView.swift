@@ -17,6 +17,8 @@ struct ManageRemindersView: View {
     @Query var reminders: [Reminder]
     @Environment(\.modelContext) var modelContext
     
+    @State var selectedReminder: Reminder?
+    
     var body: some View {
         NavigationStack {
             ZStack{
@@ -39,7 +41,8 @@ struct ManageRemindersView: View {
                                     }
                                     
                                     Button {
-                                        isSheetPresented = true
+                                        selectedReminder = reminder
+                                        //isSheetPresented = true
                                     } label: {
                                         Label("Editar", systemImage: "pencil")
                                     }
@@ -47,8 +50,6 @@ struct ManageRemindersView: View {
                                     
                                     
                                     
-                                }.sheet(isPresented: $isSheetPresented) {
-                                    AddReminder(isShowingAddReminderSheet: $isSheetPresented, existingReminder: reminder)
                                 }
                         }
                     }.scrollContentBackground(.hidden)
@@ -70,6 +71,8 @@ struct ManageRemindersView: View {
                     }
 
                    }
+                }.sheet(item: $selectedReminder) { reminder in
+                    AddReminder(existingReminder: reminder)
                 }
 
         }
