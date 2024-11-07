@@ -15,10 +15,23 @@ class Reminder: Identifiable {
     var startDate: Date = Date.distantPast
     var repetition: Repetition = Repetition.never
     var type: ReminderType = ReminderType.event
+    var daysOfTheWeek: [Bool] = Array(repeating: false, count: 7)
     var time: Date = Date.now
     var daysCompleted: [Date] = []
     var notes: String = ""
     var dosage: String = ""
+    
+    init(name: String, startDate: Date, repetition: Repetition, type: ReminderType, daysOfTheWeek: [Bool], time: Date, daysCompleted: [Date], notes: String, dosage: String) {
+        self.name = name
+        self.startDate = startDate
+        self.repetition = repetition
+        self.type = type
+        self.daysOfTheWeek = daysOfTheWeek
+        self.time = time
+        self.daysCompleted = daysCompleted
+        self.notes = notes
+        self.dosage = dosage
+    }
     
     init(name: String, startDate: Date, repetition: Repetition, type: ReminderType, time: Date, daysCompleted: [Date], notes: String, dosage: String) {
         self.name = name

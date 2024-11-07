@@ -11,6 +11,10 @@ struct DocumentPreviewComponent: View {
     var documents: [Document]
     var isPreview: Bool
     
+    let columns = [
+        GridItem(.adaptive(minimum: 80))
+    ]
+    
     var body: some View {
         VStack (spacing: 12) {
             if !isPreview && !documents.isEmpty {
@@ -21,7 +25,7 @@ struct DocumentPreviewComponent: View {
                     Spacer()
                 }
             }
-            HStack (spacing: 8) {
+            LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(documents, id: \.self) { document in
                     VStack (spacing: 4){
                         Image(systemName: "document.fill")
@@ -31,14 +35,12 @@ struct DocumentPreviewComponent: View {
                             .multilineTextAlignment(.leading)
                             .lineLimit(1...2)
                             .truncationMode(.tail)
-                    }.frame(width: 70)
+                    }
                 }
-                Spacer()
-                
             }
         }
-      
     }
+    
 }
 
 #Preview {

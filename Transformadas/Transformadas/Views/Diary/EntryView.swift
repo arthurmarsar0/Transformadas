@@ -16,6 +16,7 @@ struct EntryView: View {
     @Binding var isShowingEntrySheet: Bool
     
     @State var isShowingDeleteEntry: Bool = false
+    @State var isShowingEditEntrySheet = false
     
     var body: some View {
         NavigationStack {
@@ -81,8 +82,10 @@ struct EntryView: View {
                 .padding(16)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Editar") {
-                            
+                        Button ("Editar") {
+                            isShowingEditEntrySheet = true
+                        }.sheet(isPresented: $isShowingEditEntrySheet) {
+                            AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
                         }
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.cinzaEscuro)
@@ -139,7 +142,7 @@ struct EntryView: View {
 
 #Preview {
     NavigationStack {
-        EntryView(entry: Entry(date: Date.now, mood: .well, note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. Nunc et tortor quis orci tristique facilisis at eget nisi. Proin at aliquam augue. In pretium risus tortor, vitae mollis leo eleifend eu. Ut lacus mauris, accumsan et fringilla at, bibendum ut urna. Vivamus a sapien eu nunc suscipit aliquet. Sed rutrum et libero eget mattis. Ut ullamcorper enim in dolor dignissim, at facilisis enim lobortis. ", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais", status: .active), Effect(name: "Fadiga", status: .active), Effect(name: "Insônia", status: .active), Effect(name: "Náusea", status: .active)], documents: [], weight: 63.7), isShowingEntrySheet: .constant(true))
+        EntryView(entry: Entry(date: Date.now, mood: .well, note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. Nunc et tortor quis orci tristique facilisis at eget nisi. Proin at aliquam augue. In pretium risus tortor, vitae mollis leo eleifend eu. Ut lacus mauris, accumsan et fringilla at, bibendum ut urna. Vivamus a sapien eu nunc suscipit aliquet. Sed rutrum et libero eget mattis. Ut ullamcorper enim in dolor dignissim, at facilisis enim lobortis. ", audio: nil, photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais", status: .active), Effect(name: "Fadiga", status: .active), Effect(name: "Insônia", status: .active), Effect(name: "Náusea", status: .active)], documents: [], weight: 63.7), isShowingEntrySheet: .constant(true))
     }
     .modelContainer(for: [Effect.self,
                           User.self,

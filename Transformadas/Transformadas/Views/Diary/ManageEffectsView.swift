@@ -34,13 +34,13 @@ struct ManageEffectsView: View {
                     Section (content: {
                         ForEach($customEffects) { $effect in
                             TextField("", text: $effect.name)
-                                .modifier(KeyboardDismiss())
+                                
                         }.onDelete(perform: deleteEffect)
                         
                         ForEach($newEffects) { $effect in
                             
                             TextField("Novo Efeito", text: $effect.name)
-                                .modifier(KeyboardDismiss())
+                                
                             
                         }.onDelete(perform: deleteNewEffect)
                         
@@ -129,7 +129,9 @@ struct ManageEffectsView: View {
                         Text("Salvar")
                     }
                 }
-            }.scrollContentBackground(.hidden)
+            }
+            .scrollContentBackground(.hidden)
+                .modifier(KeyboardDismiss())
         }
     }
     

@@ -42,6 +42,7 @@ class ReminderModel {
         foundReminder.startDate = reminder.startDate
         foundReminder.repetition = reminder.repetition
         foundReminder.type = reminder.type
+        foundReminder.daysOfTheWeek = reminder.daysOfTheWeek
         foundReminder.time = reminder.time
         foundReminder.daysCompleted = reminder.daysCompleted
         foundReminder.notes = reminder.notes
@@ -69,6 +70,7 @@ func copyReminder(toReminder: Reminder, reminder: Reminder) {
     toReminder.startDate = reminder.startDate
     toReminder.repetition = reminder.repetition
     toReminder.type = reminder.type
+    toReminder.daysOfTheWeek = reminder.daysOfTheWeek
     toReminder.time = reminder.time
     toReminder.daysCompleted = reminder.daysCompleted
     toReminder.notes = reminder.notes

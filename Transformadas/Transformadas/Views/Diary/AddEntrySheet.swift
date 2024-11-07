@@ -12,6 +12,7 @@ import PhotosUI
 struct AddEntrySheet: View {
     // MARK: - EXTERNAL
     @Binding var isPresented: Bool
+    var existingEntry: Entry?
     
     // MARK: - DATA
     @Query var effects: [Effect]
@@ -20,6 +21,14 @@ struct AddEntrySheet: View {
     
     // MARK: - VIEW DATA
     @State var entry: Entry = Entry(date: Date.now, mood: nil, note: "", audio: nil, photos: [], effects: [], documents: [], weight: nil)
+    
+    var addTitle: String {
+        if existingEntry != nil {
+            return "Salvar"
+        } else {
+            return "Registrar"
+        }
+    }
     
     ///EFFECTS
     @State var activeEffects: [Effect] = []
@@ -40,7 +49,14 @@ struct AddEntrySheet: View {
     @State var selectedDocumentURL: URL?
     
     ///AUDIO
-    @State var audioRecorded: Bool = false
+    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
+    @State var isShowingRecordAudioSheet = false
+    @StateObject var audioRecorder = AudioRecorder()
+    @StateObject var audioPlayer = AudioPlayer()
+    @State var isShowingDeleteAudioConfirmation = false
+    
+    @State var timeElapsed: TimeInterval = 0
+    @State var startDate = Date.now
     
     var canAddEntry: Bool {
         return entry.mood != nil
@@ -49,7 +65,6 @@ struct AddEntrySheet: View {
     var body: some View {
         NavigationStack{
             ZStack{
-                // TODO: Adicionar a cor bege de fundo
                 Color.bege
                     .ignoresSafeArea()
                 
@@ -61,7 +76,7 @@ struct AddEntrySheet: View {
                     Section {
                         TextField("Descreva este momento da sua transição...", text: $entry.note, axis: .vertical)
                             .lineLimit(6...7)
-                            .modifier(KeyboardDismiss())
+                            
                     }.listSectionSpacing(16)
                     
                     Section("Mudanças Físicas") {
@@ -69,7 +84,7 @@ struct AddEntrySheet: View {
                     }
                     
                     //Section {
-                        addImageView()
+                    addImageView()
                     //}
                     //.listSectionSpacing(8)
                     
@@ -126,9 +141,15 @@ struct AddEntrySheet: View {
                 }
                 .toolbarBackground(.bege)
                 .toolbarBackgroundVisibility(.visible)
+                .modifier(KeyboardDismiss())
                 
             }
         }.onAppear {
+            
+            if let existingEntry = existingEntry {
+                copyEntry(toEntry: entry, entry: existingEntry)
+            }
+            
             activeEffects = effects.filter({$0.status != .inactive})
             chosenEffects = Array(repeating: false, count: activeEffects.count)
         }
@@ -173,14 +194,76 @@ struct AddEntrySheet: View {
     }
     
     func audioView() -> some View {
-        Button(action: {
-            
-        }) {
-            HStack {
-                Text("Gravar voz")
-                Spacer()
-                Image(systemName: "microphone.fill")
+        Section {
+            if let audio = entry.audio {
+                AnyView(
+                    HStack (spacing: 24){
+                        
+                        if !audioPlayer.isPlaying {
+                            Image(systemName: "play.fill")
+                                .foregroundStyle(.rosa)
+                                .onTapGesture {
+                                    audioPlayer.startPlayback(audio: audio.path)
+                                }
+                            
+                        } else {
+                            
+                            Image(systemName: "pause.fill")
+                                .foregroundStyle(.rosa)
+                                .onTapGesture {
+                                    audioPlayer.pausePlayback()
+                                }
+                            
+                        }
+                        
+                        if let time = audioPlayer.currentTime, audioPlayer.isPlaying {
+                            Text(time.minutesAndSeconds)
+                        } else {
+                            Text(audio.length.minutesAndSeconds)
+                        }
+                        
+                        ///TO-DO: AUDIO WAVELENGTH
+                        
+                        Spacer()
+                        
+                        
+                        Image(systemName: "trash.circle.fill")
+                            .foregroundStyle(.gray)
+                            .onTapGesture {
+                                isShowingDeleteAudioConfirmation = true
+                                
+                            }.confirmationDialog("Você tem certeza que quer deletar o áudio?", isPresented: $isShowingDeleteAudioConfirmation, titleVisibility: .visible) {
+                                Button ("Deletar", role: .destructive) {
+                                    entry.audio = nil
+                                }
+                                
+                                Button ("Manter", role: .cancel) {
+                                    
+                                }
+                            }
+                        
+                    }
+                )
+            } else {
+                AnyView(
+                    Button(action: {
+                        isShowingRecordAudioSheet = true
+                    }) {
+                        HStack {
+                            Text("Gravar voz")
+                            Spacer()
+                            Image(systemName: "microphone.fill")
+                        }
+                    }
+                )
             }
+        }.sheet(isPresented: $isShowingRecordAudioSheet, onDismiss: {
+            if audioRecorder.isRecording {
+                entry.audio = audioRecorder.stopRecording()
+            }
+        }) {
+            AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
+                .presentationDetents([.medium])
         }
     }
     
@@ -198,7 +281,8 @@ struct AddEntrySheet: View {
         }
         .listSectionSpacing(8)
         .sheet(isPresented: $isShowingCameraPicker) {
-            CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+            //PhotoPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+            ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
         }
         .onChange(of: selectedCameraPhoto) {
             if let selectedPhoto = selectedCameraPhoto {

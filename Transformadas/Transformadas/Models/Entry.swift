@@ -14,13 +14,13 @@ class Entry {
     var date: Date = Date.now
     var mood: Mood?
     var note: String = ""
-    var audio: String? // MUDAR
+    var audio: Audio? // MUDAR
     var photos: [Data] = []
     @Relationship(deleteRule: .nullify, inverse: .none) var effects: [Effect]?
     var documents: [Document] = []
     var weight: Double?
     
-    init(date: Date, mood: Mood?, note: String, audio: String?, photos: [Data], effects: [Effect]?, documents: [Document], weight: Double?) {
+    init(date: Date, mood: Mood?, note: String, audio: Audio?, photos: [Data], effects: [Effect]?, documents: [Document], weight: Double?) {
         self.date = date
         self.mood = mood
         self.note = note

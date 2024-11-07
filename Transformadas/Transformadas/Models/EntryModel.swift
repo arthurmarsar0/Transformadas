@@ -88,3 +88,14 @@ class EntryModel {
     
     
 }
+
+func copyEntry(toEntry: Entry, entry: Entry) {
+    toEntry.date = entry.date
+    toEntry.mood = entry.mood
+    toEntry.note = entry.note
+    toEntry.audio = entry.audio
+    toEntry.photos = entry.photos
+    toEntry.effects = entry.effects
+    toEntry.documents = entry.documents
+    toEntry.weight = entry.weight
+}
