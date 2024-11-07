@@ -159,6 +159,24 @@ struct AddEntrySheet: View {
                 activeEffects = effects.filter({$0.status != .inactive})
                 chosenEffects = Array(repeating: false, count: activeEffects.count)
             }
+        }.sheet(isPresented: $isShowingCameraPicker) {
+            CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+                .onAppear {
+                    removeNavBarBackground()
+                }
+            //ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
+        }.sheet(isPresented: $isShowingDocumentPicker) {
+            DocumentPicker(selectedURL: $selectedDocumentURL)
+                .onAppear {
+                    removeNavBarBackground()
+                }
+        }.sheet(isPresented: $isShowingRecordAudioSheet, onDismiss: {
+            if audioRecorder.isRecording {
+                entry.audio = audioRecorder.stopRecording()
+            }
+        }) {
+            AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
+                .presentationDetents([.medium])
         }
     }
     
@@ -257,14 +275,8 @@ struct AddEntrySheet: View {
                     }
                 )
             }
-        }.sheet(isPresented: $isShowingRecordAudioSheet, onDismiss: {
-            if audioRecorder.isRecording {
-                entry.audio = audioRecorder.stopRecording()
-            }
-        }) {
-            AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
-                .presentationDetents([.medium])
         }
+        
     }
     
     func addImageView() -> some View {
@@ -280,10 +292,6 @@ struct AddEntrySheet: View {
             }
         }
         .listSectionSpacing(8)
-        .sheet(isPresented: $isShowingCameraPicker) {
-            //PhotoPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
-            ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
-        }
         .onChange(of: selectedCameraPhoto) {
             if let selectedPhoto = selectedCameraPhoto {
                 selectedPhotosCamera.append(selectedPhoto)
@@ -330,7 +338,7 @@ struct AddEntrySheet: View {
                         Button(action: {
                             selectedPhotos.removeAll(where: { $0 == photo })
                         }) {
-                            Image(systemName: "xmark.circle")
+                            Image(systemName: "xmark.circle.fill")
                                 .foregroundStyle(.black)
                         }
                     }
@@ -372,9 +380,7 @@ struct AddEntrySheet: View {
             }
             
         }
-        .sheet(isPresented: $isShowingDocumentPicker) {
-            DocumentPicker(selectedURL: $selectedDocumentURL)
-        }
+        
         .onChange(of: selectedDocumentURL) {
             if let document = selectedDocumentURL {
                 selectedDocuments.append(document)

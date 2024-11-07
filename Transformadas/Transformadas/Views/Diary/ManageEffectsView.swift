@@ -96,7 +96,6 @@ struct ManageEffectsView: View {
                     }
                 }
             }.onAppear {
-                removeNavBarBackground()
                 customEffects = effects.filter({$0.status == .custom})
                 activeEffects = effects.filter({$0.status == .active})
                 inactiveEffects = effects.filter({$0.status == .inactive})
@@ -132,6 +131,8 @@ struct ManageEffectsView: View {
             }
             .scrollContentBackground(.hidden)
                 .modifier(KeyboardDismiss())
+        }.onAppear {
+            removeNavBarBackground()
         }
     }
     

@@ -28,7 +28,7 @@ struct ServiceFilter: View {
 }
 
 #Preview {
-    ServiceFilter()
+    ServiceFilter(searchText: .constant(""))
         .modelContainer(for: [Effect.self,
                               User.self,
                               Entry.self,

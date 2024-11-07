@@ -89,7 +89,7 @@ struct Diary: View {
                                 }.sheet(isPresented: $isShowingAddReminderSheet, onDismiss: {
                                     addNavBarBackground()
                                 }) {
-                                    AddReminder(isShowingAddReminderSheet: $isShowingAddReminderSheet)
+                                    AddReminder()
                                 }
                             }
                             

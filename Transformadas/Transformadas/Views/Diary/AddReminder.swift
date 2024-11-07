@@ -10,12 +10,14 @@ import SwiftData
 
 struct AddReminder: View {
     // MARK: - EXTERNAL
-    @Binding var isShowingAddReminderSheet: Bool
+    //@Binding var isShowingAddReminderSheet: Bool
     var existingReminder: Reminder?
     
     // MARK: - DATA
     @Environment(\.modelContext) var modelContext
     @Query var reminders: [Reminder]
+    
+    @Environment(\.presentationMode) var presentationMode
     
     // MARK: - VIEW DATA
     @State var reminder = Reminder(name: "", startDate: Date.now, repetition: .never, type: .event, daysOfTheWeek: Array(repeating: false, count: 7), time: Date.now, daysCompleted: [], notes: "", dosage: "")
@@ -100,7 +102,7 @@ struct AddReminder: View {
                             if (existingReminder != nil && hadChangesOnReminder(oldReminder: existingReminder!, newReminder: reminder)) || (existingReminder == nil && hadChangesOnReminder(oldReminder: staticReminder, newReminder: reminder)) {
                                 isShowingCancelReminder = true
                             } else {
-                                isShowingAddReminderSheet = false
+                                presentationMode.wrappedValue.dismiss()
                             }
                             
                         }) {
@@ -110,7 +112,7 @@ struct AddReminder: View {
                     ToolbarItem(placement: .confirmationAction) {
                         Button(action: {
                             addReminder()
-                            isShowingAddReminderSheet = false
+                            presentationMode.wrappedValue.dismiss()
                         }) {
                             Text(saveTitle)
                                 .foregroundStyle(canAddReminder ? colors[3] : colors[0])
@@ -129,7 +131,7 @@ struct AddReminder: View {
         }.confirmationDialog("Tem certeza de que deseja descartar este lembrete?", isPresented: $isShowingCancelReminder, titleVisibility: .visible) {
             
             Button ("Descartar Alterações", role: .destructive) {
-                isShowingAddReminderSheet = false
+                presentationMode.wrappedValue.dismiss()
             }
             
             Button ("Continuar Editando", role: .cancel) {
@@ -238,7 +240,7 @@ struct AddReminder: View {
 }
 
 #Preview {
-    AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
+    AddReminder(existingReminder: nil)
         .modelContainer(for: [Effect.self,
                               User.self,
                               Entry.self,
