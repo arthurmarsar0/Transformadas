@@ -1,0 +1,88 @@
+//
+//  ManageRemindersView.swift
+//  Transformadas
+//
+//  Created by Alice Barbosa on 06/11/24.
+//
+
+
+import SwiftUI
+import SwiftData
+
+
+struct ManageRemindersView: View {
+    @State var reminderType: ReminderType = .event
+    @Environment(\.presentationMode) var presentationMode
+    @State var isSheetPresented: Bool = false
+    @Query var reminders: [Reminder]
+    @Environment(\.modelContext) var modelContext
+    
+    var body: some View {
+        NavigationStack {
+            ZStack{
+                Color.bege.ignoresSafeArea()
+                VStack(alignment: .leading){
+                    HStack{
+                        Text("Meus lembretes")
+                            .font(.system(size: 28, weight: .regular))
+                        Spacer()
+                    }
+                    reminderTypePicker()
+                    List{
+                        ForEach(reminders.filter({$0.type == reminderType})) { reminder in
+                            EditReminderComponent(reminder: reminder)
+                                .swipeActions(edge: .trailing, allowsFullSwipe: false){
+                                    Button(role: .destructive) {
+                                        modelContext.delete(reminder)
+                                    } label: {
+                                        Label("Deletar", systemImage: "trash.fill")
+                                    }
+                                    
+                                    Button {
+                                        isSheetPresented = true
+                                    } label: {
+                                        Label("Editar", systemImage: "pencil")
+                                    }
+                                    .tint(.gray)
+                                    
+                                    
+                                    
+                                }.sheet(isPresented: $isSheetPresented) {
+                                    AddReminder(isShowingAddReminderSheet: $isSheetPresented, existingReminder: reminder)
+                                }
+                        }
+                    }.scrollContentBackground(.hidden)
+                }
+                .padding()
+            }
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        presentationMode.wrappedValue.dismiss()
+                    } label: {
+                        HStack{
+                            Image(systemName: "chevron.left")
+                            Text("Voltar")
+                        }
+                        .foregroundStyle(.black)
+                        
+                        .font(.system(size: 17, weight: .semibold))
+                    }
+
+                   }
+                }
+
+        }
+        
+    }
+    func reminderTypePicker() -> some View {
+        
+        Picker("", selection: $reminderType) {
+            ForEach(ReminderType.allCases, id: \.self) { type in
+                Text(type.name)
+            }
+        }.pickerStyle(.segmented)
+        
+        
+    }
+}

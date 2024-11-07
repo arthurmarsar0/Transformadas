@@ -103,11 +103,17 @@ struct Diary: View {
                             }
                             
                             ToolbarItem(placement: .topBarTrailing) {
-                                Button(action: {
-                                    
-                                }) {
+                                Menu{
+                                    NavigationLink(destination: ManageRemindersView().navigationBarBackButtonHidden()) {
+                                        HStack {
+                                            Text("Gerenciar Lembretes")
+                                                .font(.headline)
+                                            Image(systemName: "gear")
+                                        }
+                                        .foregroundStyle(.cinzaEscuro)
+                                    }
+                                }label: {
                                     Image(systemName: "ellipsis.circle")
-                                    
                                 }
                                 
                                 
