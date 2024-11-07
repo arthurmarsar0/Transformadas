@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct EntryView: View {
     @Environment(\.modelContext) var modelContext
@@ -15,6 +16,7 @@ struct EntryView: View {
     @Binding var isShowingEntrySheet: Bool
     
     @State var isShowingDeleteEntry: Bool = false
+    @State var isShowingEditEntrySheet = false
     
     var body: some View {
         NavigationStack {
@@ -32,7 +34,12 @@ struct EntryView: View {
                                         NavigationLink(destination: PhotosView(entryDate: entry.date, photos: EntryModel.dataToImages(dataset: entry.photos), startingPhoto: i)) {
                                             photo
                                                 .resizable()
-                                                .scaledToFill()
+                                                .frame(width: 173, height: 232)
+                                                .aspectRatio(contentMode: .fill)
+                                                .scaledToFit()
+                                                .mask {
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                }
                                         }
                                         
                                     }
@@ -53,9 +60,9 @@ struct EntryView: View {
                         if let weight = entry.weight {
                             WeightPreviewComponent(weight: weight, isPreview: false)
                         }
-                        if let note = entry.note {
-                            NotePreviewComponent(note: note, isPreview: false)
-                        }
+                        //if let note = entry.note {
+                        NotePreviewComponent(note: entry.note, isPreview: false)
+                        //}
                         
                         
                     }
@@ -64,9 +71,9 @@ struct EntryView: View {
                         //EffectPreviewComponent(effects: effects, isPreview: false)
                     }
                     
-                    if let documents = entry.documents {
-                        DocumentPreviewComponent(documents: documents, isPreview: false)
-                    }
+                   
+                    DocumentPreviewComponent(documents: entry.documents, isPreview: false)
+                    
                     
                     deleteEntryButton().padding(.top, 16)
                     
@@ -75,8 +82,10 @@ struct EntryView: View {
                 .padding(16)
                 .toolbar {
                     ToolbarItem(placement: .confirmationAction) {
-                        Button("Editar") {
-                            
+                        Button ("Editar") {
+                            isShowingEditEntrySheet = true
+                        }.sheet(isPresented: $isShowingEditEntrySheet) {
+                            AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
                         }
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.cinzaEscuro)
@@ -89,6 +98,8 @@ struct EntryView: View {
                         .foregroundStyle(.verde)
                     }
                 }
+                .toolbarBackground(.white)
+                .toolbarBackgroundVisibility(.visible)
             }
         }.onAppear {
             removeNavBarBackground()
@@ -129,14 +140,13 @@ struct EntryView: View {
     }
 }
 
-//#Preview {
-//    let preview = Preview()
-//    preview.addEntriesExamples(EntryModel.samples)
-//    preview.addEffectsExamples(EffectModel.samples)
-//    preview.addRemindersExamples(ReminderModel.samples)
-//    return NavigationStack {
-//        EntryView(entry: Entry(date: Date.now, mood: .well, note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. Nunc et tortor quis orci tristique facilisis at eget nisi. Proin at aliquam augue. In pretium risus tortor, vitae mollis leo eleifend eu. Ut lacus mauris, accumsan et fringilla at, bibendum ut urna. Vivamus a sapien eu nunc suscipit aliquet. Sed rutrum et libero eget mattis. Ut ullamcorper enim in dolor dignissim, at facilisis enim lobortis. ", audio: "", photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 63.7), isShowingEntrySheet: .constant(true))
-//    }
-//    .modelContainer(preview.modelContainer)
-//    
-//}
+#Preview {
+    NavigationStack {
+        EntryView(entry: Entry(date: Date.now, mood: .well, note: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. Nunc et tortor quis orci tristique facilisis at eget nisi. Proin at aliquam augue. In pretium risus tortor, vitae mollis leo eleifend eu. Ut lacus mauris, accumsan et fringilla at, bibendum ut urna. Vivamus a sapien eu nunc suscipit aliquet. Sed rutrum et libero eget mattis. Ut ullamcorper enim in dolor dignissim, at facilisis enim lobortis. ", audio: nil, photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais", status: .active), Effect(name: "Fadiga", status: .active), Effect(name: "Insônia", status: .active), Effect(name: "Náusea", status: .active)], documents: [], weight: 63.7), isShowingEntrySheet: .constant(true))
+    }
+    .modelContainer(for: [Effect.self,
+                          User.self,
+                          Entry.self,
+                          Reminder.self], inMemory: true, isAutosaveEnabled: false)
+    
+}

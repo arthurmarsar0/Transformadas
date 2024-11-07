@@ -37,4 +37,8 @@ struct WeightPreviewComponent: View {
 
 #Preview {
     WeightPreviewComponent(weight: 63.7, isPreview: false)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

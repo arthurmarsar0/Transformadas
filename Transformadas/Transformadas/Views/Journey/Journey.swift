@@ -46,4 +46,8 @@ struct Journey: View {
 
 #Preview {
     Journey()
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

@@ -8,12 +8,16 @@
 import SwiftUI
 
 struct DocumentPreviewComponent: View {
-    var documents: [String]
+    var documents: [Document]
     var isPreview: Bool
+    
+    let columns = [
+        GridItem(.adaptive(minimum: 80))
+    ]
     
     var body: some View {
         VStack (spacing: 12) {
-            if !isPreview {
+            if !isPreview && !documents.isEmpty {
                 HStack {
                     Text("DOCUMENTOS")
                         .foregroundStyle(.gray)
@@ -21,26 +25,28 @@ struct DocumentPreviewComponent: View {
                     Spacer()
                 }
             }
-            HStack (spacing: 8) {
+            LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(documents, id: \.self) { document in
                     VStack (spacing: 4){
                         Image(systemName: "document.fill")
                             .font(.system(size: 32))
-                        Text(document)
+                        Text(document.name)
                             .font(.system(size: 11, weight: .regular))
                             .multilineTextAlignment(.leading)
                             .lineLimit(1...2)
                             .truncationMode(.tail)
-                    }.frame(width: 70)
+                    }
                 }
-                Spacer()
-                
             }
         }
-      
     }
+    
 }
 
 #Preview {
-    DocumentPreviewComponent(documents: ["arquivo_examesangue_pdf gthyh hyh", "arquivo_examesangue_pdf"], isPreview: false)
+    DocumentPreviewComponent(documents: [], isPreview: false)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

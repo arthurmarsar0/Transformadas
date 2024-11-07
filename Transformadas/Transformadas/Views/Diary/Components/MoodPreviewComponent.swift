@@ -57,4 +57,8 @@ struct MoodPreviewComponent: View {
 
 #Preview {
     MoodPreviewComponent(mood: .moreOrLess, entryDate: Date.now, isPreview: false)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

@@ -18,9 +18,9 @@ struct AddReminder: View {
     @Query var reminders: [Reminder]
     
     // MARK: - VIEW DATA
-    @State var reminder = Reminder(name: "", startDate: Date.now, repetition: .never, type: .event, time: Date.now, daysCompleted: [], notes: "", dosage: "")
+    @State var reminder = Reminder(name: "", startDate: Date.now, repetition: .never, type: .event, daysOfTheWeek: Array(repeating: false, count: 7), time: Date.now, daysCompleted: [], notes: "", dosage: "")
     
-    @State var staticReminder = Reminder(name: "", startDate: Date.now, repetition: .never, type: .event, time: Date.now, daysCompleted: [], notes: "", dosage: "")
+    @State var staticReminder = Reminder(name: "", startDate: Date.now, repetition: .never, type: .event, daysOfTheWeek: Array(repeating: false, count: 7), time: Date.now, daysCompleted: [], notes: "", dosage: "")
     
     @State var isShowingCancelReminder = false
     
@@ -41,10 +41,8 @@ struct AddReminder: View {
     }
     
     var canAddReminder: Bool {
-        return reminder.name != "" && (reminder.repetition != .daysOfTheWeek || selectedWeekDays.contains(true))
+        return reminder.name != "" && (reminder.repetition != .daysOfTheWeek || reminder.daysOfTheWeek.contains(true))
     }
-    
-    @State var selectedWeekDays: [Bool] = Array(repeating: false, count: WeekDay.allCases.count)
     
     // MARK: - VIEW
     var body: some View {
@@ -58,11 +56,14 @@ struct AddReminder: View {
                     List{
                         Section {
                             TextField(reminder.type == .event ? "Título do Evento" : "Nome do Medicamento", text: $reminder.name)
+                                
                             
                             if reminder.type == .event {
                                 TextField("Notas", text: $reminder.notes)
+                                   
                             } else {
                                 TextField("Dose", text: $reminder.dosage)
+                                    
                             }
                         }
                         
@@ -71,6 +72,7 @@ struct AddReminder: View {
                             
                             Section {
                                 TextField("Notas", text: $reminder.notes)
+                                    
                             }
                         }
                         
@@ -115,6 +117,9 @@ struct AddReminder: View {
                         }.disabled(!canAddReminder)
                     }
                 }
+                .toolbarBackground(.beginho)
+                .toolbarBackgroundVisibility(.visible)
+                .modifier(KeyboardDismiss())
         }.onAppear {
             removeNavBarBackground()
             if let existingReminder = existingReminder {
@@ -185,7 +190,7 @@ struct AddReminder: View {
                 DatePicker("Horário", selection: $reminder.startDate, displayedComponents: [.hourAndMinute])
             }.font(.system(size: 17))
         }, footer: {
-            Text(reminder.repetition.descriptionMessage(startDate: reminder.startDate, selectedWeekDays: selectedWeekDays))
+            Text(reminder.repetition.descriptionMessage(startDate: reminder.startDate, selectedWeekDays: reminder.daysOfTheWeek))
                 .foregroundStyle(.cinzaEscuro)
                 .font(.system(size: 13, weight: .regular))
         })
@@ -198,16 +203,16 @@ struct AddReminder: View {
                 
                 Text(WeekDay.allCases[i].name.prefix(1))
                     .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(selectedWeekDays[i] ? .white : .marrom)
+                    .foregroundStyle(reminder.daysOfTheWeek[i] ? .white : .marrom)
                     .background {
-                        if selectedWeekDays[i] {
+                        if reminder.daysOfTheWeek[i] {
                             Circle().fill(degradeRosa()).frame(width: 32, height: 32)
                         }
                         
                     }
                     .frame(width: 32, height: 32)
                     .onTapGesture {
-                        selectedWeekDays[i].toggle()
+                        reminder.daysOfTheWeek[i].toggle()
                     }
                 
                 if i != 6 {
@@ -225,17 +230,17 @@ struct AddReminder: View {
         if let existingReminder = existingReminder {
             copyReminder(toReminder: existingReminder, reminder: reminder)
         } else {
+            reminder.startDate = Calendar.current.startOfDay(for: reminder.startDate)
             modelContext.insert(reminder)
         }
     }
 
 }
 
-//#Preview {
-//    let preview = Preview()
-//    preview.addEntriesExamples(EntryModel.samples)
-//    preview.addEffectsExamples(EffectModel.samples)
-//    preview.addRemindersExamples(ReminderModel.samples)
-//    return AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
-//        .modelContainer(preview.modelContainer)
-//}
+#Preview {
+    AddReminder(isShowingAddReminderSheet: .constant(true), existingReminder: nil)
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
+}

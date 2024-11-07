@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct PhotosView: View {
     var entryDate: Date
@@ -48,14 +49,13 @@ struct PhotosView: View {
     }
 }
 
-//#Preview {
-//    let preview = Preview()
-//    preview.addEntriesExamples(EntryModel.samples)
-//    preview.addEffectsExamples(EffectModel.samples)
-//    preview.addRemindersExamples(ReminderModel.samples)
-//    return NavigationStack {
-//        PhotosView(entryDate: Date.now, photos: [Image(systemName: "calendar"), Image(systemName: "calendar"), Image(systemName: "calendar")], startingPhoto: 1)
-//    }
-//    .modelContainer(preview.modelContainer)
-//    
-//}
+#Preview {
+    NavigationStack {
+        PhotosView(entryDate: Date.now, photos: [Image(systemName: "calendar"), Image(systemName: "calendar"), Image(systemName: "calendar")], startingPhoto: 1)
+    }
+    .modelContainer(for: [Effect.self,
+                          User.self,
+                          Entry.self,
+                          Reminder.self], inMemory: true, isAutosaveEnabled: false)
+    
+}

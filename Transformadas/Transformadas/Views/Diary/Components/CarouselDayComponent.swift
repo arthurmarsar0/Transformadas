@@ -187,4 +187,8 @@ struct CarouselDayComponent: View {
 
 #Preview {
     CarouselDayComponent(date: Date.now, state: .noEntry, isSelected: true, todayReminders: [])
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }
