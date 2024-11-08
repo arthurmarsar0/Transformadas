@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import CoreLocation
 
 
 struct SheetDetailView: View {
@@ -32,61 +32,64 @@ struct SheetDetailView: View {
     var body: some View {
         ZStack(alignment: .top){
             Color.bege.ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 16){
-                
-                VStack(alignment: .leading){
-                    HStack {
-                        ForEach(service.categories , id: \.self) { category in
-                            if !category.symbol.isEmpty{
-                                Image(systemName: category.symbol)
-                                    .foregroundStyle(category.color)
+            ScrollView{
+                VStack(alignment: .leading, spacing: 16){
+                    
+                    VStack(alignment: .leading){
+                        HStack {
+                            ForEach(service.categories , id: \.self) { category in
+                                if !category.symbol.isEmpty{
+                                    Image(systemName: category.symbol)
+                                        .foregroundStyle(category.color)
+                                }
                             }
                         }
                     }
-                }
-                VStack(alignment: .leading){
+                    VStack(alignment: .leading){
+                        
+                        Text(service.name)
+                            .font(.system(size: 32, weight: .medium))
+                            .foregroundStyle(.rosa)
+                    }
                     
-                    Text(service.name)
-                        .font(.system(size: 32, weight: .medium))
-                        .foregroundStyle(.rosa)
-                }
-                
-                VStack(alignment: .leading){
-                    Text("Endereço e Contato")
-                        .font(.system(size: 18, weight: .bold))
-                    HStack{
-                        Image(systemName: "phone.fill")
-                        Text(service.telephone)
+                    VStack(alignment: .leading){
+                        Text("Endereço e Contato")
+                            .font(.system(size: 18, weight: .bold))
+                        HStack{
+                            Image(systemName: "phone.fill")
+                            Text(service.telephone)
+                            
+                        }
+                        HStack{
+                            Image(systemName: "mappin.and.ellipse")
+                            Text(service.address.street + ", " + service.address.neighborhood + ", " + service.address.city)
+                        }
+                    }
+                    
+                    VStack(alignment: .leading){
+                        Text("Sobre")
+                            .font(.system(size: 18, weight: .bold))
+                        Text(service.description)
+                    }
+                    
+                    ZStack{
+                        RoundedRectangle(cornerRadius: 16)
+                            .frame(height: 180)
+                            .foregroundStyle(.black)
+                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(.black, lineWidth: 2))
+                        MapView(selectedFilter: $selectedFilter, showFilters: false)
+                            .frame(height: 180)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                         
                     }
-                    HStack{
-                        Image(systemName: "mappin.and.ellipse")
-                        Text(service.address.street + ", " + service.address.neighborhood + ", " + service.address.city)
+                    .onTapGesture {
+                        
+                        openInWaze()
                     }
                 }
-                
-                VStack(alignment: .leading){
-                    Text("Sobre")
-                        .font(.system(size: 18, weight: .bold))
-                    Text(service.description)
-                }
-                
-                ZStack{
-                    RoundedRectangle(cornerRadius: 16)
-                        .frame(height: 180)
-                        .foregroundStyle(.black)
-                        .overlay(RoundedRectangle(cornerRadius: 16).stroke(.black, lineWidth: 2))
-                    MapView(selectedFilter: $selectedFilter, showFilters: false)
-                        .frame(height: 180)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                    
-                }
-                .onTapGesture {
-                    openInWaze()
-                }
+                .padding()
+                Spacer()
             }
-            .padding()
-            Spacer()
         }
     }
 }

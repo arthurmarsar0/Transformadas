@@ -7,7 +7,7 @@
 
 import SwiftUI
 import MapKit
-
+import ShimmeringUiView
 
 struct MapView: View {
     @State private var locationManager = LocationManager()
@@ -16,11 +16,12 @@ struct MapView: View {
     @Binding var selectedFilter: String
     @State var showFilters: Bool
     @State var searchText: String = ""
+    @State var isUserLocationOn = false
     
     
     @State var region = MapCameraPosition.region(MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: -8.05592, longitude: -34.95108),
-        span: MKCoordinateSpan(latitudeDelta: 0.0125, longitudeDelta: 0.0125)))
+        center: CLLocationCoordinate2D(latitude: -8.06317, longitude: -34.87114),
+        span: MKCoordinateSpan(latitudeDelta: 0.1000, longitudeDelta: 0.1000)))
     
     var body: some View {
             VStack{
@@ -44,6 +45,7 @@ struct MapView: View {
                             
                         }
                         
+                        
                         .sheet(item: $selectedService) { service in
                             SheetDetailView(service: service)
                         }
@@ -61,19 +63,26 @@ struct MapView: View {
                 }
             }.onAppear {
                 addNavBarBackground()
+                locationManager.startLocationServices()
             Task {
                 await viewModel.loadServices()
                 viewModel.filterServices(by: selectedFilter, searchText: searchText)
             }
                 
-            
-            region = MapCameraPosition.region(MKCoordinateRegion(
-                center: locationManager.userLocation?.coordinate ?? CLLocationCoordinate2D(latitude: -8.05592, longitude: -34.95108),
-                span: MKCoordinateSpan(latitudeDelta: 0.0125, longitudeDelta: 0.0125)))
+
         }
         .onChange(of: selectedFilter){
             viewModel.filterServices(by: selectedFilter, searchText: searchText)
             selectedService = nil
+        }
+        .onChange(of: locationManager.userLocation){
+            if !isUserLocationOn {
+                region = MapCameraPosition.region(MKCoordinateRegion(
+                    center: locationManager.userLocation?.coordinate ?? CLLocationCoordinate2D(latitude: -8.06317, longitude: -34.87114),
+                    span: MKCoordinateSpan(latitudeDelta: 0.0125, longitudeDelta: 0.0125)))
+                isUserLocationOn = true
+            }
+            
         }
         .toolbarBackground(.bege, for: .tabBar)
         .toolbarBackground(.bege, for: .navigationBar)
