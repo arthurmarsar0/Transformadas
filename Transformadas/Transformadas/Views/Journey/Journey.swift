@@ -7,7 +7,6 @@
 
 import SwiftUI
 import Charts
-import UIKit
 
 struct Journey: View {
 
@@ -18,6 +17,24 @@ struct Journey: View {
     let datePicker = UIDatePicker()
     //datePicker.datePickerMode = .yearAndMonth
     //datePicker.preferredDatePickerStyle = .wheels
+    
+    var monthlyFeeeling : [String : Int] {
+        var emptyDict: [String: Int] = [:]
+        
+        for entrada in entradasMock {
+            if let effects = entrada.effects {
+                for efeitos in effects {
+                    var quant : Int = emptyDict[efeitos.name] ?? 0
+                    quant += 1
+                    emptyDict[efeitos.name] = quant
+                }
+            }
+        }
+        
+        return emptyDict
+    }
+    
+    @State var effectsGraphsFullView: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -30,9 +47,12 @@ struct Journey: View {
                         buttonsView()
                         feelingsCharts()
                         
-                        
-                        
-                        efectsCharts()
+                        Button(action: {
+                            print("Teste chart")
+                            effectsGraphsFullView.toggle()
+                        }) {
+                            efectsCharts()
+                        }
                         weightChart()
                         
                         MonthYearPickerView(selectedMonth: $selectedMonthFeelings, selectedYear: $selectedYearFeelings)
@@ -90,15 +110,16 @@ struct Journey: View {
     
     func buttonsView() -> some View {
         HStack(spacing: 8){
-            Button(action:{
-                print("fotos")
-            }) {
+            NavigationLink(destination: PhotoAlbumView()
+                ) {
                 HStack{
                     VStack(alignment: .leading){
                         Image(systemName: "photo.on.rectangle.angled.fill")
                             .font(.system(size: 22, weight: .medium))
                         Spacer()
-                        Text("Minhas Fotos")
+                        Text("Minhas")
+                            .font(.system(size: 17, weight: .medium))
+                        Text("Fotos")
                             .font(.system(size: 17, weight: .medium))
                     }
                     .foregroundStyle(.azul)
@@ -114,9 +135,8 @@ struct Journey: View {
                 
             
             
-            Button(action:{
-                print("audios")
-            }) {
+            NavigationLink(destination: AllAudiosView()
+                ) {
                 HStack{
                     VStack(alignment: .leading){
                         Image(systemName: "waveform")
@@ -137,10 +157,8 @@ struct Journey: View {
                 RoundedRectangle(cornerRadius: 12)
                     .fill(.rosaClaro)
             }
-            
-            Button(action:{
-                print("audios")
-            }) {
+        
+            NavigationLink(destination: AllDocumentsView()) {
                 HStack{
                     VStack(alignment: .leading){
                         Image(systemName: "document.fill")
@@ -232,11 +250,27 @@ struct Journey: View {
     }
     
     func efectsCharts() -> some View {
-        ZStack{
+        var sizeOfReturn: Int {
+            if effectsGraphsFullView {
+                0
+            } else {
+                monthlyFeeeling.count - 5
+            }
+        }
+        
+        var sizeOfGraph: CGFloat {
+            if effectsGraphsFullView {
+                CGFloat(monthlyFeeeling.count * 54)
+            } else {
+                CGFloat(272)
+            }
+        }
+        
+        return ZStack{
             RoundedRectangle(cornerRadius: 12)
                 .fill(.begeClaro)
             VStack{
-                HStack{ //TODO: Ver se fica melhor com Group
+                HStack{
                     Text("Efeitos")
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.cinzaEscuro)
@@ -244,10 +278,13 @@ struct Journey: View {
                     
                         
                 }
-                Chart(efeitoss) { efeito in
+                
+                //TODO: efeitoss vai ser o resultado do fetch das entradas do mês
+               
+                Chart(monthlyFeeeling.keys.sorted().dropLast(sizeOfReturn), id: \.self) { efeito in
                     BarMark(
-                        x: .value("qntd", efeito.count),
-                        y: .value("Nome", efeito.name)
+                        x: .value("qntd", monthlyFeeeling[efeito] ?? 0),
+                        y: .value("Nome", efeito)
                     )
                     .cornerRadius(6)
                 }
@@ -256,7 +293,7 @@ struct Journey: View {
             }
             .padding()
         }
-        .frame(minHeight: 272)
+        .frame(minHeight: sizeOfGraph)
     }
     
     func weightChart() -> some View {
@@ -307,6 +344,7 @@ struct Journey: View {
             .padding()
         }
     }
+    
 }
 
 #Preview {

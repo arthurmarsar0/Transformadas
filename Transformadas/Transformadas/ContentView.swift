@@ -18,11 +18,12 @@ struct ContentView: View {
                     Label("Perfil", systemImage: "person.fill")
                 }
                 .tag(0)
+                
                 Diary().tabItem {
                     Label("Diário", systemImage: "calendar")
                 }
-                
                 .tag(1)
+                
                 Services().tabItem {
                     Label("Serviços", systemImage: "text.book.closed.fill")
                 }.tag(2)
