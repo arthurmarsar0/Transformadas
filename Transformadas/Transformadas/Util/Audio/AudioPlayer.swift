@@ -11,12 +11,18 @@ import SwiftUI
 class AudioPlayer: NSObject, ObservableObject {
     var audioPlayer: AVAudioPlayer?
     @Published var isPlaying = false
-    public var currentTime: TimeInterval? {
-        audioPlayer?.currentTime
-    }
+    @Published var isStarted = false
+    //@Published var audio: Audio?
+    @Published var currentTime: TimeInterval = 0.0
+    
+//    public var currentTime: TimeInterval {
+//        audioPlayer?.currentTime ?? audio?.length ?? 0.0
+//    }
     
     // Método para iniciar a reprodução de áudio
-    func startPlayback(audio: URL) {
+    func startPlayback(audio: Audio) {
+        //self.audio = audio
+        
         let playbackSession = AVAudioSession.sharedInstance()
         
         do {
@@ -30,12 +36,14 @@ class AudioPlayer: NSObject, ObservableObject {
             }
             
             // Inicializa o AVAudioPlayer com o arquivo de áudio
-            audioPlayer = try AVAudioPlayer(contentsOf: audio)
+            audioPlayer = try AVAudioPlayer(contentsOf: audio.path)
             audioPlayer?.delegate = self
             audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
             audioPlayer?.play()
+            startTimer()
             
             isPlaying = true
+            isStarted = true
         } catch {
             print("Erro ao iniciar a reprodução: \(error)")
         }
@@ -51,6 +59,7 @@ class AudioPlayer: NSObject, ObservableObject {
         
         player.stop()
         isPlaying = false
+        isStarted = false
     }
     
     func pausePlayback() {
@@ -63,6 +72,28 @@ class AudioPlayer: NSObject, ObservableObject {
         player.pause()
         isPlaying = false
     }
+    
+    func playPlayback() {
+        // Verifica se o player foi inicializado antes de tentar parar a reprodução
+        guard let player = audioPlayer else {
+            print("Player não foi inicializado")
+            return
+        }
+        
+        player.play()
+        isPlaying = true
+    }
+    
+    private func startTimer() {
+            let timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+                guard let self = self else { return }
+                if let current = self.audioPlayer?.currentTime {
+                    DispatchQueue.main.async {
+                        self.currentTime = current
+                    }
+                }
+            }
+        }
 }
 
 extension AudioPlayer: AVAudioPlayerDelegate {
@@ -70,6 +101,7 @@ extension AudioPlayer: AVAudioPlayerDelegate {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
         if flag {
             isPlaying = false
+            isStarted = false
         }
         
         // Libera a instância do player após a reprodução terminar

@@ -166,10 +166,10 @@ class AudioRecorder: ObservableObject {
     }
 
     func stopRecording() -> Audio? {
+        recordedAudio?.length = audioDuration
         audioRecorder?.stop()
         stopUpdatingAudioLevel()
         isRecording = false
-        recordedAudio?.length = audioDuration
     
         return recordedAudio
     }

@@ -43,7 +43,11 @@ struct AudioPreviewComponent: View {
             if audioPlayer.isPlaying {
                 audioPlayer.pausePlayback()
             } else {
-                audioPlayer.startPlayback(audio: audio.path)
+                if audioPlayer.isStarted {
+                    audioPlayer.playPlayback()
+                } else {
+                    audioPlayer.startPlayback(audio: audio)
+                }
             }
         }
         
