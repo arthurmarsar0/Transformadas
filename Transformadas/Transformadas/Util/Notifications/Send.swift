@@ -15,16 +15,14 @@ func sendNotification(content: UNNotificationContent, notification: Notification
     formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
     formatter.timeZone = TimeZone(secondsFromGMT: -3 * 3600)
     let dateString = formatter.string(from: notification.date)
-    print(dateString)
+    print("notificação: \(dateString)")
     
     
     var timeInterval = notification.date.timeIntervalSinceNow
     timeInterval += notification.type.timeInterval
     
-    
-    print(timeInterval)
-    
     if timeInterval < 0 {
+        print("tempo inválido: \(timeInterval)")
         return
     }
     

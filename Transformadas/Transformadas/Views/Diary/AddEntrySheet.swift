@@ -176,7 +176,7 @@ struct AddEntrySheet: View {
                     }
                 }
                 
-                for (modelID, isOn) in activeEffects {
+                for (modelID, _) in activeEffects {
                     if !effects.contains(where: {$0.modelID == modelID}) || effects.filter({$0.modelID == modelID}).first?.status == .inactive {
                         activeEffects.removeValue(forKey: modelID)
                     }
