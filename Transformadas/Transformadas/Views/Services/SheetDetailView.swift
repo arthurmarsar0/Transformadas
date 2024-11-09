@@ -76,6 +76,8 @@ struct SheetDetailView: View {
                                 
                             }
                         }
+                        .frame(height: 180)
+                        .clipShape(RoundedRectangle(cornerRadius: 16))
                         
                     }
                     .onTapGesture {
