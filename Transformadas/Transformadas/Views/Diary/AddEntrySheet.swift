@@ -200,6 +200,7 @@ struct AddEntrySheet: View {
         }) {
             AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
                 .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
     

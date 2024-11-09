@@ -92,6 +92,7 @@ struct Diary: View {
                                     addNavBarBackground()
                                 }) {
                                     AddReminder(selectedDate: selectedDate)
+                                        .interactiveDismissDisabled()
                                 }
                             }
                             
@@ -310,6 +311,7 @@ struct Diary: View {
             addNavBarBackground()
         }) {
             EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
+                .presentationDragIndicator(.visible)
         }
         
     }
@@ -340,6 +342,7 @@ struct Diary: View {
             addNavBarBackground()
         }) {
             AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
+                .interactiveDismissDisabled()
         }
     }
     
@@ -375,7 +378,7 @@ struct Diary: View {
             //}
             
             if let effects = entry.effects {
-                //EffectPreviewComponent(effects: effects, isPreview: true)
+                EffectPreviewComponent(effects: effects, isPreview: true)
             }
             
             //if let documents = entry.documents {
@@ -406,6 +409,7 @@ struct Diary: View {
                 addNavBarBackground()
             }) {
                 AddEntrySheet(isPresented: $isShowingAddEntrySheet, selectedDate: selectedDate)
+                    .interactiveDismissDisabled()
     }
     
     }

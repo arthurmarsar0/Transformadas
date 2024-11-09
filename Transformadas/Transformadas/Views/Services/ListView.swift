@@ -31,6 +31,7 @@ struct ListView: View {
                 }
                 .sheet(item: $selectedService) { service in
                     SheetDetailView(service: service)
+                        .presentationDragIndicator(.visible)
                 }
             }
             .onAppear {

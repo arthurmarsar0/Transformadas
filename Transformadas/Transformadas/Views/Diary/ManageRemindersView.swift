@@ -78,6 +78,7 @@ struct ManageRemindersView: View {
                 addNavBarBackground()
             }) { reminder in
                     AddReminder(existingReminder: reminder)
+                    .interactiveDismissDisabled()
                 }
 
         }

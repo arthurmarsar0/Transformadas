@@ -73,10 +73,12 @@ struct ReminderComponent: View
             }) {
                 ReminderSheetView(isShowingReminderSheet: $isShowingReminderSheet, isShowingEditReminderSheet: $isShowingEditReminderSheet, reminder: reminder, isChecked: $isChecked, selectedDate: selectedDate)
                     .presentationDetents([.medium])
+                    .interactiveDismissDisabled()
             }.sheet(isPresented: $isShowingEditReminderSheet, onDismiss: {
                 addNavBarBackground()
             }) {
                 AddReminder(existingReminder: reminder)
+                    .interactiveDismissDisabled()
             }
         
         
