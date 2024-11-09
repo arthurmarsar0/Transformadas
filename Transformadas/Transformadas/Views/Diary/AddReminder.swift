@@ -12,12 +12,14 @@ struct AddReminder: View {
     // MARK: - EXTERNAL
     //@Binding var isShowingAddReminderSheet: Bool
     var existingReminder: Reminder?
+    var selectedDate: Date?
     
     // MARK: - DATA
     @Environment(\.modelContext) var modelContext
     @Query var reminders: [Reminder]
     
     @Environment(\.presentationMode) var presentationMode
+    @Query var notifications: [NotificationModel]
     
     // MARK: - VIEW DATA
     @State var reminder = Reminder(name: "", startDate: Date.now, repetition: .never, type: .event, daysOfTheWeek: Array(repeating: false, count: 7), time: Date.now, daysCompleted: [], notes: "", dosage: "")
@@ -62,6 +64,7 @@ struct AddReminder: View {
                             
                             if reminder.type == .event {
                                 TextField("Notas", text: $reminder.notes)
+                                    //.lineLimit(2...3)
                                    
                             } else {
                                 TextField("Dose", text: $reminder.dosage)
@@ -74,7 +77,7 @@ struct AddReminder: View {
                             
                             Section {
                                 TextField("Notas", text: $reminder.notes)
-                                    
+                                    //.lineLimit(2...3)
                             }
                         }
                         
@@ -123,6 +126,11 @@ struct AddReminder: View {
                 .toolbarBackgroundVisibility(.visible)
                 .modifier(KeyboardDismiss())
         }.onAppear {
+            if let selectedDate = selectedDate {
+                reminder.startDate = selectedDate
+                staticReminder.startDate = selectedDate
+            }
+            
             removeNavBarBackground()
             if let existingReminder = existingReminder {
                 copyReminder(toReminder: reminder, reminder: existingReminder)
@@ -189,7 +197,7 @@ struct AddReminder: View {
             HStack {
                 Image(systemName: "clock")
                     .foregroundStyle(colors[1])
-                DatePicker("Horário", selection: $reminder.startDate, displayedComponents: [.hourAndMinute])
+                DatePicker("Horário", selection: $reminder.time, displayedComponents: [.hourAndMinute])
             }.font(.system(size: 17))
         }, footer: {
             Text(reminder.repetition.descriptionMessage(startDate: reminder.startDate, selectedWeekDays: reminder.daysOfTheWeek))
@@ -231,6 +239,7 @@ struct AddReminder: View {
         
         if let existingReminder = existingReminder {
             copyReminder(toReminder: existingReminder, reminder: reminder)
+            deleteReminderNotifications(reminderNotifications: notifications.filter({$0.reminder?.modelID == reminder.modelID}), modelContext: modelContext)
         } else {
             reminder.startDate = Calendar.current.startOfDay(for: reminder.startDate)
             modelContext.insert(reminder)
@@ -240,7 +249,7 @@ struct AddReminder: View {
 }
 
 #Preview {
-    AddReminder(existingReminder: nil)
+    AddReminder(existingReminder: nil, selectedDate: Date.now)
         .modelContainer(for: [Effect.self,
                               User.self,
                               Entry.self,

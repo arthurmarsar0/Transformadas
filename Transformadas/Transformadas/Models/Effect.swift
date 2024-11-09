@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-class Effect: Identifiable {
+class Effect: Identifiable, Hashable, Equatable {
     var modelID: UUID = UUID()
     var name: String = ""
     var status: EffectStatus = EffectStatus.active

@@ -13,6 +13,7 @@ struct AddEntrySheet: View {
     // MARK: - EXTERNAL
     @Binding var isPresented: Bool
     var existingEntry: Entry?
+    var selectedDate: Date?
     
     // MARK: - DATA
     @Query var effects: [Effect]
@@ -31,8 +32,8 @@ struct AddEntrySheet: View {
     }
     
     ///EFFECTS
-    @State var activeEffects: [Effect] = []
-    @State var chosenEffects: [Bool] = []
+    @State var activeEffects: [UUID: Bool] = [:]
+    //@State var chosenEffects: [Bool] = []
     @State var hasEffectsChanged: Bool = false
     
     ///PHOTOS
@@ -145,19 +146,41 @@ struct AddEntrySheet: View {
                 
             }
         }.onAppear {
+            removeNavBarBackground()
+            if let selectedDate = selectedDate {
+                entry.date = selectedDate
+            }
+            
+            
+            for effect in effects.filter({$0.status != .inactive}) {
+                activeEffects[effect.modelID] = false
+            }
             
             if let existingEntry = existingEntry {
                 copyEntry(toEntry: entry, entry: existingEntry)
+                if let efs = entry.effects {
+                    for effect in efs {
+                        activeEffects[effect.modelID] = true
+                    }
+                }
+                
             }
             
-            activeEffects = effects.filter({$0.status != .inactive})
-            chosenEffects = Array(repeating: false, count: activeEffects.count)
         }
         .onChange(of: hasEffectsChanged) {
             if hasEffectsChanged {
                 hasEffectsChanged = false
-                activeEffects = effects.filter({$0.status != .inactive})
-                chosenEffects = Array(repeating: false, count: activeEffects.count)
+                for effect in effects.filter({$0.status != .inactive}) {
+                    if activeEffects[effect.modelID] == nil {
+                        activeEffects[effect.modelID] = false
+                    }
+                }
+                
+                for (modelID, isOn) in activeEffects {
+                    if !effects.contains(where: {$0.modelID == modelID}) || effects.filter({$0.modelID == modelID}).first?.status == .inactive {
+                        activeEffects.removeValue(forKey: modelID)
+                    }
+                }
             }
         }.sheet(isPresented: $isShowingCameraPicker) {
             CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
@@ -177,6 +200,7 @@ struct AddEntrySheet: View {
         }) {
             AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
                 .presentationDetents([.medium])
+                .presentationDragIndicator(.visible)
         }
     }
     
@@ -315,9 +339,14 @@ struct AddEntrySheet: View {
     }
     
     func effectView() -> some View {
-        ForEach(0..<chosenEffects.count, id: \.self) { i in
-            Toggle(isOn: $chosenEffects[i]) {
-                Text(activeEffects[i].name)
+        ForEach(activeEffects.keys.sorted(), id: \.self) { modelID in
+            let isOn = Binding<Bool>(
+                get: { activeEffects[modelID] ?? false },
+                    set: { newValue in activeEffects[modelID] = newValue }
+                )
+            
+            Toggle(isOn: isOn) {
+                Text(effects.filter{$0.modelID == modelID}.first?.name ?? "")
             }
         }
     }
@@ -393,9 +422,9 @@ struct AddEntrySheet: View {
     // MARK: - DATA FUNC
     
     func addRegister() {
-        for i in activeEffects.indices {
-            if chosenEffects[i] {
-                entry.effects?.append(activeEffects[i])
+        for (modelID, isOn) in activeEffects {
+            if let effect = effects.filter({$0.modelID == modelID}).first, isOn {
+                entry.effects?.append(effect)
             }
         }
         
@@ -414,7 +443,7 @@ struct AddEntrySheet: View {
 }
 
 #Preview {
-    AddEntrySheet(isPresented: .constant(true))
+    AddEntrySheet(isPresented: .constant(true), selectedDate: (Date.now))
         .modelContainer(for: [Effect.self,
                               User.self,
                               Entry.self,

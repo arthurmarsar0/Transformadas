@@ -20,6 +20,8 @@ struct Diary: View {
         entry.date.monthNumber == now.monthNumber && entry.date.yearNumber == now.yearNumber
     }) var monthEntries: [Entry]
     
+    @Query var notifications: [NotificationModel]
+    
     // MARK: - VIEW DATA
     
     /// DATES
@@ -89,7 +91,8 @@ struct Diary: View {
                                 }.sheet(isPresented: $isShowingAddReminderSheet, onDismiss: {
                                     addNavBarBackground()
                                 }) {
-                                    AddReminder()
+                                    AddReminder(selectedDate: selectedDate)
+                                        .interactiveDismissDisabled()
                                 }
                             }
                             
@@ -127,11 +130,13 @@ struct Diary: View {
                 addNavBarBackground()
                 loadTodayReminders()
                 loadAllReminders()
+                loadNotifications()
             }.onChange(of: selectedDate) {
                 loadTodayReminders()
             }.onChange(of: reminders) {
                 loadTodayReminders()
                 loadAllReminders()
+                loadNotifications()
             }
             
         }
@@ -147,6 +152,14 @@ struct Diary: View {
                     .foregroundStyle(.marrom)
                     .font(.system(size: 17, weight: .regular))
                 Spacer()
+                if isCalendarView {
+                    Button(action: {
+                        selectedDate = Date.now
+                    }) {
+                        Text("Hoje")
+                            .foregroundStyle(isSameDay(selectedDate, Date.now) ? .cinzaClaro : .vermelho)
+                    }.disabled(isSameDay(selectedDate, Date.now))
+                }
             }
             
             if isLoadingReminder {
@@ -298,6 +311,7 @@ struct Diary: View {
             addNavBarBackground()
         }) {
             EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
+                .presentationDragIndicator(.visible)
         }
         
     }
@@ -324,8 +338,11 @@ struct Diary: View {
             Button ("Cancelar", role: .cancel) {
                 
             }
-        }.sheet(isPresented: $isShowingEditEntrySheet) {
+        }.sheet(isPresented: $isShowingEditEntrySheet, onDismiss: {
+            addNavBarBackground()
+        }) {
             AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
+                .interactiveDismissDisabled()
         }
     }
     
@@ -361,7 +378,7 @@ struct Diary: View {
             //}
             
             if let effects = entry.effects {
-                //EffectPreviewComponent(effects: effects, isPreview: true)
+                EffectPreviewComponent(effects: effects, isPreview: true)
             }
             
             //if let documents = entry.documents {
@@ -388,8 +405,11 @@ struct Diary: View {
                         .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
                 }
         }.disabled(isFutureDate(selectedDate))
-        .sheet(isPresented: $isShowingAddEntrySheet) {
-        AddEntrySheet(isPresented: $isShowingAddEntrySheet)
+            .sheet(isPresented: $isShowingAddEntrySheet, onDismiss: {
+                addNavBarBackground()
+            }) {
+                AddEntrySheet(isPresented: $isShowingAddEntrySheet, selectedDate: selectedDate)
+                    .interactiveDismissDisabled()
     }
     
     }
@@ -472,6 +492,51 @@ struct Diary: View {
         for day in monthDates {
             monthReminders[day]?.append(contentsOf: Repetition.remindersToday(date: day, reminders: [reminder]))
         }
+    }
+    
+    func loadNotifications() {
+        var dates: [Date] = []
+        let today = Calendar.current.startOfDay(for: Date.now)
+
+        for i in 0...3 {
+            if let date = Calendar.current.date(byAdding: .day, value: i, to: today) {
+                dates.append(date)
+            }
+        }
+        
+        for date in dates {
+            if let reminders = monthReminders[date] {
+                for reminder in reminders.filter({getDateByDayAndTime(day: date, time: $0.time)?.timeIntervalSinceNow ?? -1 > 0}) {
+                    var reminderNotifications = notifications.filter({$0.reminder?.modelID == reminder.modelID})
+                    
+                    if reminder.type == .event {
+                        if !reminderNotifications.contains(where: {$0.type == .afterEvent && isSameDay($0.date, date)}) {
+                            sendReminderNotification(reminder: reminder, type: .afterEvent, targetDate: date, modelContext: modelContext)
+                            //print("c")
+                        }
+                        
+                        if !reminderNotifications.contains(where: {$0.type == .rememberEvent && isSameDay($0.date, date)}) {
+                            sendReminderNotification(reminder: reminder, type: .rememberEvent, targetDate: date, modelContext: modelContext)
+                        }
+                        
+                    } else {
+                        
+                        if !reminderNotifications.contains(where: {$0.type == .takeMedicine && isSameDay($0.date, date)}) {
+                            print("chamada 1")
+                            sendReminderNotification(reminder: reminder, type: .takeMedicine, targetDate: date, modelContext: modelContext)
+                            
+                        }
+                        
+                        if !reminderNotifications.contains(where: {$0.type == .missingMedicine && isSameDay($0.date, date)}) {
+                            sendReminderNotification(reminder: reminder, type: .missingMedicine, targetDate: date, modelContext: modelContext)
+                        }
+                    }
+                    
+                }
+            }
+            
+        }
+    
     }
     
 }
