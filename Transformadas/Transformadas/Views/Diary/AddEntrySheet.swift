@@ -183,11 +183,14 @@ struct AddEntrySheet: View {
                 }
             }
         }.sheet(isPresented: $isShowingCameraPicker) {
-            CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+            //CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+//                .onAppear {
+//                    removeNavBarBackground()
+//                }
+            ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
                 .onAppear {
                     removeNavBarBackground()
                 }
-            //ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
         }.sheet(isPresented: $isShowingDocumentPicker) {
             DocumentPicker(selectedURL: $selectedDocumentURL)
                 .onAppear {
@@ -245,7 +248,11 @@ struct AddEntrySheet: View {
                             Image(systemName: "play.fill")
                                 .foregroundStyle(.rosa)
                                 .onTapGesture {
-                                    audioPlayer.startPlayback(audio: audio.path)
+                                    if audioPlayer.isStarted {
+                                        audioPlayer.playPlayback()
+                                    } else {
+                                        audioPlayer.startPlayback(audio: audio)
+                                    }
                                 }
                             
                         } else {
@@ -258,11 +265,13 @@ struct AddEntrySheet: View {
                             
                         }
                         
-                        if let time = audioPlayer.currentTime, audioPlayer.isPlaying {
-                            Text(time.minutesAndSeconds)
+                        if audioPlayer.isStarted {
+                            Text(audioPlayer.currentTime.minutesAndSeconds)
                         } else {
                             Text(audio.length.minutesAndSeconds)
                         }
+                        
+                        
                         
                         ///TO-DO: AUDIO WAVELENGTH
                         
