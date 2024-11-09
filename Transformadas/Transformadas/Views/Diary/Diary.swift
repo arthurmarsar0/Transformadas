@@ -128,17 +128,23 @@ struct Diary: View {
                 
             }.onAppear {
                 addNavBarBackground()
-                loadTodayReminders()
-                loadAllReminders()
-                loadNotifications()
-            }.onChange(of: selectedDate) {
-                loadTodayReminders()
-            }.onChange(of: reminders) {
-                loadTodayReminders()
-                loadAllReminders()
+            }.task {
+                await loadTodayReminders()
+                await loadAllReminders()
                 loadNotifications()
             }
-            
+            .onChange(of: selectedDate) {
+                Task {
+                    await loadTodayReminders()
+                }
+                
+            }.onChange(of: reminders) {
+                Task {
+                    await loadTodayReminders()
+                    await loadAllReminders()
+                    loadNotifications()
+                }
+            }
         }
         
     }
@@ -416,11 +422,6 @@ struct Diary: View {
     
     // MARK: - DATA  FUNCS
     
-    func addEntry(selectedDate: Date) {
-        modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: nil, photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 67.5))
-        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: selectedDate, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"))
-    }
-    
     func deleteEntry(entry: Entry) {
         modelContext.delete(entry)
     }
@@ -457,34 +458,28 @@ struct Diary: View {
         return .noEntry
     }
     
-    func remindersTodayAsync(date: Date, reminders: [Reminder], completion: @escaping ([Reminder]) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
+    func remindersTodayAsync(date: Date, reminders: [Reminder]) async -> [Reminder] {
+        return await withCheckedContinuation { continuation in
             let result = Repetition.remindersToday(date: date, reminders: reminders)
-            DispatchQueue.main.async {
-                completion(result)
-            }
+            continuation.resume(returning: result)
         }
     }
-    
-    func loadAllReminders() {
+
+    func loadAllReminders() async {
         isLoadingReminders = true
         for day in monthDates {
-            remindersTodayAsync(date: day, reminders: reminders) { newReminders in
-                self.monthReminders[day] = newReminders.sorted(by: {$0.time < $1.time})
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    isLoadingReminders = false
-                }
-            }
+            let newReminders = await remindersTodayAsync(date: day, reminders: reminders)
+            self.monthReminders[day] = newReminders.sorted(by: { $0.time < $1.time })
         }
+        isLoadingReminders = false
     }
-    
-    func loadTodayReminders() {
+
+    func loadTodayReminders() async {
         isLoadingReminder = true
-        remindersTodayAsync(date: selectedDate, reminders: reminders) { newReminders in
-            self.selectedDayReminders = newReminders.sorted(by: {$0.time < $1.time})
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                isLoadingReminder = false
-            }
+        let newReminders = await remindersTodayAsync(date: selectedDate, reminders: reminders)
+        self.selectedDayReminders = newReminders.sorted(by: { $0.time < $1.time })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isLoadingReminder = false
         }
     }
     

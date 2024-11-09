@@ -13,7 +13,7 @@ import UserNotifications
 class NotificationModel {
     var modelID: String = UUID().uuidString
     var state: NotificationState = NotificationState.send
-    @Relationship(deleteRule: .nullify, inverse: \Reminder.notification) var reminder: Reminder?
+    @Relationship(deleteRule: .nullify, inverse: \Reminder.notifications) var reminder: Reminder?
     var type: NotificationType = NotificationType.takeMedicine
     var date: Date = Date.now
     
