@@ -20,6 +20,7 @@ class Reminder: Identifiable {
     var daysCompleted: [Date] = []
     var notes: String = ""
     var dosage: String = ""
+    @Relationship(deleteRule: .nullify, inverse: .none) var notifications: [NotificationModel]?
     
     init(name: String, startDate: Date, repetition: Repetition, type: ReminderType, daysOfTheWeek: [Bool], time: Date, daysCompleted: [Date], notes: String, dosage: String) {
         self.name = name

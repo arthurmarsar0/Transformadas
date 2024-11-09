@@ -15,7 +15,8 @@ struct TransformadasApp: App {
             Effect.self,
             User.self,
             Entry.self,
-            Reminder.self
+            Reminder.self,
+            NotificationModel.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -27,8 +28,9 @@ struct TransformadasApp: App {
     }()
 
     var body: some Scene {
+       
         WindowGroup {
-            ContentView()
+            SplashScreen()
         }
         .modelContainer(sharedModelContainer)
     }

@@ -10,5 +10,10 @@ import SwiftUI
 struct Onboarding: View {
     var body: some View {
         Text("Onboarding")
+            .onAppear {
+                requestNotificationAccess { _ in
+                    
+                }
+            }
     }
 }

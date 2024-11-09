@@ -68,7 +68,7 @@ struct EntryView: View {
                     }
                     
                     if let effects = entry.effects {
-                        //EffectPreviewComponent(effects: effects, isPreview: false)
+                        EffectPreviewComponent(effects: effects, isPreview: false)
                     }
                     
                    
@@ -86,6 +86,7 @@ struct EntryView: View {
                             isShowingEditEntrySheet = true
                         }.sheet(isPresented: $isShowingEditEntrySheet) {
                             AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
+                                .interactiveDismissDisabled()
                         }
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.cinzaEscuro)

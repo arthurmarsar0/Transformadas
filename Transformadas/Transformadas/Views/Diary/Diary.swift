@@ -20,6 +20,8 @@ struct Diary: View {
         entry.date.monthNumber == now.monthNumber && entry.date.yearNumber == now.yearNumber
     }) var monthEntries: [Entry]
     
+    @Query var notifications: [NotificationModel]
+    
     // MARK: - VIEW DATA
     
     /// DATES
@@ -89,7 +91,8 @@ struct Diary: View {
                                 }.sheet(isPresented: $isShowingAddReminderSheet, onDismiss: {
                                     addNavBarBackground()
                                 }) {
-                                    AddReminder(isShowingAddReminderSheet: $isShowingAddReminderSheet)
+                                    AddReminder(selectedDate: selectedDate)
+                                        .interactiveDismissDisabled()
                                 }
                             }
                             
@@ -125,15 +128,23 @@ struct Diary: View {
                 
             }.onAppear {
                 addNavBarBackground()
-                loadTodayReminders()
-                loadAllReminders()
-            }.onChange(of: selectedDate) {
-                loadTodayReminders()
-            }.onChange(of: reminders) {
-                loadTodayReminders()
-                loadAllReminders()
+            }.task {
+                await loadTodayReminders()
+                await loadAllReminders()
+                loadNotifications()
             }
-            
+            .onChange(of: selectedDate) {
+                Task {
+                    await loadTodayReminders()
+                }
+                
+            }.onChange(of: reminders) {
+                Task {
+                    await loadTodayReminders()
+                    await loadAllReminders()
+                    loadNotifications()
+                }
+            }
         }
         
     }
@@ -147,6 +158,14 @@ struct Diary: View {
                     .foregroundStyle(.marrom)
                     .font(.system(size: 17, weight: .regular))
                 Spacer()
+                if isCalendarView {
+                    Button(action: {
+                        selectedDate = Date.now
+                    }) {
+                        Text("Hoje")
+                            .foregroundStyle(isSameDay(selectedDate, Date.now) ? .cinzaClaro : .vermelho)
+                    }.disabled(isSameDay(selectedDate, Date.now))
+                }
             }
             
             if isLoadingReminder {
@@ -298,6 +317,7 @@ struct Diary: View {
             addNavBarBackground()
         }) {
             EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
+                .presentationDragIndicator(.visible)
         }
         
     }
@@ -324,8 +344,11 @@ struct Diary: View {
             Button ("Cancelar", role: .cancel) {
                 
             }
-        }.sheet(isPresented: $isShowingEditEntrySheet) {
+        }.sheet(isPresented: $isShowingEditEntrySheet, onDismiss: {
+            addNavBarBackground()
+        }) {
             AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
+                .interactiveDismissDisabled()
         }
     }
     
@@ -361,7 +384,7 @@ struct Diary: View {
             //}
             
             if let effects = entry.effects {
-                //EffectPreviewComponent(effects: effects, isPreview: true)
+                EffectPreviewComponent(effects: effects, isPreview: true)
             }
             
             //if let documents = entry.documents {
@@ -388,18 +411,16 @@ struct Diary: View {
                         .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
                 }
         }.disabled(isFutureDate(selectedDate))
-        .sheet(isPresented: $isShowingAddEntrySheet) {
-        AddEntrySheet(isPresented: $isShowingAddEntrySheet)
+            .sheet(isPresented: $isShowingAddEntrySheet, onDismiss: {
+                addNavBarBackground()
+            }) {
+                AddEntrySheet(isPresented: $isShowingAddEntrySheet, selectedDate: selectedDate)
+                    .interactiveDismissDisabled()
     }
     
     }
     
     // MARK: - DATA  FUNCS
-    
-    func addEntry(selectedDate: Date) {
-        modelContext.insert(Entry(date: selectedDate, mood: .bad, note: "Querido diário, hoje eu notei que a minha barba começou a crescer mais nas laterais. O bigode, que já tava maior, agora está engrossando, o que é muito bom", audio: nil, photos: [EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!, EntryModel.imageToData(image: UIImage(systemName: "calendar")!)!], effects: [Effect(name: "Crescimento das mamas"), Effect(name: "Diminuição de pelos faciais"), Effect(name: "Fadiga"), Effect(name: "Insônia"), Effect(name: "Náusea")], documents: [], weight: 67.5))
-        modelContext.insert(Reminder(name: "Consulta Endocrinologista", startDate: selectedDate, repetition: .never, type: .medicine, time: Date.now, daysCompleted: [], notes: "", dosage: "2mg"))
-    }
     
     func deleteEntry(entry: Entry) {
         modelContext.delete(entry)
@@ -437,34 +458,28 @@ struct Diary: View {
         return .noEntry
     }
     
-    func remindersTodayAsync(date: Date, reminders: [Reminder], completion: @escaping ([Reminder]) -> Void) {
-        DispatchQueue.global(qos: .userInitiated).async {
+    func remindersTodayAsync(date: Date, reminders: [Reminder]) async -> [Reminder] {
+        return await withCheckedContinuation { continuation in
             let result = Repetition.remindersToday(date: date, reminders: reminders)
-            DispatchQueue.main.async {
-                completion(result)
-            }
+            continuation.resume(returning: result)
         }
     }
-    
-    func loadAllReminders() {
+
+    func loadAllReminders() async {
         isLoadingReminders = true
         for day in monthDates {
-            remindersTodayAsync(date: day, reminders: reminders) { newReminders in
-                self.monthReminders[day] = newReminders.sorted(by: {$0.time < $1.time})
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    isLoadingReminders = false
-                }
-            }
+            let newReminders = await remindersTodayAsync(date: day, reminders: reminders)
+            self.monthReminders[day] = newReminders.sorted(by: { $0.time < $1.time })
         }
+        isLoadingReminders = false
     }
-    
-    func loadTodayReminders() {
+
+    func loadTodayReminders() async {
         isLoadingReminder = true
-        remindersTodayAsync(date: selectedDate, reminders: reminders) { newReminders in
-            self.selectedDayReminders = newReminders.sorted(by: {$0.time < $1.time})
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                isLoadingReminder = false
-            }
+        let newReminders = await remindersTodayAsync(date: selectedDate, reminders: reminders)
+        self.selectedDayReminders = newReminders.sorted(by: { $0.time < $1.time })
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            isLoadingReminder = false
         }
     }
     
@@ -472,6 +487,51 @@ struct Diary: View {
         for day in monthDates {
             monthReminders[day]?.append(contentsOf: Repetition.remindersToday(date: day, reminders: [reminder]))
         }
+    }
+    
+    func loadNotifications() {
+        var dates: [Date] = []
+        let today = Calendar.current.startOfDay(for: Date.now)
+
+        for i in 0...3 {
+            if let date = Calendar.current.date(byAdding: .day, value: i, to: today) {
+                dates.append(date)
+            }
+        }
+        
+        for date in dates {
+            if let reminders = monthReminders[date] {
+                for reminder in reminders.filter({getDateByDayAndTime(day: date, time: $0.time)?.timeIntervalSinceNow ?? -1 > 0}) {
+                    var reminderNotifications = notifications.filter({$0.reminder?.modelID == reminder.modelID})
+                    
+                    if reminder.type == .event {
+                        if !reminderNotifications.contains(where: {$0.type == .afterEvent && isSameDay($0.date, date)}) {
+                            sendReminderNotification(reminder: reminder, type: .afterEvent, targetDate: date, modelContext: modelContext)
+                            //print("c")
+                        }
+                        
+                        if !reminderNotifications.contains(where: {$0.type == .rememberEvent && isSameDay($0.date, date)}) {
+                            sendReminderNotification(reminder: reminder, type: .rememberEvent, targetDate: date, modelContext: modelContext)
+                        }
+                        
+                    } else {
+                        
+                        if !reminderNotifications.contains(where: {$0.type == .takeMedicine && isSameDay($0.date, date)}) {
+                            print("chamada 1")
+                            sendReminderNotification(reminder: reminder, type: .takeMedicine, targetDate: date, modelContext: modelContext)
+                            
+                        }
+                        
+                        if !reminderNotifications.contains(where: {$0.type == .missingMedicine && isSameDay($0.date, date)}) {
+                            sendReminderNotification(reminder: reminder, type: .missingMedicine, targetDate: date, modelContext: modelContext)
+                        }
+                    }
+                    
+                }
+            }
+            
+        }
+    
     }
     
 }
