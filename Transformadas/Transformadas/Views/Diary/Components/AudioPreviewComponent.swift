@@ -18,8 +18,12 @@ struct AudioPreviewComponent: View {
                 HStack {
                     Image(systemName: audioPlayer.isPlaying ? "pause.circle.fill" : "play.circle.fill")
                         .font(.system(size: 13, weight: .regular))
-                    Text(audio.length.minutesAndSeconds)
-                        .font(.system(size: 11, weight: .regular))
+                    
+                    if audioPlayer.isStarted {
+                        Text(audioPlayer.currentTime.minutesAndSeconds)
+                    } else {
+                        Text(audio.length.minutesAndSeconds)
+                    }
                     Spacer()
                     
                     if !isPreview {
@@ -40,16 +44,18 @@ struct AudioPreviewComponent: View {
         .background{
             RoundedRectangle(cornerRadius: 8).fill(backgroundFill)
         }.onTapGesture {
-            if audioPlayer.isPlaying {
-                audioPlayer.pausePlayback()
-            } else {
-                if audioPlayer.isStarted {
-                    audioPlayer.playPlayback()
+            //if !isPreview {
+                if audioPlayer.isPlaying {
+                    audioPlayer.pausePlayback()
                 } else {
-                    audioPlayer.startPlayback(audio: audio)
+                    if audioPlayer.isStarted {
+                        audioPlayer.playPlayback()
+                    } else {
+                        audioPlayer.startPlayback(audio: audio)
+                    }
                 }
-            }
-        }
+            //}
+        }.disabled(isPreview)
         
     }
     

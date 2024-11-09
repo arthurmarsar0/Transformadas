@@ -183,11 +183,14 @@ struct AddEntrySheet: View {
                 }
             }
         }.sheet(isPresented: $isShowingCameraPicker) {
-            CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+            //CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+//                .onAppear {
+//                    removeNavBarBackground()
+//                }
+            ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
                 .onAppear {
                     removeNavBarBackground()
                 }
-            //ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
         }.sheet(isPresented: $isShowingDocumentPicker) {
             DocumentPicker(selectedURL: $selectedDocumentURL)
                 .onAppear {
