@@ -48,6 +48,7 @@ struct MapView: View {
                         
                         .sheet(item: $selectedService) { service in
                             SheetDetailView(service: service)
+                                .presentationDragIndicator(.visible)
                         }
                         .mapControls {
                             MapUserLocationButton()

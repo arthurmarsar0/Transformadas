@@ -9,6 +9,14 @@ import SwiftUI
 
 struct EditReminderComponent: View {
     var reminder: Reminder
+    
+    var colors: [Color] {
+        if reminder.type == .event {
+            return [.azul, .verdeMedio]
+        } else {
+            return [.vermelho, .rosaMedio]
+        }
+    }
     var body: some View {
             VStack(alignment: .leading, spacing: 4){
                 Text(reminder.time.hourFormatted)
@@ -16,29 +24,36 @@ struct EditReminderComponent: View {
                     .foregroundStyle(.cinzaClaro)
                 Text(reminder.name)
                     .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(reminder.type.name == "Evento" ? .verde : .vermelho)
-                Text(reminder.notes)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(.cinzaEscuro)
-                HStack{
+                    .foregroundStyle(colors[0])
+                
+                if reminder.notes != ""{
+                    Text(reminder.notes)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundStyle(.cinzaEscuro)
+                        .multilineTextAlignment(.leading)
+                }
+                
+                HStack (spacing: 4){
                     Image(systemName: "calendar")
                     
                     Text(reminder.repetition.name)
                 }
                 .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(reminder.type.name == "Evento" ? .verdeMedio : .rosaMedio)
-                if(reminder.type.name == "Medicamento"){
-                    HStack{
+                .foregroundStyle(colors[1])
+                
+                if(reminder.type == .medicine){
+                    HStack (spacing: 4) {
                         Image(systemName: "pill")
                         Text(reminder.dosage)
                     }
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(.rosaMedio)
                 }
-            }.padding(12)
+            }
+            .padding(.vertical, 12)
             .background{
                 RoundedRectangle(cornerRadius: 8)
-                .foregroundStyle(.white)
+                    .fill(.white)
             }
                
         

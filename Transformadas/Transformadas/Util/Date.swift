@@ -78,7 +78,7 @@ func isAfterDate(startDate: Date, date: Date) -> Bool {
 }
 
 func isFutureDate(_ date: Date) -> Bool {
-    return date > Date.now
+    return date > Date.now && !isSameDay(date, Date.now)
 }
 
 func isSameDayAndMonth(_ date1: Date, _ date2: Date) -> Bool {
@@ -92,4 +92,13 @@ extension TimeInterval {
         let seconds = Int(self) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
+}
+
+func getDateByDayAndTime(day: Date, time: Date) -> Date? {
+    var components = Calendar.current.dateComponents([.year, .month, .day], from: day)
+    components.hour = Calendar.current.component(.hour, from: time)
+    components.minute = Calendar.current.component(.minute, from: time)
+    
+    
+    return Calendar.current.date(from: components)
 }

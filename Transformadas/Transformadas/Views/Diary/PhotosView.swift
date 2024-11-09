@@ -43,8 +43,10 @@ struct PhotosView: View {
                 }
             }.onAppear {
                 selectedPhoto = startingPhoto
-                removeNavBarBackground()
+                
             }
+        }.onAppear {
+            removeNavBarBackground()
         }
     }
 }

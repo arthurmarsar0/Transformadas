@@ -7,71 +7,130 @@
 
 import SwiftUI
 
-// Layout personalizado para simular um HStack com quebra automática de linha
-struct WrapHStackLayout: Layout {
-    var spacing: CGFloat = 8  // Espaçamento entre itens
-    var verticalSpacing: CGFloat = 8  // Espaçamento entre linhas
+struct NewFlowLayout: Layout {
+  var alignment: Alignment = .center
+  var spacing: CGFloat?
 
-    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
-        var totalWidth: CGFloat = 0
-        var totalHeight: CGFloat = 0
-        var rowWidth: CGFloat = 0
-        var rowHeight: CGFloat = 0
-        let maxWidth = proposal.width ?? .infinity
+  func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) -> CGSize {
+    let result = FlowResult(
+      in: proposal.replacingUnspecifiedDimensions().width,
+      subviews: subviews,
+      alignment: alignment,
+      spacing: spacing
+    )
+    return result.bounds
+  }
 
-        for subview in subviews {
-            let subviewSize = subview.sizeThatFits(.unspecified)
-            
-            // Adiciona espaçamento entre itens
-            if rowWidth + subviewSize.width + spacing > maxWidth {
-                // Move para a próxima linha
-                totalHeight += rowHeight + verticalSpacing
-                totalWidth = max(totalWidth, rowWidth)
-                
-                // Reseta a largura da linha
-                rowWidth = subviewSize.width
-                rowHeight = subviewSize.height
-            } else {
-                // Adiciona o item à largura da linha atual
-                if rowWidth > 0 {
-                    rowWidth += spacing
-                }
-                rowWidth += subviewSize.width
-                rowHeight = max(rowHeight, subviewSize.height)
-            }
-        }
+  func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout Void) {
+    let result = FlowResult(
+      in: proposal.replacingUnspecifiedDimensions().width,
+      subviews: subviews,
+      alignment: alignment,
+      spacing: spacing
+    )
+    for row in result.rows {
+      let rowXOffset = (bounds.width - row.frame.width) * alignment.horizontal.percent
+      for index in row.range {
+        let xPos = rowXOffset + row.frame.minX + row.xOffsets[index - row.range.lowerBound] + bounds.minX
+        let rowYAlignment = (row.frame.height - subviews[index].sizeThatFits(.unspecified).height) *
+        alignment.vertical.percent
+        let yPos = row.frame.minY + rowYAlignment + bounds.minY
+        subviews[index].place(at: CGPoint(x: xPos, y: yPos), anchor: .topLeading, proposal: .unspecified)
+      }
+    }
+  }
 
-        // Adiciona a última linha ao total
-        totalHeight += rowHeight
-        totalWidth = max(totalWidth, rowWidth)
+  struct FlowResult {
+    var bounds = CGSize.zero
+    var rows = [Row]()
 
-        return CGSize(width: min(totalWidth, maxWidth), height: totalHeight)
+    struct Row {
+      var range: Range<Int>
+      var xOffsets: [Double]
+      var frame: CGRect
     }
 
-    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        var xOffset: CGFloat = 0
-        var yOffset: CGFloat = 0
-        var rowHeight: CGFloat = 0
-        let maxWidth = bounds.width
-
-        for subview in subviews {
-            let subviewSize = subview.sizeThatFits(.unspecified)
-
-            // Quebra a linha se o próximo subview não couber na linha atual
-            if xOffset + subviewSize.width > maxWidth {
-                xOffset = 0
-                yOffset += rowHeight + verticalSpacing
-                rowHeight = 0
-            }
-
-            // Posiciona o subview
-            subview.place(at: CGPoint(x: xOffset, y: yOffset), proposal: .init(width: subviewSize.width, height: subviewSize.height))
-            
-            // Atualiza os deslocamentos para o próximo subview
-            xOffset += subviewSize.width + spacing
-            rowHeight = max(rowHeight, subviewSize.height)
+    init(in maxPossibleWidth: Double, subviews: Subviews, alignment: Alignment, spacing: CGFloat?) {
+      var itemsInRow = 0
+      var remainingWidth = maxPossibleWidth.isFinite ? maxPossibleWidth : .greatestFiniteMagnitude
+      var rowMinY = 0.0
+      var rowHeight = 0.0
+      var xOffsets: [Double] = []
+      for (index, subview) in zip(subviews.indices, subviews) {
+        let idealSize = subview.sizeThatFits(.unspecified)
+        if index != 0 && widthInRow(index: index, idealWidth: idealSize.width) > remainingWidth {
+          // Finish the current row without this subview.
+          finalizeRow(index: max(index - 1, 0), idealSize: idealSize)
         }
+        addToRow(index: index, idealSize: idealSize)
+
+        if index == subviews.count - 1 {
+          // Finish this row; it's either full or we're on the last view anyway.
+          finalizeRow(index: index, idealSize: idealSize)
+        }
+      }
+
+      func spacingBefore(index: Int) -> Double {
+        guard itemsInRow > 0 else { return 0 }
+        return spacing ?? subviews[index - 1].spacing.distance(to: subviews[index].spacing, along: .horizontal)
+      }
+
+      func widthInRow(index: Int, idealWidth: Double) -> Double {
+        idealWidth + spacingBefore(index: index)
+      }
+
+      func addToRow(index: Int, idealSize: CGSize) {
+        let width = widthInRow(index: index, idealWidth: idealSize.width)
+
+        xOffsets.append(maxPossibleWidth - remainingWidth + spacingBefore(index: index))
+        // Allocate width to this item (and spacing).
+        remainingWidth -= width
+        // Ensure the row height is as tall as the tallest item.
+        rowHeight = max(rowHeight, idealSize.height)
+        // Can fit in this row, add it.
+        itemsInRow += 1
+      }
+
+      func finalizeRow(index: Int, idealSize: CGSize) {
+        let rowWidth = maxPossibleWidth - remainingWidth
+        rows.append(
+          Row(
+            range: index - max(itemsInRow - 1, 0) ..< index + 1,
+            xOffsets: xOffsets,
+            frame: CGRect(x: 0, y: rowMinY, width: rowWidth, height: rowHeight)
+          )
+        )
+        bounds.width = max(bounds.width, rowWidth)
+        let ySpacing = spacing ?? ViewSpacing().distance(to: ViewSpacing(), along: .vertical)
+        bounds.height += rowHeight + (rows.count > 1 ? ySpacing : 0)
+        rowMinY += rowHeight + ySpacing
+        itemsInRow = 0
+        rowHeight = 0
+        xOffsets.removeAll()
+        remainingWidth = maxPossibleWidth
+      }
     }
+  }
+}
+
+private extension HorizontalAlignment {
+  var percent: Double {
+    switch self {
+      case .leading: return 0
+      case .trailing: return 1
+      default: return 0.5
+    }
+  }
+}
+
+private extension VerticalAlignment {
+  var percent: Double {
+    switch self {
+      case .top: return 0
+      case .bottom: return 1
+      default: return 0.5
+    }
+  }
 }
 
 // Componente principal usando o layout personalizado com o EffectComponent
@@ -87,7 +146,7 @@ struct EffectPreviewComponent: View {
                     .font(.system(size: 12, weight: .regular))
             }
 
-            WrapHStackLayout(spacing: 8, verticalSpacing: 8) {
+            NewFlowLayout(alignment: .leading, spacing: 8) {
                 ForEach(effects, id: \.name) { effect in
                     EffectComponent(effect: effect, isPreview: isPreview)
                 }
@@ -95,10 +154,6 @@ struct EffectPreviewComponent: View {
             //.background(.rosa)
         }
         .padding(8)
-        .background {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.gray.opacity(0.1))
-        }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }

@@ -17,6 +17,10 @@ struct ManageRemindersView: View {
     @Query var reminders: [Reminder]
     @Environment(\.modelContext) var modelContext
     
+    @Query var notifications: [NotificationModel]
+    
+    @State var selectedReminder: Reminder?
+    
     var body: some View {
         NavigationStack {
             ZStack{
@@ -29,17 +33,20 @@ struct ManageRemindersView: View {
                     }
                     reminderTypePicker()
                     List{
-                        ForEach(reminders.filter({$0.type == reminderType})) { reminder in
+                        ForEach(reminders.filter({$0.type == reminderType}).sorted(by: {$0.time < $1.time})) { reminder in
                             EditReminderComponent(reminder: reminder)
                                 .swipeActions(edge: .trailing, allowsFullSwipe: false){
                                     Button(role: .destructive) {
+                                        print("deletando...")
                                         modelContext.delete(reminder)
+                                        deleteReminderNotifications(reminderNotifications: notifications.filter({$0.reminder?.modelID == reminder.modelID}), modelContext: modelContext)
                                     } label: {
                                         Label("Deletar", systemImage: "trash.fill")
                                     }
                                     
                                     Button {
-                                        isSheetPresented = true
+                                        selectedReminder = reminder
+                                        //isSheetPresented = true
                                     } label: {
                                         Label("Editar", systemImage: "pencil")
                                     }
@@ -47,8 +54,6 @@ struct ManageRemindersView: View {
                                     
                                     
                                     
-                                }.sheet(isPresented: $isSheetPresented) {
-                                    AddReminder(isShowingAddReminderSheet: $isSheetPresented, existingReminder: reminder)
                                 }
                         }
                     }.scrollContentBackground(.hidden)
@@ -70,6 +75,11 @@ struct ManageRemindersView: View {
                     }
 
                    }
+            }.sheet(item: $selectedReminder, onDismiss: {
+                addNavBarBackground()
+            }) { reminder in
+                    AddReminder(existingReminder: reminder)
+                    .interactiveDismissDisabled()
                 }
 
         }

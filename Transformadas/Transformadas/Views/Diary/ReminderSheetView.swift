@@ -11,11 +11,11 @@ struct ReminderSheetView: View {
     ///EXTERNAL
     @Binding var isShowingReminderSheet: Bool
     @Binding var isShowingEditReminderSheet: Bool
-    
-    ///VIEW DATA
     var reminder: Reminder
     @Binding var isChecked: Bool
+    var selectedDate: Date
     
+    ///VIEW DATA
     var colors: [Color] {
         if reminder.type == .event {
             return [.azul, .verde]
@@ -114,9 +114,9 @@ struct ReminderSheetView: View {
                 .padding(14)
                 .background {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(colors[1])
+                        .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : colors[1])
                 }
-        }
+        }.disabled(isFutureDate(selectedDate))
         
     }
     
@@ -135,7 +135,7 @@ struct ReminderSheetView: View {
 
 #Preview {
     NavigationStack {
-        ReminderSheetView(isShowingReminderSheet: .constant(true), isShowingEditReminderSheet: .constant(false), reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: Repetition.never, type: .medicine, time: Date.now, daysCompleted: [], notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. ", dosage: "2mg"), isChecked: .constant(true))
+        ReminderSheetView(isShowingReminderSheet: .constant(true), isShowingEditReminderSheet: .constant(false), reminder: Reminder(name: "Consulta Endocrinologista", startDate: Date.now, repetition: Repetition.never, type: .medicine, time: Date.now, daysCompleted: [], notes: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut in ornare tellus. ", dosage: "2mg"), isChecked: .constant(true), selectedDate: Date.now)
     }
     .modelContainer(for: [Effect.self,
                           User.self,
