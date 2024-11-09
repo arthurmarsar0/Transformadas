@@ -25,9 +25,13 @@ struct EditReminderComponent: View {
                 Text(reminder.name)
                     .font(.system(size: 12, weight: .medium))
                     .foregroundStyle(colors[0])
-                Text(reminder.notes)
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(.cinzaEscuro)
+                
+                if reminder.notes != ""{
+                    Text(reminder.notes)
+                        .font(.system(size: 12, weight: .regular))
+                        .foregroundStyle(.cinzaEscuro)
+                        .multilineTextAlignment(.leading)
+                }
                 
                 HStack (spacing: 4){
                     Image(systemName: "calendar")

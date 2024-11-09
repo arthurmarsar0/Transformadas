@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ReminderComponent: View
 {
@@ -15,6 +16,7 @@ struct ReminderComponent: View
     
     // MARK: - DATA
     @Environment(\.modelContext) var modelContext
+    @Query var notifications: [NotificationModel]
     
     // MARK: - VIEW DATA
     @State var isChecked: Bool = false
@@ -47,8 +49,8 @@ struct ReminderComponent: View
                         isChecked.toggle()
                     }) {
                         Image(systemName: isChecked ? "checkmark.circle.fill" : "circle")
-                            .foregroundStyle(isChecked ? .azul : .cinzaClaro)
-                    }
+                            .foregroundStyle(isChecked ? .azul : isFutureDate(selectedDate) ? .cinzaMuitoClaro : .cinzaClaro)
+                    }.disabled(isFutureDate(selectedDate))
                     
                     
                 }
@@ -69,7 +71,7 @@ struct ReminderComponent: View
             }.sheet(isPresented: $isShowingReminderSheet, onDismiss: {
                 addNavBarBackground()
             }) {
-                ReminderSheetView(isShowingReminderSheet: $isShowingReminderSheet, isShowingEditReminderSheet: $isShowingEditReminderSheet, reminder: reminder, isChecked: $isChecked)
+                ReminderSheetView(isShowingReminderSheet: $isShowingReminderSheet, isShowingEditReminderSheet: $isShowingEditReminderSheet, reminder: reminder, isChecked: $isChecked, selectedDate: selectedDate)
                     .presentationDetents([.medium])
             }.sheet(isPresented: $isShowingEditReminderSheet, onDismiss: {
                 addNavBarBackground()
@@ -87,6 +89,20 @@ struct ReminderComponent: View
         
         
         if isChecked {
+            var dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: selectedDate)
+            dateComponents.hour = Calendar.current.dateComponents([.hour], from: reminder.time).hour
+            dateComponents.minute = Calendar.current.dateComponents([.minute], from: reminder.time).minute
+            
+            if let targetDate = Calendar.current.date(from: dateComponents) {
+                if Date.now < targetDate {
+                    deleteReminderNotifications(reminderNotifications: notifications.filter({$0.reminder?.modelID == reminder.modelID}), modelContext: modelContext)
+                } else if Date.now < targetDate + TimeInterval(30*60) {
+                    deleteReminderNotifications(reminderNotifications: notifications.filter({$0.reminder?.modelID == reminder.modelID && ($0.type == .missingMedicine || $0.type == .afterEvent)}), modelContext: modelContext)
+                }
+            }
+            
+            
+            
             reminder.daysCompleted.append(selectedDate)
         } else {
             reminder.daysCompleted = reminder.daysCompleted.filter({!isSameDay($0, selectedDate)})
