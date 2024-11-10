@@ -34,16 +34,22 @@ class AudioPlayer: NSObject, ObservableObject {
             if audioPlayer != nil {
                 audioPlayer?.stop()
             }
+                
+            do {
+                audioPlayer = try AVAudioPlayer(data: audio.data)
+                //audioPlayer = try AVAudioPlayer(contentsOf: audio.url)
+                audioPlayer?.delegate = self
+                audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
+                audioPlayer?.play()
+                startTimer()
+                
+                isPlaying = true
+                isStarted = true
+            } catch {
+                print("Erro ao tentar reproduzir o áudio: \(error.localizedDescription)")
+            }
             
-            // Inicializa o AVAudioPlayer com o arquivo de áudio
-            audioPlayer = try AVAudioPlayer(contentsOf: audio.path)
-            audioPlayer?.delegate = self
-            audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
-            audioPlayer?.play()
-            startTimer()
             
-            isPlaying = true
-            isStarted = true
         } catch {
             print("Erro ao iniciar a reprodução: \(error)")
         }

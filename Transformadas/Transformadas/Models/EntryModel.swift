@@ -28,12 +28,12 @@ class EntryModel {
         return nil
     }
     
-    static func dataToImages(dataset: [Data]) -> [Image] {
-        var images: [Image] = []
+    static func dataToImages(dataset: [Data]) -> [UIImage] {
+        var images: [UIImage] = []
         
         for data in dataset {
             if let uiImage = UIImage(data: data) {
-                images.append(Image(uiImage: uiImage))
+                images.append(uiImage)
             }
         }
         
@@ -94,8 +94,17 @@ func copyEntry(toEntry: Entry, entry: Entry) {
     toEntry.mood = entry.mood
     toEntry.note = entry.note
     toEntry.audio = entry.audio
-    toEntry.photos = entry.photos
-    toEntry.effects = entry.effects
-    toEntry.documents = entry.documents
+//    toEntry.photos = entry.photos
+//    toEntry.effects = entry.effects
+//    toEntry.documents = entry.documents
     toEntry.weight = entry.weight
 }
+
+
+
+/*
+ var modelID: UUID = UUID()
+ var name: String = ""
+ var status: EffectStatus = EffectStatus.active
+ @Relationship(deleteRule: .nullify, inverse: \Entry.effects) var entries: [Entry]?
+ */

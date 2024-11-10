@@ -11,40 +11,6 @@ import AVFoundation
 import SwiftData
 
 
-////essa classe controla a reprodução do áudio
-//class AudioPlayer: NSObject, ObservableObject {
-//    var audioPlayer: AVAudioPlayer!
-//    @Published var isPlaying = false
-//    //faz basicamente o que o método do controle da gravação faz
-//    func startPlayback(audio: URL) {
-//        let playbackSession = AVAudioSession.sharedInstance()
-//        
-//        do {
-//            try playbackSession.overrideOutputAudioPort(.speaker)
-//            audioPlayer = try AVAudioPlayer(contentsOf: audio)
-//            audioPlayer.delegate = self
-//            audioPlayer.play()
-//            isPlaying = true
-//        } catch {
-//            print("Erro ao iniciar a reprodução")
-//        }
-//    }
-//    
-//    func stopPlayback() {
-//        audioPlayer.stop()
-//        isPlaying = false
-//    }
-//}
-//
-//extension AudioPlayer: AVAudioPlayerDelegate {
-//    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
-//        if flag {
-//            isPlaying = false
-//        }
-//    }
-//}
-
-
 func getFileDate(for file: URL) -> Date {
     if let attributes = try? FileManager.default.attributesOfItem(atPath: file.path) as [FileAttributeKey: Any],
         let creationDate = attributes[FileAttributeKey.creationDate] as? Date {
@@ -54,76 +20,6 @@ func getFileDate(for file: URL) -> Date {
     }
 }
 
-//essa classe controla a gravação do audio
-//class RecordController: NSObject, ObservableObject, AVAudioPlayerDelegate {
-//    
-//    var audioRecorder: AVAudioRecorder! //variável que controla o funcionamento da gravação
-//    var audioPlayer: AVAudioPlayer!
-//    
-//    @Published var isRecording: Bool = false
-//    
-//    func beginRecording(date: Date) {
-//        //uma sessão de gravação de audio
-//        let session = AVAudioSession.sharedInstance()
-//        
-//        do {
-//            //tenta setar a gravação
-//            try session.setCategory(.playAndRecord, mode: .default)
-//            try session.setActive(true)
-//        } catch {
-//            print("Não pode iniciar a gravação")
-//        }
-//        
-//        //isso daqui eu so copiei, como o usuario vai poder nomear os arquivos salvos de audio a gnt vai ter que mudar
-//        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-//        let fileName = path.appendingPathComponent("Audio\(date.dayMonthYear).m4a")
-//        
-//        //criar as configurações da gravação
-//        let settings = [
-//          AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-//          AVSampleRateKey: 12000,
-//          AVNumberOfChannelsKey: 1,
-//          AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-//        ]
-//        
-//        //verificar se houver erro
-//        do {
-//            audioRecorder = try AVAudioRecorder(url: fileName, settings: settings)
-//            audioRecorder.prepareToRecord()
-//            isRecording = true
-//        }
-//        catch {
-//            print("Falhou em setar a gravação")
-//        }
-//        
-//    }
-//    
-//    func endRecording() -> Audio {
-//        let audio = Audio(name: "", path: audioRecorder.url)
-//        audioRecorder.stop()
-//        isRecording = false
-//        //self.fetchAllRecords()
-//        
-//        return audio
-//    }
-//
-////    func fetchAllRecords()  {
-////        
-////        let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-////        
-////        let directoryContents = try! FileManager.default.contentsOfDirectory(at: path, includingPropertiesForKeys: nil)
-////        
-////        for i in directoryContents {
-////            records.append(Audio(name: <#T##String#>, path: <#T##URL#>))
-////            records.append(Audio(fileURL : i, createdAt:getFileDate(for: i), isPlaying: false))
-////        }
-////        //deixa os records por ordem cronologica
-////        records.sort(by: { $0.createdAt.compare($1.createdAt) == .orderedDescending})
-////        
-////    }
-//
-//}
-
 class AudioRecorder: ObservableObject {
     private var audioRecorder: AVAudioRecorder?
     private var timer: Timer?
@@ -132,6 +28,7 @@ class AudioRecorder: ObservableObject {
     @Published var isRecording: Bool = false
     
     var recordedAudio: Audio?
+    
     public var audioDuration: TimeInterval {
         audioRecorder?.currentTime ?? 0.0
     }
@@ -149,6 +46,9 @@ class AudioRecorder: ObservableObject {
             try audioSession.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
             try audioSession.setActive(true)
 
+//            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//            let audioURL = path.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
+            
             let tempDirectory = FileManager.default.temporaryDirectory
             let audioURL = tempDirectory.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
 
@@ -159,7 +59,7 @@ class AudioRecorder: ObservableObject {
             startUpdatingAudioLevel()
             isRecording = true
             
-            recordedAudio = Audio(name: "", path: audioURL, length: 0.0)
+            recordedAudio = Audio(name: "", data: Data(), length: 0.0)
         } catch {
             print("Erro ao iniciar a gravação: \(error.localizedDescription)")
         }
@@ -167,10 +67,20 @@ class AudioRecorder: ObservableObject {
 
     func stopRecording() -> Audio? {
         recordedAudio?.length = audioDuration
+        
         audioRecorder?.stop()
         stopUpdatingAudioLevel()
         isRecording = false
-    
+        
+        do {
+            if let url = audioRecorder?.url {
+                let data = try Data(contentsOf: url)
+                recordedAudio?.data = data
+            }
+        } catch {
+            print("Erro ao salvar áudio para Data: \(error.localizedDescription)")
+        }
+
         return recordedAudio
     }
 
