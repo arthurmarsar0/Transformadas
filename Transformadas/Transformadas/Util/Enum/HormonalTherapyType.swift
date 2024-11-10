@@ -8,4 +8,26 @@
 enum HormonalTherapyType: Codable {
     case feminization
     case masculization
+    case nohormonaltherapy
+    case rathernotinform
+}
+
+extension HormonalTherapyType {
+    static var allTypes: [HormonalTherapyType] {
+        return [.feminization, .masculization, .nohormonaltherapy, .rathernotinform]
+    }
+
+    var displayName: String {
+        switch self {
+        case .feminization:
+            return "Feminizante"
+        case .masculization:
+            return "Masculinizante"
+        case .nohormonaltherapy:
+            return "Não faço"
+        case .rathernotinform:
+            return "Prefiro não informar"
+            
+        }
+    }
 }

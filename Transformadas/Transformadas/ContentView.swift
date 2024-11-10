@@ -16,12 +16,11 @@ struct ContentView: View {
     
     var body: some View {
         if !appData.primeiraAbertura {
-            Onboarding()
+            Onboarding().environmentObject(appData)
                 .onAppear {
                     for effect in EffectEnum.allCases {
                         modelContext.insert(effect.effect)
                     }
-                    appData.primeiraAbertura = true
                 }
         } else {
             TabView (selection: $selectedTab){
