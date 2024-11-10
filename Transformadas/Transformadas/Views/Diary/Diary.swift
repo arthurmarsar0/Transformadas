@@ -408,7 +408,7 @@ struct Diary: View {
                 .padding(14)
                 .background {
                     RoundedRectangle(cornerRadius: 10)
-                        .fill(isFutureDate(selectedDate) ?  .cinzaMuitoClaro : .rosa)
+                        .fill(isFutureDate(selectedDate) ?  .cinzaClaro.opacity(0.3) : .rosa)
                 }
         }.disabled(isFutureDate(selectedDate))
             .sheet(isPresented: $isShowingAddEntrySheet, onDismiss: {
