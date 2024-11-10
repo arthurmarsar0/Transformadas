@@ -10,7 +10,7 @@ import SwiftData
 
 struct PhotosView: View {
     var entryDate: Date
-    var photos: [Image]
+    var photos: [UIImage]
     var startingPhoto: Int
     
     @State var selectedPhoto: Int = 0
@@ -20,7 +20,7 @@ struct PhotosView: View {
             
             TabView(selection: $selectedPhoto) {
                 ForEach(0..<photos.count, id: \.self) { i in
-                    photos[i]
+                    Image(uiImage: photos[i])
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                     //.scaledToFill()
@@ -50,14 +50,14 @@ struct PhotosView: View {
         }
     }
 }
-
-#Preview {
-    NavigationStack {
-        PhotosView(entryDate: Date.now, photos: [Image(systemName: "calendar"), Image(systemName: "calendar"), Image(systemName: "calendar")], startingPhoto: 1)
-    }
-    .modelContainer(for: [Effect.self,
-                          User.self,
-                          Entry.self,
-                          Reminder.self], inMemory: true, isAutosaveEnabled: false)
-    
-}
+//
+//#Preview {
+//    NavigationStack {
+//        PhotosView(entryDate: Date.now, photos: [Image(systemName: "calendar"), Image(systemName: "calendar"), Image(systemName: "calendar")], startingPhoto: 1)
+//    }
+//    .modelContainer(for: [Effect.self,
+//                          User.self,
+//                          Entry.self,
+//                          Reminder.self], inMemory: true, isAutosaveEnabled: false)
+//    
+//}

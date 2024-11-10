@@ -46,7 +46,7 @@ struct AddEntrySheet: View {
     
     ///DOCUMENTS
     @State var isShowingDocumentPicker: Bool = false
-    @State var selectedDocuments: [URL] = []
+    @State var selectedDocuments: [Document] = []
     @State var selectedDocumentURL: URL?
     
     ///AUDIO
@@ -77,7 +77,7 @@ struct AddEntrySheet: View {
                     Section {
                         TextField("Descreva este momento da sua transição...", text: $entry.note, axis: .vertical)
                             .lineLimit(6...7)
-                            
+                        
                     }.listSectionSpacing(16)
                     
                     Section("Mudanças Físicas") {
@@ -116,94 +116,135 @@ struct AddEntrySheet: View {
                     
                 }
                 .scrollContentBackground(.hidden)
-                .navigationTitle("Seu Dia")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button(action: {
-                            isPresented = false
-                        }) {
-                            Text("Cancelar")
-                                .foregroundStyle(Color.black)
+                
+                
+            }
+            .navigationTitle("Seu Dia")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(action: {
+                        isPresented = false
+                    }) {
+                        Text("Cancelar")
+                            .foregroundStyle(Color.black)
+                    }
+                }
+                
+                ToolbarItem (placement: .confirmationAction){
+                    Button(action: {
+                        isPresented = false
+                        addRegister()
+                    }) {
+                        Text(addTitle)
+                            .foregroundStyle(canAddEntry ? .rosa : .cinzaClaro)
+                            .disabled(!canAddEntry)
+                            .font(.system(size: 17, weight: .semibold))
+                    }
+                }
+            }
+            .toolbarBackground(.bege)
+            .toolbarBackgroundVisibility(.visible)
+            .modifier(KeyboardDismiss())
+            .onAppear {
+                removeNavBarBackground()
+                if let selectedDate = selectedDate {
+                    entry.date = selectedDate
+                }
+                
+                
+                for effect in effects.filter({$0.status != .inactive}) {
+                    activeEffects[effect.modelID] = false
+                }
+                
+                if let existingEntry = existingEntry {
+                    selectedDocuments = existingEntry.documents
+                    selectedPhotos = EntryModel.dataToImages(dataset: existingEntry.photos)
+                    copyEntry(toEntry: entry, entry: existingEntry)
+                    
+                    if let efs = existingEntry.effects {
+                        for effect in efs {
+                            activeEffects[effect.modelID] = true
                         }
                     }
                     
-                    ToolbarItem (placement: .confirmationAction){
-                        Button(action: {
-                            isPresented = false
-                            addRegister()
-                        }) {
-                            Text("Registrar")
-                                .foregroundStyle(canAddEntry ? .rosa : .cinzaClaro)
-                                .disabled(!canAddEntry)
-                                .font(.system(size: 17, weight: .semibold))
+                }
+                
+            }
+            .onChange(of: hasEffectsChanged) {
+                if hasEffectsChanged {
+                    hasEffectsChanged = false
+                    for effect in effects.filter({$0.status != .inactive}) {
+                        if activeEffects[effect.modelID] == nil {
+                            activeEffects[effect.modelID] = false
+                        }
+                    }
+                    
+                    for (modelID, _) in activeEffects {
+                        if !effects.contains(where: {$0.modelID == modelID}) || effects.filter({$0.modelID == modelID}).first?.status == .inactive {
+                            activeEffects.removeValue(forKey: modelID)
                         }
                     }
                 }
-                .toolbarBackground(.bege)
-                .toolbarBackgroundVisibility(.visible)
-                .modifier(KeyboardDismiss())
-                
-            }
-        }.onAppear {
-            removeNavBarBackground()
-            if let selectedDate = selectedDate {
-                entry.date = selectedDate
-            }
-            
-            
-            for effect in effects.filter({$0.status != .inactive}) {
-                activeEffects[effect.modelID] = false
-            }
-            
-            if let existingEntry = existingEntry {
-                copyEntry(toEntry: entry, entry: existingEntry)
-                if let efs = entry.effects {
-                    for effect in efs {
-                        activeEffects[effect.modelID] = true
+            }.sheet(isPresented: $isShowingCameraPicker) {
+                //CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
+                //                .onAppear {
+                //                    removeNavBarBackground()
+                //                }
+                ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
+                    .onAppear {
+                        removeNavBarBackground()
                     }
+            }.sheet(isPresented: $isShowingDocumentPicker) {
+                DocumentPicker(selectedURL: $selectedDocumentURL)
+                    .onAppear {
+                        removeNavBarBackground()
+                    }
+            }.sheet(isPresented: $isShowingRecordAudioSheet, onDismiss: {
+                if audioRecorder.isRecording {
+                    entry.audio = audioRecorder.stopRecording()
                 }
-                
-            }
-            
-        }
-        .onChange(of: hasEffectsChanged) {
-            if hasEffectsChanged {
-                hasEffectsChanged = false
-                for effect in effects.filter({$0.status != .inactive}) {
-                    if activeEffects[effect.modelID] == nil {
-                        activeEffects[effect.modelID] = false
-                    }
+            }) {
+                AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
+                    .presentationDetents([.medium])
+                    .presentationDragIndicator(.visible)
+            }.confirmationDialog("Você tem certeza que quer deletar o áudio?", isPresented: $isShowingDeleteAudioConfirmation, titleVisibility: .visible) {
+                Button ("Deletar", role: .destructive) {
+                    entry.audio = nil
                 }
                 
-                for (modelID, _) in activeEffects {
-                    if !effects.contains(where: {$0.modelID == modelID}) || effects.filter({$0.modelID == modelID}).first?.status == .inactive {
-                        activeEffects.removeValue(forKey: modelID)
+                Button ("Manter", role: .cancel) {
+                    
+                }
+            }.onChange(of: selectedCameraPhoto) {
+                if let selectedPhoto = selectedCameraPhoto {
+                    selectedPhotosCamera.append(selectedPhoto)
+                    selectedCameraPhoto = nil
+                    
+                    selectedPhotos = selectedPhotosCamera + selectedPhotosPicker
+                }
+            }
+            .onChange(of: selectedPhotosPPI) {
+                Task {
+                    selectedPhotosPicker = []
+                    for photo in selectedPhotosPPI {
+                        
+                        guard let imageData = try? await photo.loadTransferable(type: Data.self) else { return }
+                        if let convertedImage = UIImage(data: imageData) {
+                            selectedPhotosPicker.append(convertedImage)
+                        }
+                        
                     }
+                    selectedPhotos = selectedPhotosCamera + selectedPhotosPicker
                 }
+            }.onChange(of: selectedDocumentURL) {
+                if let documentURL = selectedDocumentURL {
+                    var document = Document(name: documentURL.lastPathComponent, url: documentURL, type: documentURL.pathExtension)
+                    selectedDocuments.append(document)
+                    selectedDocumentURL = nil
+                }
+                
             }
-        }.sheet(isPresented: $isShowingCameraPicker) {
-            //CameraPicker(selectedImage: $selectedCameraPhoto, sourceType: .camera)
-//                .onAppear {
-//                    removeNavBarBackground()
-//                }
-            ImagePicker(image: $selectedCameraPhoto, sourceType: .camera)
-                .onAppear {
-                    removeNavBarBackground()
-                }
-        }.sheet(isPresented: $isShowingDocumentPicker) {
-            DocumentPicker(selectedURL: $selectedDocumentURL)
-                .onAppear {
-                    removeNavBarBackground()
-                }
-        }.sheet(isPresented: $isShowingRecordAudioSheet, onDismiss: {
-            if audioRecorder.isRecording {
-                entry.audio = audioRecorder.stopRecording()
-            }
-        }) {
-            AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
-                .presentationDetents([.medium])
-                .presentationDragIndicator(.visible)
         }
     }
     
@@ -283,16 +324,7 @@ struct AddEntrySheet: View {
                             .onTapGesture {
                                 isShowingDeleteAudioConfirmation = true
                                 
-                            }.confirmationDialog("Você tem certeza que quer deletar o áudio?", isPresented: $isShowingDeleteAudioConfirmation, titleVisibility: .visible) {
-                                Button ("Deletar", role: .destructive) {
-                                    entry.audio = nil
-                                }
-                                
-                                Button ("Manter", role: .cancel) {
-                                    
-                                }
                             }
-                        
                     }
                 )
             } else {
@@ -325,34 +357,15 @@ struct AddEntrySheet: View {
             }
         }
         .listSectionSpacing(8)
-        .onChange(of: selectedCameraPhoto) {
-            if let selectedPhoto = selectedCameraPhoto {
-                selectedPhotosCamera.append(selectedPhoto)
-                selectedCameraPhoto = nil
-            }
-        }
-        .onChange(of: selectedPhotosPPI) {
-            Task {
-                selectedPhotosPicker = []
-                for photo in selectedPhotosPPI {
-                    
-                    guard let imageData = try? await photo.loadTransferable(type: Data.self) else { return }
-                    if let convertedImage = UIImage(data: imageData) {
-                        selectedPhotosPicker.append(convertedImage)
-                    }
-                    
-                }
-                selectedPhotos = selectedPhotosCamera + selectedPhotosPicker
-            }
-        }
+        
     }
     
     func effectView() -> some View {
         ForEach(activeEffects.keys.sorted(), id: \.self) { modelID in
             let isOn = Binding<Bool>(
                 get: { activeEffects[modelID] ?? false },
-                    set: { newValue in activeEffects[modelID] = newValue }
-                )
+                set: { newValue in activeEffects[modelID] = newValue }
+            )
             
             Toggle(isOn: isOn) {
                 Text(effects.filter{$0.modelID == modelID}.first?.name ?? "")
@@ -377,7 +390,7 @@ struct AddEntrySheet: View {
                             selectedPhotos.removeAll(where: { $0 == photo })
                         }) {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
                         }
                     }
                     
@@ -399,14 +412,14 @@ struct AddEntrySheet: View {
     func pdfView() -> some View {
         ForEach(selectedDocuments, id: \.self) { document in
             HStack (spacing: 16){
-                Text(document.pathExtension)
+                Text(document.type)
                     .foregroundStyle(.blue)
                     .background {
                         Image(systemName: "document.fill")
                             .foregroundStyle(.beginho)
                             .font(.system(size: 48))
                     }
-                Text(document.lastPathComponent)
+                Text(document.name)
                 
                 Button(action: {
                     selectedDocuments.removeAll(where: {$0 == document})
@@ -419,34 +432,61 @@ struct AddEntrySheet: View {
             
         }
         
-        .onChange(of: selectedDocumentURL) {
-            if let document = selectedDocumentURL {
-                selectedDocuments.append(document)
-                selectedDocumentURL = nil
-            }
-            
-        }
+        
     }
     
     // MARK: - DATA FUNC
     
     func addRegister() {
-        for (modelID, isOn) in activeEffects {
-            if let effect = effects.filter({$0.modelID == modelID}).first, isOn {
-                entry.effects?.append(effect)
+        if let existingEntry = existingEntry {
+            copyEntry(toEntry: existingEntry, entry: entry)
+            existingEntry.effects = []
+            existingEntry.documents = []
+            existingEntry.photos = []
+            
+            for (modelID, isOn) in activeEffects {
+                if let effect = effects.filter({$0.modelID == modelID}).first, isOn {
+                    existingEntry.effects?.append(effect)
+                }
             }
-        }
-        
-        for photo in selectedPhotos {
-            if let data = EntryModel.imageToData(image: photo) {
-                entry.photos.append(data)
+            
+            for photo in selectedPhotos {
+                if let data = EntryModel.imageToData(image: photo) {
+                    existingEntry.photos.append(data)
+                }
             }
+            
+            for document in selectedDocuments {
+                if let url = saveDocumentToAppDirectory(url: document.url) {
+                    existingEntry.documents.append(Document(name: document.name, url: url, type: document.type))
+                }
+            }
+            
+            print("registro editado com sucesso!")
+        } else {
+            var newEntry = Entry(date: Calendar.current.startOfDay(for: entry.date), mood: entry.mood, note: entry.note, audio: entry.audio, photos: [], effects: [], documents: [], weight: entry.weight)
+            
+            for (modelID, isOn) in activeEffects {
+                if let effect = effects.filter({$0.modelID == modelID}).first, isOn {
+                    newEntry.effects?.append(effect)
+                }
+            }
+            
+            for photo in selectedPhotos {
+                if let data = EntryModel.imageToData(image: photo) {
+                    newEntry.photos.append(data)
+                }
+            }
+            
+            for document in selectedDocuments {
+                if let url = saveDocumentToAppDirectory(url: document.url) {
+                    newEntry.documents.append(Document(name: document.name, url: url, type: document.type))
+                }
+            }
+            
+            modelContext.insert(newEntry)
+            print("registro criado com sucesso!")
         }
-        
-        entry.documents = selectedDocuments.map({Document(name: $0.lastPathComponent, url: $0)})
-        
-        
-        modelContext.insert(entry)
     }
     
 }

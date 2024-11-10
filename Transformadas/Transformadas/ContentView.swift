@@ -11,6 +11,7 @@ import SwiftData
 struct ContentView: View {
     @State var selectedTab: Int = 1
     @StateObject var appData: AppData = AppData()
+    @Query var effects: [Effect]
     
     @Environment(\.modelContext) var modelContext
     
@@ -19,7 +20,9 @@ struct ContentView: View {
             Onboarding().environmentObject(appData)
                 .onAppear {
                     for effect in EffectEnum.allCases {
-                        modelContext.insert(effect.effect)
+                        if !effects.contains(where: {$0.name == effect.effect.name}) {
+                            modelContext.insert(effect.effect)
+                        }
                     }
                 }
         } else {
@@ -39,9 +42,9 @@ struct ContentView: View {
                     }.tag(2)
                     
                 }
-            }.onAppear{
-                //setupTabBarAppearance(modo: true)
             }
+            .toolbarBackgroundVisibility(.visible, for: .tabBar)
+            .toolbarBackground(.bege, for: .tabBar)
         }
     }
     
