@@ -403,7 +403,7 @@ struct AddEntrySheet: View {
         NavigationLink(destination: ManageEffectsView(hasEffectsChanged: $hasEffectsChanged).navigationBarBackButtonHidden()) {
             
             Text("Adicione um Efeito")
-                .foregroundStyle(.rosa)
+                .foregroundStyle(.verde)
             
         }
     }
