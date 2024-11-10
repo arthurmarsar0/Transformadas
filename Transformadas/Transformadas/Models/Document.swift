@@ -9,5 +9,6 @@ import Foundation
 
 struct Document: Codable, Hashable {
     var name: String
-    var url: URL
+    var data: Data
+    var type: String
 }

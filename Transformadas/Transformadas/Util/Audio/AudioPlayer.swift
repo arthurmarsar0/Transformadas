@@ -35,15 +35,24 @@ class AudioPlayer: NSObject, ObservableObject {
                 audioPlayer?.stop()
             }
             
-            // Inicializa o AVAudioPlayer com o arquivo de áudio
-            audioPlayer = try AVAudioPlayer(contentsOf: audio.path)
-            audioPlayer?.delegate = self
-            audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
-            audioPlayer?.play()
-            startTimer()
             
-            isPlaying = true
-            isStarted = true
+            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("audio\(UUID().uuidString).m4a")
+                
+            do {
+                try audio.data.write(to: tempURL)
+                audioPlayer = try AVAudioPlayer(contentsOf: tempURL)
+                audioPlayer?.delegate = self
+                audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
+                audioPlayer?.play()
+                startTimer()
+                
+                isPlaying = true
+                isStarted = true
+            } catch {
+                print("Erro ao tentar reproduzir o áudio: \(error.localizedDescription)")
+            }
+            
+            
         } catch {
             print("Erro ao iniciar a reprodução: \(error)")
         }

@@ -14,7 +14,7 @@ class Entry {
     var date: Date = Date.now
     var mood: Mood?
     var note: String = ""
-    var audio: Audio? // MUDAR
+    var audio: Audio?
     var photos: [Data] = []
     @Relationship(deleteRule: .nullify, inverse: .none) var effects: [Effect]?
     var documents: [Document] = []

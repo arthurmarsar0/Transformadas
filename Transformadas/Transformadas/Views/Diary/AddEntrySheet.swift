@@ -46,7 +46,7 @@ struct AddEntrySheet: View {
     
     ///DOCUMENTS
     @State var isShowingDocumentPicker: Bool = false
-    @State var selectedDocuments: [URL] = []
+    @State var selectedDocuments: [Document] = []
     @State var selectedDocumentURL: URL?
     
     ///AUDIO
@@ -133,7 +133,7 @@ struct AddEntrySheet: View {
                             isPresented = false
                             addRegister()
                         }) {
-                            Text("Registrar")
+                            Text(addTitle)
                                 .foregroundStyle(canAddEntry ? .rosa : .cinzaClaro)
                                 .disabled(!canAddEntry)
                                 .font(.system(size: 17, weight: .semibold))
@@ -204,6 +204,47 @@ struct AddEntrySheet: View {
             AudioRecordingSheet(audioRecorder: audioRecorder, isShowingRecordAudioSheet: $isShowingRecordAudioSheet, audio: $entry.audio)
                 .presentationDetents([.medium])
                 .presentationDragIndicator(.visible)
+        }.confirmationDialog("Você tem certeza que quer deletar o áudio?", isPresented: $isShowingDeleteAudioConfirmation, titleVisibility: .visible) {
+            Button ("Deletar", role: .destructive) {
+                entry.audio = nil
+            }
+            
+            Button ("Manter", role: .cancel) {
+                
+            }
+        }.onChange(of: selectedCameraPhoto) {
+            if let selectedPhoto = selectedCameraPhoto {
+                selectedPhotosCamera.append(selectedPhoto)
+                selectedCameraPhoto = nil
+                
+                selectedPhotos = selectedPhotosCamera + selectedPhotosPicker
+            }
+        }
+        .onChange(of: selectedPhotosPPI) {
+            Task {
+                selectedPhotosPicker = []
+                for photo in selectedPhotosPPI {
+                    
+                    guard let imageData = try? await photo.loadTransferable(type: Data.self) else { return }
+                    if let convertedImage = UIImage(data: imageData) {
+                        selectedPhotosPicker.append(convertedImage)
+                    }
+                    
+                }
+                selectedPhotos = selectedPhotosCamera + selectedPhotosPicker
+            }
+        }.onChange(of: selectedDocumentURL) {
+            if let documentURL = selectedDocumentURL {
+                do {
+                    var data = try Data(contentsOf: documentURL)
+                    var document = Document(name: documentURL.lastPathComponent, data: data, type: documentURL.pathExtension)
+                    selectedDocuments.append(document)
+                    selectedDocumentURL = nil
+                } catch {
+                    print(error.localizedDescription)
+                }
+            }
+            
         }
     }
     
@@ -283,16 +324,7 @@ struct AddEntrySheet: View {
                             .onTapGesture {
                                 isShowingDeleteAudioConfirmation = true
                                 
-                            }.confirmationDialog("Você tem certeza que quer deletar o áudio?", isPresented: $isShowingDeleteAudioConfirmation, titleVisibility: .visible) {
-                                Button ("Deletar", role: .destructive) {
-                                    entry.audio = nil
-                                }
-                                
-                                Button ("Manter", role: .cancel) {
-                                    
-                                }
                             }
-                        
                     }
                 )
             } else {
@@ -325,26 +357,7 @@ struct AddEntrySheet: View {
             }
         }
         .listSectionSpacing(8)
-        .onChange(of: selectedCameraPhoto) {
-            if let selectedPhoto = selectedCameraPhoto {
-                selectedPhotosCamera.append(selectedPhoto)
-                selectedCameraPhoto = nil
-            }
-        }
-        .onChange(of: selectedPhotosPPI) {
-            Task {
-                selectedPhotosPicker = []
-                for photo in selectedPhotosPPI {
-                    
-                    guard let imageData = try? await photo.loadTransferable(type: Data.self) else { return }
-                    if let convertedImage = UIImage(data: imageData) {
-                        selectedPhotosPicker.append(convertedImage)
-                    }
-                    
-                }
-                selectedPhotos = selectedPhotosCamera + selectedPhotosPicker
-            }
-        }
+        
     }
     
     func effectView() -> some View {
@@ -377,7 +390,7 @@ struct AddEntrySheet: View {
                             selectedPhotos.removeAll(where: { $0 == photo })
                         }) {
                             Image(systemName: "xmark.circle.fill")
-                                .foregroundStyle(.black)
+                                .foregroundStyle(.white)
                         }
                     }
                     
@@ -399,14 +412,14 @@ struct AddEntrySheet: View {
     func pdfView() -> some View {
         ForEach(selectedDocuments, id: \.self) { document in
             HStack (spacing: 16){
-                Text(document.pathExtension)
+                Text(document.type)
                     .foregroundStyle(.blue)
                     .background {
                         Image(systemName: "document.fill")
                             .foregroundStyle(.beginho)
                             .font(.system(size: 48))
                     }
-                Text(document.lastPathComponent)
+                Text(document.name)
                 
                 Button(action: {
                     selectedDocuments.removeAll(where: {$0 == document})
@@ -419,13 +432,7 @@ struct AddEntrySheet: View {
             
         }
         
-        .onChange(of: selectedDocumentURL) {
-            if let document = selectedDocumentURL {
-                selectedDocuments.append(document)
-                selectedDocumentURL = nil
-            }
-            
-        }
+        
     }
     
     // MARK: - DATA FUNC
@@ -443,8 +450,8 @@ struct AddEntrySheet: View {
             }
         }
         
-        entry.documents = selectedDocuments.map({Document(name: $0.lastPathComponent, url: $0)})
         
+        entry.documents.append(contentsOf: selectedDocuments)
         
         modelContext.insert(entry)
     }
