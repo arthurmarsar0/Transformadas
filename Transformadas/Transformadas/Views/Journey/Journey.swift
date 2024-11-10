@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Journey: View {
+    @State var isUserInfoPresented: Bool = false
     var body: some View {
         NavigationStack {
             VStack {
@@ -30,12 +31,15 @@ struct Journey: View {
                 }
                 ToolbarItem(placement: .topBarTrailing){
                     Button(action: {
-                        
+                        isUserInfoPresented.toggle()
                     }) {
                         Image(systemName: "ellipsis.circle")
                             .foregroundStyle(.black)
                     }
                 }
+            }
+            .sheet(isPresented: $isUserInfoPresented) {
+                UserInfoSheetView()
             }
             Text("Hello, World!")
         }

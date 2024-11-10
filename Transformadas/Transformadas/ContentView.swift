@@ -17,14 +17,13 @@ struct ContentView: View {
     
     var body: some View {
         if !appData.primeiraAbertura {
-            Onboarding()
+            Onboarding().environmentObject(appData)
                 .onAppear {
                     for effect in EffectEnum.allCases {
                         if !effects.contains(where: {$0.name == effect.effect.name}) {
                             modelContext.insert(effect.effect)
                         }
                     }
-                    appData.primeiraAbertura = true
                 }
         } else {
             TabView (selection: $selectedTab){

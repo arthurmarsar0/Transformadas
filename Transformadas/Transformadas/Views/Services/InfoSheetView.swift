@@ -16,12 +16,12 @@ struct InfoSheetView: View {
             VStack(spacing: 38){
                 VStack(spacing: 8){
                     HStack{
+                        Spacer()
                         Button("OK"){
                             dismiss()
                         }
                         .font(.system(size: 17, weight: .semibold, design: .default))
                         .foregroundStyle(.verde)
-                        Spacer()
                     }
                     Text("O que procurar...")
                         .font(.system(size: 28, weight: .regular, design: .default))

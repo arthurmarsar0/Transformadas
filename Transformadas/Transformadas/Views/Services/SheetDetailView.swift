@@ -61,31 +61,44 @@ struct SheetDetailView: View {
                         Text(service.description)
                     }
                     
-                    ZStack{
-                        RoundedRectangle(cornerRadius: 16)
-                            .frame(height: 180)
-                            .foregroundStyle(.black)
-                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(.black, lineWidth: 2))
+//                    ZStack{
+//                        RoundedRectangle(cornerRadius: 16)
+//                            .frame(height: 180)
+//                            .foregroundStyle(.black)
+//                            .overlay(RoundedRectangle(cornerRadius: 16).stroke(.black, lineWidth: 2))
+//
+//                        
+//                        Map(initialPosition: region){
+//                            Annotation(service.name, coordinate: service.coordinate){
+//                                Image("pin")
+//                                    .resizable()
+//                                    .foregroundColor(.verde)
+//                                
+//                            }
+//                        }
+//                        .frame(height: 180)
+//                        .clipShape(RoundedRectangle(cornerRadius: 16))
+//                        
+//                    }
+//                    .onTapGesture {
+//                        openInWaze()
+//                    }
 
-                        
-                        Map(initialPosition: region){
-                            Annotation(service.name, coordinate: service.coordinate){
-                                Image("pin")
-                                    .resizable()
-                                    .foregroundColor(.verde)
-                                
-                            }
-                        }
-                        .frame(height: 180)
-                        .clipShape(RoundedRectangle(cornerRadius: 16))
-                        
-                    }
-                    .onTapGesture {
-                        openInWaze()
-                    }
                 }
                 .padding()
                 Spacer()
+                Button {
+                    openInWaze()
+                } label: {
+                    HStack{
+                        Image(systemName: "paperplane.circle.fill")
+                            .font(.system(size: 20, weight: .semibold))
+                        Text("Traçar rota")
+                            .font(.system(size: 17, weight: .semibold))
+                    }
+                    .foregroundStyle(.verde)
+                    
+                }
             }
         }.onAppear {
             region = MapCameraPosition.region(MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: service.coordinate.latitude, longitude: service.coordinate.longitude), span: MKCoordinateSpan(latitudeDelta: 0.0125, longitudeDelta: 0.0125)))
