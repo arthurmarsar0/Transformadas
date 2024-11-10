@@ -8,7 +8,9 @@
 import SwiftUI
 
 struct PhotoAlbumView: View {
-    @State private var paginationOffset: Int?
+    
+//    @State private var paginationOffset: Int?
+    
     var body: some View {
         ZStack{
             Color.bege
@@ -21,38 +23,42 @@ struct PhotoAlbumView: View {
                     Spacer()
                 }
                 ScrollView{
-                    PaginatedView( paginationOffset: $paginationOffset) { entradas in
-                        ForEach(entradas) { entrada in
-                            VStack{
-                                Text(entrada.photo!)
-                            }
-                            .customOnAppear(false) {
-                                if entradas.last == entrada {
-                                    print("Fetch")
-                                }
-                            }
-                        }
-                        
-                    }
+//                    PaginatedView( paginationOffset: $paginationOffset) { entradas in
+//                        ForEach(entradas) { entrada in
+//                            VStack{
+//                                Text(entrada)
+//                            }
+//                            .customOnAppear(false) {
+//                                if entradas.last == entrada {
+//                                    print("Fetch")
+//                                }
+//                            }
+//                        }
+//                        
+//                    }
                 }
-                .onAppear{
-                    if paginationOffset == nil {
-                        paginationOffset = 0
-                    }
-                }
+//                .onAppear{
+//                    if paginationOffset == nil {
+//                        paginationOffset = 0
+//                    }
+//                }
                 
             }
             .padding()
         }
     }
     
-    func showMore() {
-        
-    }
+//    func showMore() {
+//        
+//    }
 }
 
 #Preview {
     PhotoAlbumView()
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }
 
 

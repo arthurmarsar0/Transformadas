@@ -35,9 +35,9 @@ struct CarouselDayComponent: View {
         date.dayNumber
     }
     
-    @Binding var state: DayComponentState
+    var state: DayComponentState
     var isSelected: Bool
-    @Binding var remindersQuantity: Int
+    var todayReminders: [Reminder]
     
     var body: some View {
         
@@ -54,7 +54,7 @@ struct CarouselDayComponent: View {
                         .stroke(.bege, lineWidth: 2)
                         
                 }
-            if (remindersQuantity > 0) {
+            if (todayReminders.count > 0) {
                 reminders()
             }
         }
@@ -65,12 +65,11 @@ struct CarouselDayComponent: View {
     
     func reminders() -> some View {
             HStack (spacing: 4) {
-                ForEach(1...min(remindersQuantity,4), id: \.self) { i in
-                    if (i == 2) {
-                        Circle().fill(.verde).frame(width: 4, height: 4)
-                    } else {
-                        Circle().fill(.rosa).frame(width: 4, height: 4)
-                    }
+                ForEach(todayReminders.prefix(5), id: \.self) { reminder in
+                    
+                    Circle().fill(reminder.type == .event ? .azul :
+                        .rosa).frame(width: 4, height: 4)
+                    
                 }
             }
     }
@@ -187,5 +186,9 @@ struct CarouselDayComponent: View {
 }
 
 #Preview {
-    CarouselDayComponent(date: Date.now, state: .constant(.noEntry), isSelected: true, remindersQuantity: .constant(0))
+    CarouselDayComponent(date: Date.now, state: .noEntry, isSelected: true, todayReminders: [])
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

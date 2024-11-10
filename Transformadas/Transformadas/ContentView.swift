@@ -10,27 +10,39 @@ import SwiftData
 
 struct ContentView: View {
     @State var selectedTab: Int = 1
+    @StateObject var appData: AppData = AppData()
+    
+    @Environment(\.modelContext) var modelContext
     
     var body: some View {
-        TabView (selection: $selectedTab){
-            Group {
-                Journey().tabItem {
-                    Label("Perfil", systemImage: "person.fill")
+        if !appData.primeiraAbertura {
+            Onboarding()
+                .onAppear {
+                    for effect in EffectEnum.allCases {
+                        modelContext.insert(effect.effect)
+                    }
+                    appData.primeiraAbertura = true
                 }
-                .tag(0)
-                
-                Diary().tabItem {
-                    Label("Diário", systemImage: "calendar")
+        } else {
+            TabView (selection: $selectedTab){
+                Group {
+                    Journey().tabItem {
+                        Label("Jornada", systemImage: "point.bottomleft.forward.to.point.topright.filled.scurvepath")
+                    }
+                    .tag(0)
+                    Diary().tabItem {
+                        Label("Hoje", systemImage: "calendar")
+                    }
+                    
+                    .tag(1)
+                    Services().tabItem {
+                        Label("Serviços", systemImage: "network")
+                    }.tag(2)
+                    
                 }
-                .tag(1)
-                
-                Services().tabItem {
-                    Label("Serviços", systemImage: "text.book.closed.fill")
-                }.tag(2)
-                
+            }.onAppear{
+                //setupTabBarAppearance(modo: true)
             }
-        }.onAppear{
-            //setupTabBarAppearance(modo: true)
         }
     }
     
@@ -38,4 +50,8 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+        .modelContainer(for: [Effect.self,
+                              User.self,
+                              Entry.self,
+                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
 }

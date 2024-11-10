@@ -15,39 +15,40 @@ struct WeightData: Identifiable {
     let date: Date
     let weight: Double
 }
+let UserTest = User.init(name: "Arthur", weight: 75.0, transitionStart: Date.now.addingTimeInterval(-86400 * 350), hormonalTherapyType: .feminization, pronouns: [])
 
 let weightData = [
     WeightData(date: Date().addingTimeInterval(-86400 * 5), weight: 71.0),
     WeightData(date: Date().addingTimeInterval(-86400 * 4), weight: 70.8),
-    WeightData(date: Date().addingTimeInterval(-86400 * 3), weight: 71.2),
-    WeightData(date: Date().addingTimeInterval(-86400 * 2), weight: 70.7),
-    WeightData(date: Date().addingTimeInterval(-86400 * 1), weight: 70.4),
-    WeightData(date: Date(), weight: 70.0),
-    WeightData(date: Date().addingTimeInterval(86400 * 2), weight: 70.0),
+//    WeightData(date: Date().addingTimeInterval(-86400 * 3), weight: 71.2),
+//    WeightData(date: Date().addingTimeInterval(-86400 * 2), weight: 70.7),
+//    WeightData(date: Date().addingTimeInterval(-86400 * 1), weight: 70.4),
+//    WeightData(date: Date(), weight: 70.0),
+//    WeightData(date: Date().addingTimeInterval(86400 * 2), weight: 70.0),
     WeightData(date: Date().addingTimeInterval(86400 * 3), weight: 70.5)
 ]
 
 let entradasMock = [
-                Entry(date: Date.now.addingTimeInterval(-86400 * 3), mood: Mood.ok, note: "", audio: "audio 1", photo: "Foto 1", effects: [.init(name: "fadiga"), .init(name: "insonia")], pdf: "arquivo 1"),
-                Entry(date: Date.now.addingTimeInterval(-86400 * 2), mood: Mood.bad, note: "", audio: "Audio 2", photo: "foto 2", effects: [.init(name: "fadiga"), .init(name: "insonia")], pdf: "arquivo 2"),
-                Entry(date: Date.now.addingTimeInterval(-86400 * 1), mood: Mood.ok, note: "", audio: "audio 3", photo: "foto 3", effects: [.init(name: "fadiga"), .init(name: "aumento de mamas")], pdf: "arquivo 3"),
-                Entry(date: Date.now, mood: Mood.excellent, note: "", audio: "audio3", photo: "foto 4", effects: [], pdf: "arquivo 4"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 1), mood: Mood.ok, note: "", audio: "audio 1", photo: "Foto 1", effects: [.init(name: "aumento do pé"), .init(name: "insonia")], pdf: "arquivo 1"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 2), mood: Mood.bad, note: "", audio: "Audio 2", photo: "foto 2", effects: [.init(name: "sudorese"), .init(name: "insonia")], pdf: "arquivo 2"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 3), mood: Mood.ok, note: "", audio: "audio 3", photo: "foto 3", effects: [.init(name: "fadiga"), .init(name: "diminuicao de pelos")], pdf: "arquivo 3"),
-                Entry(date: Date.now.addingTimeInterval(86400*4), mood: Mood.well, note: "", audio: "audio3", photo: "foto 4", effects: [.init(name: "ansiedade"), .init(name: "insonia")], pdf: "arquivo 4"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 5), mood: Mood.ok, note: "", audio: "audio 1", photo: "Foto 1", effects: [.init(name: "fadiga"), .init(name: "ansiedade")], pdf: "arquivo 1"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 6), mood: Mood.moreOrLess, note: "", audio: "Audio 2", photo: "foto 2", effects: [.init(name: "febre"), .init(name: "insonia")], pdf: "arquivo 2"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 7), mood: Mood.ok, note: "", audio: "audio 3", photo: "foto 3", effects: [.init(name: "fadiga"), .init(name: "Dor na orelha")], pdf: "arquivo 3"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 8), mood: Mood.excellent, note: "", audio: "audio3", photo: "foto 4", effects: [.init(name: "dor de cabeça"), .init(name: "insonia")], pdf: "arquivo 4"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 9), mood: Mood.ok, note: "", audio: "audio 1", photo: "Foto 1", effects: [.init(name: "fadiga"), .init(name: "febre")], pdf: "arquivo 1"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 10), mood: Mood.ok, note: "", audio: "Audio 2", photo: "foto 2", effects: [.init(name: "fadiga"), .init(name: "febre")], pdf: "arquivo 2"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 11), mood: Mood.ok, note: "", audio: "audio 3", photo: "foto 3", effects: [.init(name: "fadiga"), .init(name: "calafrios")], pdf: "arquivo 3"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 12), mood: Mood.excellent, note: "", audio: "audio3", photo: "foto 4", effects: [.init(name: "calafrio"), .init(name: "insonia")], pdf: "arquivo 4"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 13), mood: Mood.well, note: "", audio: "audio 1", photo: "Foto 1", effects: [.init(name: "fadiga"), .init(name: "insonia")], pdf: "arquivo 1"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 14), mood: Mood.bad, note: "", audio: "Audio 2", photo: "foto 2", effects: [.init(name: "fadiga"), .init(name: "insonia")], pdf: "arquivo 2"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 15), mood: Mood.ok, note: "", audio: "audio 3", photo: "foto 3", effects: [.init(name: "fadiga"), .init(name: "insonia")], pdf: "arquivo 3"),
-                Entry(date: Date.now.addingTimeInterval(86400 * 16), mood: Mood.excellent, note: "", audio: "audio3", photo: "foto 4", effects: [.init(name: "fadiga"), .init(name: "insonia")], pdf: "arquivo 4")
+                Entry(date: Date.now.addingTimeInterval(-86400 * 15), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "insonia")], documents: [], weight: 71.0),
+                Entry(date: Date.now.addingTimeInterval(-86400 * 14), mood: Mood.bad, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "insonia")], documents: [], weight: 70.7),
+                Entry(date: Date.now.addingTimeInterval(-86400 * 1), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "aumento de mamas")], documents: [], weight: 70.4),
+                Entry(date: Date.now, mood: Mood.excellent, note: "", audio: nil, photos: [], effects: [], documents: [], weight: 70.0),
+                Entry(date: Date.now.addingTimeInterval(86400 * 1), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "aumento do pé"), .init(name: "insonia")], documents: [], weight: 70.6),
+                Entry(date: Date.now.addingTimeInterval(86400 * 2), mood: Mood.bad, note: "", audio: nil, photos: [], effects: [.init(name: "sudorese"), .init(name: "insonia")], documents: [], weight: 70.5),
+                Entry(date: Date.now.addingTimeInterval(86400 * 3), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "diminuicao de pelos")], documents: [], weight: 70.7),
+                Entry(date: Date.now.addingTimeInterval(86400*4), mood: Mood.well, note: "", audio: nil, photos: [], effects: [.init(name: "ansiedade"), .init(name: "insonia")], documents: [], weight: 70.8),
+                Entry(date: Date.now.addingTimeInterval(86400 * 5), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "ansiedade")], documents: [], weight: 71.4),
+                Entry(date: Date.now.addingTimeInterval(86400 * 6), mood: Mood.moreOrLess, note: "", audio: nil, photos: [], effects: [.init(name: "febre"), .init(name: "insonia")], documents: [], weight: 72.0),
+                Entry(date: Date.now.addingTimeInterval(86400 * 7), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "Dor na orelha")], documents: [], weight: 71.5),
+                Entry(date: Date.now.addingTimeInterval(86400 * 8), mood: Mood.excellent, note: "", audio: nil, photos: [], effects: [.init(name: "dor de cabeça"), .init(name: "insonia")], documents: [], weight: 71.3),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 9), mood: Mood.ok, note: "", audio: nil, photos: [], effects: [.init(name: "fadiga"), .init(name: "febre")], documents: "arquivo 1"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 10), mood: Mood.ok, note: "", audio: "Audio 2", photos: "foto 2", effects: [.init(name: "fadiga"), .init(name: "febre")], documents: "arquivo 2"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 11), mood: Mood.ok, note: "", audio: "audio 3", photos: "foto 3", effects: [.init(name: "fadiga"), .init(name: "calafrios")], documents: "arquivo 3"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 12), mood: Mood.excellent, note: "", audio: "audio3", photos: "foto 4", effects: [.init(name: "calafrio"), .init(name: "insonia")], documents: "arquivo 4"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 13), mood: Mood.well, note: "", audio: "audio 1", photos: "Foto 1", effects: [.init(name: "fadiga"), .init(name: "insonia")], documents: "arquivo 1"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 14), mood: Mood.bad, note: "", audio: "Audio 2", photos: "foto 2", effects: [.init(name: "fadiga"), .init(name: "insonia")], documents: "arquivo 2"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 15), mood: Mood.ok, note: "", audio: "audio 3", photos: "foto 3", effects: [.init(name: "fadiga"), .init(name: "insonia")], documents: "arquivo 3"),
+//                Entry(date: Date.now.addingTimeInterval(86400 * 16), mood: Mood.excellent, note: "", audio: "audio3", photos: "foto 4", effects: [.init(name: "fadiga"), .init(name: "insonia")], documents: "arquivo 4")
 ]
 
 func newDateFrom(aPartirDe data: Date, soma: Int) -> Date? {
@@ -152,3 +153,4 @@ fileprivate struct CustomOnAppearModifier: ViewModifier {
     }
     
 }
+

@@ -31,7 +31,19 @@ func degradeRosa2() -> LinearGradient {
             .init(color: .rosa, location: 1)
         ]),
         startPoint: .bottom,
-        endPoint: .top
+        endPoint: .top)
+}
+
+func degradeVerde() -> LinearGradient {
+    return LinearGradient(
+        gradient: Gradient(stops: [
+            .init(color: .bege, location: 0.0),
+            .init(color: .verdeClaro, location: 0.13),
+            .init(color: .verdeMedio, location: 0.51),
+            .init(color: .verde, location: 1)
+        ]),
+        startPoint: .bottomTrailing,
+        endPoint: .topLeading
     )
 }
 

@@ -9,21 +9,33 @@ import Foundation
 import SwiftData
 
 @Model
-class Effect {
+class Effect: Identifiable {
     var modelID: UUID = UUID()
     var name: String = ""
+    var status: EffectStatus = EffectStatus.active
+    @Relationship(deleteRule: .nullify, inverse: \Entry.effects) var entries: [Entry]?
+    
+    init(name: String, status: EffectStatus) {
+        self.name = name
+        self.status = status
+    }
     
     init(name: String) {
         self.name = name
+        self.status = .active
     }
 }
 
-enum EffectEnum: Codable {
-    case insomnia
+extension Effect: Comparable {
+    static func < (lhs: Effect, rhs: Effect) -> Bool {
+        lhs.modelID < rhs.modelID
+    }
     
-    var effect: Effect {
-        switch self {
-        case .insomnia: return Effect(name: "Insônia")
-        }
+    static func > (lhs: Effect, rhs: Effect) -> Bool {
+        lhs.modelID > rhs.modelID
+    }
+    
+    static func == (lhs: Effect, rhs: Effect) -> Bool {
+        lhs.modelID == rhs.modelID
     }
 }
