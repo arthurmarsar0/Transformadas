@@ -153,7 +153,6 @@ struct EffectPreviewComponent: View {
             }
             //.background(.rosa)
         }
-        .padding(8)
         .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
