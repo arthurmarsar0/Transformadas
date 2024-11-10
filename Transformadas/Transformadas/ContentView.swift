@@ -18,33 +18,38 @@ struct ContentView: View {
     var body: some View {
         if !appData.primeiraAbertura {
             Onboarding().environmentObject(appData)
-                .onAppear {
-                    for effect in EffectEnum.allCases {
-                        if !effects.contains(where: {$0.name == effect.effect.name}) {
-                            modelContext.insert(effect.effect)
-                        }
-                    }
-                }
         } else {
             TabView (selection: $selectedTab){
                 Group {
-                    Journey().tabItem {
+                    Journey()
+                        .environmentObject(appData)
+                        .tabItem {
                         Label("Jornada", systemImage: "point.bottomleft.forward.to.point.topright.filled.scurvepath")
                     }
                     .tag(0)
-                    Diary().tabItem {
+                    Diary()
+                        .environmentObject(appData)
+                        .tabItem {
                         Label("Hoje", systemImage: "calendar")
                     }
                     
                     .tag(1)
-                    Services().tabItem {
+                    Services()
+                        .environmentObject(appData)
+                        .tabItem {
                         Label("Serviços", systemImage: "network")
                     }.tag(2)
                     
                 }
             }
+            
             .toolbarBackgroundVisibility(.visible, for: .tabBar)
             .toolbarBackground(.bege, for: .tabBar)
+            .onAppear {
+                requestNotificationAccess { _ in
+                    
+                }
+            }
         }
     }
     

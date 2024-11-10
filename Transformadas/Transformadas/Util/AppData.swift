@@ -14,8 +14,15 @@ class AppData: ObservableObject {
                 }
     }
     
+    @Published var appleID: String {
+        didSet {
+            UserDefaults.standard.set(appleID, forKey: "appleID")
+        }
+    }
+    
     init() {
             self.primeiraAbertura = UserDefaults.standard.bool(forKey: "primeiraAbertura")
+            self.appleID = UserDefaults.standard.string(forKey: "appleID") ?? ""
         }
 
 }

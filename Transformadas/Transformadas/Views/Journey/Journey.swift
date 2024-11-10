@@ -9,6 +9,8 @@ import SwiftUI
 
 struct Journey: View {
     @State var isUserInfoPresented: Bool = false
+    @EnvironmentObject var appData: AppData
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -23,23 +25,19 @@ struct Journey: View {
                 }
                 ToolbarItem(placement: .topBarTrailing){
                     Button(action: {
-                        
-                    }) {
-                        Image(systemName: "calendar")
-                            .foregroundStyle(.black)
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
                         isUserInfoPresented.toggle()
                     }) {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "person.fill")
                             .foregroundStyle(.black)
                     }
                 }
             }
-            .sheet(isPresented: $isUserInfoPresented) {
+            .sheet(isPresented: $isUserInfoPresented, onDismiss: {
+                addNavBarBackground()
+            }) {
                 UserInfoSheetView()
+                    .environmentObject(appData)
+                    .interactiveDismissDisabled()
             }
             Text("Hello, World!")
         }
