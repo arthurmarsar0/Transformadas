@@ -60,7 +60,7 @@ struct ManageEffectsView: View {
                     })
                     
                     Section(content: {
-                        ForEach(activeEffects) { effect in
+                        ForEach(activeEffects.sorted(by: {$0.name < $1.name})) { effect in
                             Text(effect.name)
                                 .swipeActions (edge: .trailing) {
                                     Button (action: {
@@ -79,7 +79,7 @@ struct ManageEffectsView: View {
                     })
                     
                     Section("EFEITOS PADRÃO INATIVOS") {
-                        ForEach(inactiveEffects) { effect in
+                        ForEach(inactiveEffects.sorted(by: {$0.name < $1.name})) { effect in
                             Text(effect.name)
                                 .swipeActions (edge: .trailing){
                                     Button (action: {

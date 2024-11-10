@@ -10,7 +10,7 @@ import SwiftData
 import SwiftUI
 
 @Model
-class Entry {
+class Entry: Identifiable, Hashable, Equatable {
     var date: Date = Date.now
     var mood: Mood?
     var note: String = ""
@@ -29,5 +29,21 @@ class Entry {
         self.effects = effects
         self.documents = documents
         self.weight = weight
+    }
+    
+    // MARK: - Identifiable
+    var id: Date {
+        return date
+    }
+
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        // Usando modelID para gerar o hash único para a instância
+        hasher.combine(date)
+    }
+
+    // MARK: - Equatable
+    static func ==(lhs: Entry, rhs: Entry) -> Bool {
+        return isSameDay(lhs.date, rhs.date)
     }
 }

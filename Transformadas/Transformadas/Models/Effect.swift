@@ -24,6 +24,18 @@ class Effect: Identifiable, Hashable, Equatable {
         self.name = name
         self.status = .active
     }
+    
+    // MARK: - Identifiable
+    var id: UUID {
+        return modelID
+    }
+
+    // MARK: - Hashable
+    func hash(into hasher: inout Hasher) {
+        // Usando modelID para gerar o hash único para a instância
+        hasher.combine(modelID)
+    }
+
 }
 
 extension Effect: Comparable {

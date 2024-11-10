@@ -147,7 +147,7 @@ struct EffectPreviewComponent: View {
             }
 
             NewFlowLayout(alignment: .leading, spacing: 8) {
-                ForEach(effects, id: \.name) { effect in
+                ForEach(effects.sorted(by: {$0.name < $1.name}), id: \.name) { effect in
                     EffectComponent(effect: effect, isPreview: isPreview)
                 }
             }

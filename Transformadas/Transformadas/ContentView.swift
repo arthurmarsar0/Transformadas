@@ -44,6 +44,8 @@ struct ContentView: View {
                     
                 }
             }
+            .toolbarBackgroundVisibility(.visible, for: .tabBar)
+            .toolbarBackground(.bege, for: .tabBar)
         }
     }
     
