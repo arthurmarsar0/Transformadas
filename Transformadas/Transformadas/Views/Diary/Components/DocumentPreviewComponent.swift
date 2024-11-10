@@ -25,6 +25,7 @@ struct DocumentPreviewComponent: View {
                     Spacer()
                 }
             }
+            
             LazyVGrid(columns: columns, spacing: 16) {
                 ForEach(documents, id: \.self) { document in
                     VStack (spacing: 4){

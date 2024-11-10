@@ -7,91 +7,76 @@
 
 import SwiftUI
 import UserNotifications
+import SwiftData
 
-func sendMedicineNotification(reminder: Reminder) {
-    var content = UNMutableNotificationContent()
-    content.title = "\(reminder.name) \(reminder.time)"
-    content.body = "Não demore muito!"
-    content.sound = UNNotificationSound.default
+func sendReminderNotification(reminder: Reminder, type: NotificationType, targetDate: Date, modelContext: ModelContext) {
     
-    if let imageAttachment = createAppIconAttachment() {
+    var content = UNMutableNotificationContent()
+    content.title = type.title(reminder: reminder, user: nil)
+    content.body = type.body(reminder: reminder)
+    content.sound = type.sound
+    
+    if let imageAttachment = type.attachment {
       content.attachments = [imageAttachment]
     }
     
-    sendNotification(content: content, timeInterval: 5)
+    var notificationComponents = Calendar.current.dateComponents([.year, .month, .day], from: targetDate)
+    notificationComponents.hour = Calendar.current.component(.hour, from: reminder.time)
+    notificationComponents.minute = Calendar.current.component(.minute, from: reminder.time)
+    
+    
+    if let targetDate = Calendar.current.date(from: notificationComponents) {
+        var notification = NotificationModel(reminder: reminder, type: type, date: targetDate)
+        print("chamada 2")
+        sendNotification(content: content, notification: notification, modelContext: modelContext)
+        
+    }
+}
+
+func sendEntryNotification(targetDate: Date, modelContext: ModelContext) {
+    
+    var content = UNMutableNotificationContent()
+    content.title = NotificationType.makeEntry.title()
+    content.body = NotificationType.makeEntry.body()
+    content.sound = NotificationType.makeEntry.sound
+    
+    if let imageAttachment = NotificationType.makeEntry.attachment {
+      content.attachments = [imageAttachment]
+    }
+    
+    var notificationComponents = Calendar.current.dateComponents([.year, .month, .day], from: targetDate)
+    notificationComponents.hour = 12
+    notificationComponents.minute = 0
+    
+    
+    if let targetDate = Calendar.current.date(from: notificationComponents) {
+        var notification = NotificationModel(type: .makeEntry, date: targetDate)
+        
+        sendNotification(content: content, notification: notification, modelContext: modelContext)
+    }
     
 }
 
-func sendMissingMedicineNotification(reminder: Reminder) {
-    // 30 minutos depois
-    var content = UNMutableNotificationContent()
-    content.title = "Você tomou seu medicamento?"
-    content.body = "Um lembrete para \(reminder.time) não foi marcado como concluído ainda"
-    content.sound = UNNotificationSound.default
+func sendTransversaryNotification(user: User, targetDate: Date, modelContext: ModelContext) {
     
-    if let imageAttachment = createAppIconAttachment() {
+    var content = UNMutableNotificationContent()
+    content.title = NotificationType.transversary.title(user: user)
+    content.body = NotificationType.transversary.body()
+    content.sound = NotificationType.transversary.sound
+    
+    if let imageAttachment = NotificationType.transversary.attachment {
       content.attachments = [imageAttachment]
     }
     
-    sendNotification(content: content, timeInterval: 5)
+    var notificationComponents = Calendar.current.dateComponents([.year, .month, .day], from: targetDate)
+    notificationComponents.hour = 12
+    notificationComponents.minute = 0
     
-}
-
-func sendEventNotification(reminder: Reminder) {
-    // 10 minutos antes
-    var content = UNMutableNotificationContent()
-    content.title = "\(reminder.name) \(reminder.time)"
-    content.body = "Seu evento começa em 10 minutos"
-    content.sound = UNNotificationSound.default
     
-    if let imageAttachment = createAppIconAttachment() {
-      content.attachments = [imageAttachment]
+    if let targetDate = Calendar.current.date(from: notificationComponents) {
+        var notification = NotificationModel(type: .transversary, date: targetDate)
+        
+        sendNotification(content: content, notification: notification, modelContext: modelContext)
     }
-    
-    sendNotification(content: content, timeInterval: 5)
-    
-}
-
-func sendAfterEventNotification(reminder: Reminder) {
-    // 30 minutos depois
-    var content = UNMutableNotificationContent()
-    content.title = "Como foi o evento \(reminder.name)"
-    content.body = "Marque este lembrete como concluído e fale um pouco sobre ele"
-    content.sound = UNNotificationSound.default
-    
-    if let imageAttachment = createAppIconAttachment() {
-      content.attachments = [imageAttachment]
-    }
-    
-    sendNotification(content: content, timeInterval: 5)
-    
-}
-
-func sendAddEntryNotification() {
-    // 30 minutos depois
-    var content = UNMutableNotificationContent()
-    content.title = "Como você está se sentindo?"
-    content.body = "Registre mais um dia da sua transição!"
-    content.sound = UNNotificationSound.default
-    
-    if let imageAttachment = createAppIconAttachment() {
-      content.attachments = [imageAttachment]
-    }
-    
-    sendNotification(content: content, timeInterval: 5)
-    
-}
-
-func transversaryNotification(user: User) {
-    var content = UNMutableNotificationContent()
-    content.title = "Parabéns, \(user.name)"
-    content.body = "Hoje é seu Transversário, um dia para festejar você e toda a sua jornada até aqui!"
-    content.sound = UNNotificationSound.default
-    
-    if let imageAttachment = createAppIconAttachment() {
-      content.attachments = [imageAttachment]
-    }
-    
-    sendNotification(content: content, timeInterval: 5)
     
 }

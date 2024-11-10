@@ -42,14 +42,8 @@ struct Journey: View {
                     VStack(spacing: 16) {
                         transversaryView()
                         buttonsView()
-                        feelingsCharts()
-                        
-                        Button(action: {
-                            effectsGraphsFullView.toggle()
-                        }) {
-                            efectsCharts()
-                        }
-                        
+                        feelingsChart()
+                        effectsChart()
                         weightChart()
                         
                     }
@@ -154,7 +148,7 @@ struct Journey: View {
     
     func buttonsView() -> some View {
         HStack(spacing: 8){
-            NavigationLink(destination: PhotoAlbumView()
+            NavigationLink(destination: PhotoAlbumView().navigationBarBackButtonHidden(true)
             ) {
                 HStack{
                     VStack(alignment: .leading){
@@ -179,7 +173,7 @@ struct Journey: View {
             
             
             
-            NavigationLink(destination: AllAudiosView()
+            NavigationLink(destination: AllAudiosView().navigationBarBackButtonHidden(true)
             ) {
                 HStack{
                     VStack(alignment: .leading){
@@ -202,7 +196,7 @@ struct Journey: View {
                     .fill(.rosaClaro)
             }
             
-            NavigationLink(destination: AllDocumentsView()) {
+            NavigationLink(destination: AllDocumentsView().navigationBarBackButtonHidden(true)) {
                 HStack{
                     VStack(alignment: .leading){
                         Image(systemName: "document.fill")
@@ -226,17 +220,20 @@ struct Journey: View {
         }
     }
     
-    func feelingsCharts() -> some View {
+    func feelingsChart() -> some View {
         
         var monthEntriesFeeling : [Entry] {
             var array : [Entry] = []
-
+            
             for i in allEntries {
                 if i.date.monthNumber == selectedFeelingsDate.monthNumber && i.date.yearNumber == selectedFeelingsDate.yearNumber {
                     array.append(i)
                 }
             }
-            return array
+            
+            return array.sorted(by: {
+                $0.date < $1.date
+            })
         }
         
         return ZStack{
@@ -279,32 +276,32 @@ struct Journey: View {
                     )
                     .foregroundStyle(LinearGradient(colors: [Color.rosa.opacity(0.2), Color.clear], startPoint: .top, endPoint: .bottom))
                 }
-                        .padding(.top, 12)
-                        .foregroundStyle(.rosa)
-                        .frame(height: 312)
-                        .chartXAxis {
-                            AxisMarks(values: .stride(by: .day)) {
-                                AxisValueLabel(format: .dateTime.day())
-                            }
+                .padding(.top, 12)
+                .foregroundStyle(.rosa)
+                .frame(height: 312)
+                .chartXAxis {
+                    AxisMarks(values: .stride(by: .day)) {
+                        AxisValueLabel(format: .dateTime.day())
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(values: Mood.allCases.map { $0.rawValue }) { value in
+                        if let mood = Mood(rawValue: value.as(Int.self) ?? 1) {
+                            AxisGridLine()
+                            AxisValueLabel(mood.emoji)
+                                .font(.system(size: 15))// Mostra o emoji no eixo Y
                         }
-                        .chartYAxis {
-                            AxisMarks(values: Mood.allCases.map { $0.rawValue }) { value in
-                                if let mood = Mood(rawValue: value.as(Int.self) ?? 1) {
-                                    AxisGridLine()
-                                    AxisValueLabel(mood.emoji)
-                                        .font(.system(size: 15))// Mostra o emoji no eixo Y
-                                }
-                            }
-                        }
+                    }
+                }
             }
             .padding()
         }
     }
     
-    func efectsCharts() -> some View {
+    func effectsChart() -> some View {
         var monthEntriesEffects : [Entry] {
             var array : [Entry] = []
-
+            
             for i in allEntries {
                 if i.date.monthNumber == selectedEffectsDate.monthNumber && i.date.yearNumber == selectedEffectsDate.yearNumber {
                     array.append(i)
@@ -350,7 +347,12 @@ struct Journey: View {
         }
         
         
-        return ZStack{
+        return Button(action: {
+            if monthlyEffects.count > 5 {
+                effectsGraphsFullView.toggle()
+            }
+        }) {
+            ZStack{
             RoundedRectangle(cornerRadius: 12)
                 .fill(.begeClaro)
             VStack{
@@ -386,6 +388,7 @@ struct Journey: View {
                 
             }
             .padding()
+        }
         }
         .frame(minHeight: sizeOfGraph)
     }

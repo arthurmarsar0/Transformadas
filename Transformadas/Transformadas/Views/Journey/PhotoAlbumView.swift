@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PhotoAlbumView: View {
     
-//    @State private var paginationOffset: Int?
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         ZStack{
@@ -23,28 +23,23 @@ struct PhotoAlbumView: View {
                     Spacer()
                 }
                 ScrollView{
-//                    PaginatedView( paginationOffset: $paginationOffset) { entradas in
-//                        ForEach(entradas) { entrada in
-//                            VStack{
-//                                Text(entrada)
-//                            }
-//                            .customOnAppear(false) {
-//                                if entradas.last == entrada {
-//                                    print("Fetch")
-//                                }
-//                            }
-//                        }
-//                        
-//                    }
+                    //TODO: Colocar algo semelhante a lógica de documentos
                 }
-//                .onAppear{
-//                    if paginationOffset == nil {
-//                        paginationOffset = 0
-//                    }
-//                }
-                
             }
             .padding()
+        }
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }){
+                    HStack{
+                        Image(systemName: "chevron.left")
+                        Text("Back")
+                    }
+                    .foregroundStyle(.preto)
+                }
+            }
         }
     }
     
