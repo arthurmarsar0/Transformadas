@@ -28,7 +28,6 @@ class AudioRecorder: ObservableObject {
     @Published var isRecording: Bool = false
     
     var recordedAudio: Audio?
-    var audioPath: URL?
     
     public var audioDuration: TimeInterval {
         audioRecorder?.currentTime ?? 0.0
@@ -47,11 +46,11 @@ class AudioRecorder: ObservableObject {
             try audioSession.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
             try audioSession.setActive(true)
 
-            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            let audioURL = path.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
+//            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+//            let audioURL = path.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
             
-//            let tempDirectory = FileManager.default.temporaryDirectory
-//            let audioURL = tempDirectory.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
+            let tempDirectory = FileManager.default.temporaryDirectory
+            let audioURL = tempDirectory.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
 
             audioRecorder = try AVAudioRecorder(url: audioURL, settings: settings)
             audioRecorder?.isMeteringEnabled = true
@@ -60,8 +59,7 @@ class AudioRecorder: ObservableObject {
             startUpdatingAudioLevel()
             isRecording = true
             
-            recordedAudio = Audio(name: "", url: audioURL, length: 0.0)
-            audioPath = audioURL
+            recordedAudio = Audio(name: "", data: Data(), length: 0.0)
         } catch {
             print("Erro ao iniciar a gravação: \(error.localizedDescription)")
         }
@@ -73,6 +71,15 @@ class AudioRecorder: ObservableObject {
         audioRecorder?.stop()
         stopUpdatingAudioLevel()
         isRecording = false
+        
+        do {
+            if let url = audioRecorder?.url {
+                let data = try Data(contentsOf: url)
+                recordedAudio?.data = data
+            }
+        } catch {
+            print("Erro ao salvar áudio para Data: \(error.localizedDescription)")
+        }
 
         return recordedAudio
     }

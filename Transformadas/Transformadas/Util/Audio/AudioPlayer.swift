@@ -36,7 +36,8 @@ class AudioPlayer: NSObject, ObservableObject {
             }
                 
             do {
-                audioPlayer = try AVAudioPlayer(contentsOf: audio.url)
+                audioPlayer = try AVAudioPlayer(data: audio.data)
+                //audioPlayer = try AVAudioPlayer(contentsOf: audio.url)
                 audioPlayer?.delegate = self
                 audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
                 audioPlayer?.play()

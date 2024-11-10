@@ -68,10 +68,10 @@ struct AudioPreviewComponent: View {
     }
 }
 
-#Preview {
-    AudioPreviewComponent(audio: Audio(name: "", url: URL.documentsDirectory, length: 0.0), isPreview: false)
-        .modelContainer(for: [Effect.self,
-                              User.self,
-                              Entry.self,
-                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
-}
+//#Preview {
+//    AudioPreviewComponent(audio: Audio(name: "", url: URL.documentsDirectory, length: 0.0), isPreview: false)
+//        .modelContainer(for: [Effect.self,
+//                              User.self,
+//                              Entry.self,
+//                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
+//}
