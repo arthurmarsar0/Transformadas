@@ -47,11 +47,11 @@ class AudioRecorder: ObservableObject {
             try audioSession.setCategory(.playAndRecord, mode: .default, options: .defaultToSpeaker)
             try audioSession.setActive(true)
 
-            //let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
-            //let audioURL = path.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
+            let path = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+            let audioURL = path.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
             
-            let tempDirectory = FileManager.default.temporaryDirectory
-            let audioURL = tempDirectory.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
+//            let tempDirectory = FileManager.default.temporaryDirectory
+//            let audioURL = tempDirectory.appendingPathComponent("Audio\(Date.now.dayMonthYear).m4a")
 
             audioRecorder = try AVAudioRecorder(url: audioURL, settings: settings)
             audioRecorder?.isMeteringEnabled = true
@@ -60,7 +60,7 @@ class AudioRecorder: ObservableObject {
             startUpdatingAudioLevel()
             isRecording = true
             
-            recordedAudio = Audio(name: "", data: Data(), length: 0.0)
+            recordedAudio = Audio(name: "", url: audioURL, length: 0.0)
             audioPath = audioURL
         } catch {
             print("Erro ao iniciar a gravação: \(error.localizedDescription)")
@@ -69,20 +69,12 @@ class AudioRecorder: ObservableObject {
 
     func stopRecording() -> Audio? {
         recordedAudio?.length = audioDuration
-        if let url = audioPath {
-            do {
-                try recordedAudio?.data = Data(contentsOf: url)
-                audioRecorder?.stop()
-                stopUpdatingAudioLevel()
-                isRecording = false
-            
-                return recordedAudio
-            } catch {
-                print(error.localizedDescription)
-            }
-        }
         
-        return nil
+        audioRecorder?.stop()
+        stopUpdatingAudioLevel()
+        isRecording = false
+
+        return recordedAudio
     }
 
     private func startUpdatingAudioLevel() {

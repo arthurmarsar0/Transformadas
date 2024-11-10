@@ -69,7 +69,7 @@ struct AudioPreviewComponent: View {
 }
 
 #Preview {
-    AudioPreviewComponent(audio: Audio(name: "", data: Data(), length: 0.0), isPreview: false)
+    AudioPreviewComponent(audio: Audio(name: "", url: URL.documentsDirectory, length: 0.0), isPreview: false)
         .modelContainer(for: [Effect.self,
                               User.self,
                               Entry.self,

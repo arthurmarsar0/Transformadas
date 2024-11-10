@@ -34,13 +34,9 @@ class AudioPlayer: NSObject, ObservableObject {
             if audioPlayer != nil {
                 audioPlayer?.stop()
             }
-            
-            
-            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent("audio\(UUID().uuidString).m4a")
                 
             do {
-                try audio.data.write(to: tempURL)
-                audioPlayer = try AVAudioPlayer(contentsOf: tempURL)
+                audioPlayer = try AVAudioPlayer(contentsOf: audio.url)
                 audioPlayer?.delegate = self
                 audioPlayer?.prepareToPlay()  // Garante que o áudio está pronto para ser reproduzido
                 audioPlayer?.play()

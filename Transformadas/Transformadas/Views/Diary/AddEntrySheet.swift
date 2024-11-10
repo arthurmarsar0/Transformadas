@@ -235,14 +235,9 @@ struct AddEntrySheet: View {
             }
         }.onChange(of: selectedDocumentURL) {
             if let documentURL = selectedDocumentURL {
-                do {
-                    var data = try Data(contentsOf: documentURL)
-                    var document = Document(name: documentURL.lastPathComponent, data: data, type: documentURL.pathExtension)
-                    selectedDocuments.append(document)
-                    selectedDocumentURL = nil
-                } catch {
-                    print(error.localizedDescription)
-                }
+                var document = Document(name: documentURL.lastPathComponent, url: documentURL, type: documentURL.pathExtension)
+                selectedDocuments.append(document)
+                selectedDocumentURL = nil
             }
             
         }
@@ -450,8 +445,20 @@ struct AddEntrySheet: View {
             }
         }
         
+        for document in selectedDocuments {
+            if !isFileInICloud(fileURL: document.url) {
+                print("arquivo não está no icloud")
+                if let iCloudURL = moveToiCloudDrive(localURL: document.url) {
+                    print("icloudURL: \(iCloudURL)")
+                    entry.documents.append(Document(name: document.name, url: iCloudURL, type: document.type))
+                }
+            } else {
+                print("arquivo está no icloud")
+                entry.documents.append(Document(name: document.name, url: document.url, type: document.type))
+            }
+        }
         
-        entry.documents.append(contentsOf: selectedDocuments)
+        //entry.documents.append(contentsOf: selectedDocuments)
         
         modelContext.insert(entry)
     }

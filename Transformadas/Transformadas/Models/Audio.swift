@@ -9,6 +9,6 @@ import Foundation
 
 struct Audio: Codable {
     var name: String
-    var data: Data
+    var url: URL
     var length: TimeInterval
 }
