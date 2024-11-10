@@ -445,16 +445,22 @@ struct AddEntrySheet: View {
             }
         }
         
+//        for document in selectedDocuments {
+//            if !isFileInICloud(fileURL: document.url) {
+//                print("arquivo não está no icloud")
+//                if let iCloudURL = moveToiCloudDrive(localURL: document.url) {
+//                    print("icloudURL: \(iCloudURL)")
+//                    entry.documents.append(Document(name: document.name, url: iCloudURL, type: document.type))
+//                }
+//            } else {
+//                print("arquivo está no icloud")
+//                entry.documents.append(Document(name: document.name, url: document.url, type: document.type))
+//            }
+//        }
+        
         for document in selectedDocuments {
-            if !isFileInICloud(fileURL: document.url) {
-                print("arquivo não está no icloud")
-                if let iCloudURL = moveToiCloudDrive(localURL: document.url) {
-                    print("icloudURL: \(iCloudURL)")
-                    entry.documents.append(Document(name: document.name, url: iCloudURL, type: document.type))
-                }
-            } else {
-                print("arquivo está no icloud")
-                entry.documents.append(Document(name: document.name, url: document.url, type: document.type))
+            if let url = saveDocumentToAppDirectory(url: document.url) {
+                entry.documents.append(Document(name: document.name, url: url, type: document.type))
             }
         }
         

@@ -9,19 +9,40 @@ import Foundation
 import QuickLook
 import SwiftUI
 
-class DocumentOpener: NSObject, UIDocumentInteractionControllerDelegate {
-    private var documentInteractionController: UIDocumentInteractionController?
+//class DocumentOpener: NSObject, UIDocumentInteractionControllerDelegate {
+//    private var documentInteractionController: UIDocumentInteractionController?
+//
+//    func openDocument(at url: URL, from viewController: UIViewController) {
+////        guard url.startAccessingSecurityScopedResource() else {
+////            print("Não foi possível acessar a URl de forma segura (abrindo documento)")
+////            return
+////        }
+//        documentInteractionController = UIDocumentInteractionController(url: url)
+//        documentInteractionController?.delegate = self
+//        documentInteractionController?.presentOptionsMenu(from: viewController.view.bounds, in: viewController.view, animated: true)
+//        
+//        //url.stopAccessingSecurityScopedResource()
+//    }
+//}
+
+class DocumentOpener: NSObject, QLPreviewControllerDataSource {
+    var documentURL: URL?
 
     func openDocument(at url: URL, from viewController: UIViewController) {
-        guard url.startAccessingSecurityScopedResource() else {
-            print("Não foi possível acessar a URl de forma segura (abrindo documento)")
-            return
-        }
-        documentInteractionController = UIDocumentInteractionController(url: url)
-        documentInteractionController?.delegate = self
-        documentInteractionController?.presentOptionsMenu(from: viewController.view.bounds, in: viewController.view, animated: true)
+        documentURL = url
         
-        url.stopAccessingSecurityScopedResource()
+        let previewController = QLPreviewController()
+        previewController.dataSource = self
+        viewController.present(previewController, animated: true, completion: nil)
+    }
+    
+    // QLPreviewControllerDataSource methods
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return 1 // Um arquivo para preview
+    }
+    
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        return documentURL! as QLPreviewItem
     }
 }
 

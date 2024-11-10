@@ -57,6 +57,10 @@ struct DocumentPicker: UIViewControllerRepresentable {
 }
 
 func saveDocumentToAppDirectory(url: URL) -> URL? {
+    guard url.startAccessingSecurityScopedResource() else {
+        return nil
+    }
+    
     let fileManager = FileManager.default
     let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask).first!
     let destinationURL = documentsDirectory.appendingPathComponent(url.lastPathComponent)
@@ -65,11 +69,14 @@ func saveDocumentToAppDirectory(url: URL) -> URL? {
         if !fileManager.fileExists(atPath: destinationURL.path) {
             try fileManager.copyItem(at: url, to: destinationURL)
         }
+        url.stopAccessingSecurityScopedResource()
         return destinationURL
     } catch {
         print("Erro ao salvar o documento: \(error.localizedDescription)")
         return nil
     }
+    
+    
 }
 
 func moveToiCloudDrive(localURL: URL) -> URL? {
