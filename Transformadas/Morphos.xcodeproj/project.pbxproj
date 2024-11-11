@@ -160,6 +160,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Transformadas/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Morphos;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Permita o acesso à galeria para adicionar fotos ao registro.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Permita o acesso à câmera para adicionar fotos ao registro.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Permitir o acesso à sua localização ajuda a fornecer direções precisas e mostrar pontos de interesse próximos.";
@@ -201,6 +202,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Transformadas/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Morphos;
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Permita o acesso à galeria para adicionar fotos ao registro.";
 				INFOPLIST_KEY_NSCameraUsageDescription = "Permita o acesso à câmera para adicionar fotos ao registro.";
 				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Permitir o acesso à sua localização ajuda a fornecer direções precisas e mostrar pontos de interesse próximos.";
