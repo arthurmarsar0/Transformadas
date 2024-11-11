@@ -5,7 +5,6 @@
 //  Created by Arthur Alves Marsaro on 08/11/24.
 //
 
-// TODO: tentar chamar a oneAudioView no ForEach sem causar o erro
 
 import SwiftUI
 import SwiftData
