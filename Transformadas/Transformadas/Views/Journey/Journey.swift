@@ -11,9 +11,13 @@ import SwiftData
 
 struct Journey: View {
     
+    @EnvironmentObject var tabViewModel: TabViewModel
+    @EnvironmentObject var audioPlayer: AudioPlayer
+    
     // MARK: - DATA
     @Environment(\.modelContext) var modelContext
     @Query var allEntries: [Entry]
+    @Query var users: [User]
     
     // MARK: - View Data
     @State private var selectedFeelingsDate: Date = Date.now
@@ -26,12 +30,13 @@ struct Journey: View {
     @State var effectsGraphsFullView: Bool = false
     
     var daysSinceStartOfTransition: Int {
-        if UserTest.transitionStart != nil {
-            return calendar.numberOfDays(from: UserTest.transitionStart!, to: Date.now)
-        } else {
-            return 0
+        if let transitionStart = users.filter({$0.modelID == appData.appleID}).first?.transitionStart {
+            return calendar.numberOfDays(from: transitionStart, to: Date.now)
         }
+        return 0
     }
+    @State var isUserInfoPresented: Bool = false
+    @EnvironmentObject var appData: AppData
     
     var body: some View {
         NavigationStack {
@@ -105,23 +110,22 @@ struct Journey: View {
                 }
                 ToolbarItem(placement: .topBarTrailing){
                     Button(action: {
-                        
+                        isUserInfoPresented.toggle()
                     }) {
-                        Image(systemName: "calendar")
-                            .foregroundStyle(.black)
-                    }
-                }
-                ToolbarItem(placement: .topBarTrailing){
-                    Button(action: {
-                        
-                    }) {
-                        Image(systemName: "ellipsis.circle")
+                        Image(systemName: "person.fill")
                             .foregroundStyle(.black)
                     }
                 }
             }
             .animation(.smooth, value: effectsGraphsFullView)
             
+            .sheet(isPresented: $isUserInfoPresented, onDismiss: {
+                addNavBarBackground()
+            }) {
+                UserInfoSheetView()
+                    .environmentObject(appData)
+                    .interactiveDismissDisabled()
+            }
         }
         
     }
@@ -148,7 +152,9 @@ struct Journey: View {
     
     func buttonsView() -> some View {
         HStack(spacing: 8){
-            NavigationLink(destination: PhotoAlbumView().navigationBarBackButtonHidden(true)
+            NavigationLink(destination: PhotoAlbumView()
+                .navigationBarBackButtonHidden(true)
+                .environmentObject(tabViewModel)
             ) {
                 HStack{
                     VStack(alignment: .leading){
@@ -173,7 +179,10 @@ struct Journey: View {
             
             
             
-            NavigationLink(destination: AllAudiosView().navigationBarBackButtonHidden(true)
+            NavigationLink(destination: AllAudiosView()
+                .navigationBarBackButtonHidden(true)
+                .environmentObject(tabViewModel)
+                .environmentObject(audioPlayer)
             ) {
                 HStack{
                     VStack(alignment: .leading){
@@ -196,7 +205,10 @@ struct Journey: View {
                     .fill(.rosaClaro)
             }
             
-            NavigationLink(destination: AllDocumentsView().navigationBarBackButtonHidden(true)) {
+            NavigationLink(destination: AllDocumentsView()
+                .navigationBarBackButtonHidden(true)
+                .environmentObject(tabViewModel)
+            ) {
                 HStack{
                     VStack(alignment: .leading){
                         Image(systemName: "document.fill")
@@ -376,7 +388,7 @@ struct Journey: View {
                     
                 }
                 
-                Chart(monthlyEffects.keys.sorted().dropLast(sizeOfReturn), id: \.self) { efeito in
+                Chart(monthlyEffects.keys.sorted(by: {monthlyEffects[$0] ?? 0 > monthlyEffects[$1] ?? 0}).sorted().dropLast(sizeOfReturn), id: \.self) { efeito in
                     BarMark(
                         x: .value("qntd", monthlyEffects[efeito] ?? 0),
                         y: .value("Nome", efeito)
@@ -393,9 +405,32 @@ struct Journey: View {
         .frame(minHeight: sizeOfGraph)
     }
     
-    func weightChart() -> some View {       //TODO: Peso ainda não colocado no registro, adicionar aqui quando atualizar
+    func weightChart() -> some View {
         
-        ZStack{
+        //TODO: Peso ainda não colocado no registro, adicionar aqui quando atualizar
+        
+        var monthEntriesWeight : [Entry] {
+            var array : [Entry] = []
+            
+            for i in allEntries {
+                if i.date.monthNumber == selectedWeightDate.monthNumber && i.date.yearNumber == selectedWeightDate.yearNumber {
+                    array.append(i)
+                }
+            }
+            
+            return array.sorted(by: {
+                $0.date < $1.date
+            })
+        }
+        
+        let minWeight = monthEntriesWeight.compactMap { $0.weight }.min() ?? 0
+        let maxWeight = monthEntriesWeight.compactMap { $0.weight }.max() ?? 100
+        let margin: Double = 2 // margem de erro
+
+        let adjustedMin = minWeight - margin
+        let adjustedMax = maxWeight + margin
+        
+        return ZStack{
             RoundedRectangle(cornerRadius: 12)
                 .fill(.begeClaro)
             
@@ -417,18 +452,28 @@ struct Journey: View {
                             .fill(Color.accentColor.opacity(0.12))
                     }
                 }
-                Chart(weightData) { entry in
+                Chart(monthEntriesWeight.compactMap { entry in
+                    // Garantir que o weight não seja nil
+                    if let weight = entry.weight {
+                        return WeightEntry(date: entry.date, weight: weight) // Retorna a tupla apenas se o weight for válido
+                    } else {
+                        return nil // Ignora entradas com weight nil
+                    }
+                }) { (wd: WeightEntry) in
                     
                     LineMark(
-                        x: .value("Dia", entry.date),
-                        y: .value("Peso", entry.weight)
+                        x: .value("Dia", wd.date),
+                        y: .value("Peso", wd.weight)
                     )
                     .foregroundStyle(.rosa)
                     .lineStyle(StrokeStyle(lineWidth: 2))
                     .shadow(radius: 10)
                     
                 }
-                .chartYScale(domain: [68,72])  //Colocar uma valor que pegue uma margem de erro do maior e menor valor (pensei em algo como +- 2
+                
+
+                .chartYScale(domain: [adjustedMin, adjustedMax])
+                //.chartYScale(domain: [68,72])  //Colocar uma valor que pegue uma margem de erro do maior e menor valor (pensei em algo como +- 2
                 .chartXAxis {
                     AxisMarks(values: .stride(by: .day)) {
                         AxisValueLabel(format: .dateTime.day())
@@ -440,6 +485,12 @@ struct Journey: View {
             .padding()
         }
     }
+}
+
+struct WeightEntry: Identifiable {
+    var id: Date { date }  // A data será o identificador único
+    var date: Date
+    var weight: Double
 }
 
 #Preview {

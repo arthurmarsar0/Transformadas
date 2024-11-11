@@ -13,14 +13,17 @@ class ServiceViewModel: ObservableObject {
     @Published var allServices: [Service] = []
     @Published var filteredServices: [Service] = []
     @Published var selectedFilter: String = "Todos"
+
     
     
     
     func loadServices() async {
+
         do {
             
             allServices = try await ServiceModel.getServices()
             filteredServices = allServices
+
         } catch {
             print("Erro ao carregar serviços: \(error)")
         }
@@ -35,6 +38,7 @@ class ServiceViewModel: ObservableObject {
             
             return matchesCategory && matchesSearchText
         }
+        filteredServices.sort { $0.name.lowercased() < $1.name.lowercased() }
     }
     
     

@@ -6,10 +6,18 @@
 //
 
 import SwiftUI
+import CoreLocation
 
 struct ListComponent: View {
+    func distanceInKilometers(from coordinate1: CLLocationCoordinate2D, to coordinate2: CLLocationCoordinate2D) -> Double {
+        let location1 = CLLocation(latitude: coordinate1.latitude, longitude: coordinate1.longitude)
+        let location2 = CLLocation(latitude: coordinate2.latitude, longitude: coordinate2.longitude)
+        
+        let distanceInMeters = location1.distance(from: location2)
+        return distanceInMeters / 1000.0 // Converte de metros para quilômetros
+    }
     var service: Service
-    
+    @State private var locationManager = LocationManager()
     var body: some View {
         ZStack(alignment: .leading){
                 RoundedRectangle(cornerRadius: 8)
@@ -33,11 +41,18 @@ struct ListComponent: View {
                         .foregroundColor(.cinzaEscuro)
                         .font(.system(size: 17, weight: .semibold, design: .default))
                         .lineLimit(1)
-                    //TODO: Trocar pra calcular a distancia do usuario pro local em km
-                    Text(service.address.city)
-                        .foregroundColor(.cinzaEscuro)
-                        .font(.system(size: 16, weight: .semibold, design: .default))
-                        .lineLimit(1)
+                    if let userCoordinate = locationManager.userLocation?.coordinate {
+                        Text(String(format: "%.2f km", distanceInKilometers(from: userCoordinate, to: service.coordinate)))
+                            .foregroundColor(.cinzaEscuro)
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                            .lineLimit(1)
+                        
+                    } else {
+                        Text("Carregando...")
+                            .foregroundColor(.cinzaEscuro)
+                            .font(.system(size: 16, weight: .semibold, design: .default))
+                            .lineLimit(1)
+                    }
                 }
                 .padding()
         }

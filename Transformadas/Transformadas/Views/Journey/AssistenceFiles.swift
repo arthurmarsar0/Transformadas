@@ -15,7 +15,7 @@ struct WeightData: Identifiable {
     let date: Date
     let weight: Double
 }
-let UserTest = User.init(name: "Arthur", weight: 75.0, transitionStart: Date.now.addingTimeInterval(-86400 * 350), hormonalTherapyType: .feminization, pronouns: [])
+let UserTest = User.init(modelID: UUID().uuidString, name: "Arthur", gender: "", transitionStart: Date.now.addingTimeInterval(-86400 * 350), hormonalTherapyType: .feminization, pronouns: "")
 
 let weightData = [
     WeightData(date: Date().addingTimeInterval(-86400 * 5), weight: 71.0),

@@ -9,43 +9,63 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @State var selectedTab: Int = 1
+    @StateObject var tabViewModel: TabViewModel = TabViewModel()
+    @StateObject var audioPlayer: AudioPlayer = AudioPlayer()
     @StateObject var appData: AppData = AppData()
+    @Query var effects: [Effect]
     
     @Environment(\.modelContext) var modelContext
     
     var body: some View {
         if !appData.primeiraAbertura {
-            Onboarding()
-                .onAppear {
-                    for effect in EffectEnum.allCases {
-                        modelContext.insert(effect.effect)
-                    }
-                    appData.primeiraAbertura = true
-                }
+            Onboarding().environmentObject(appData)
         } else {
-            TabView (selection: $selectedTab){
+            TabView (selection: $tabViewModel.selectedTab){
                 Group {
-                    Journey().tabItem {
+                    Journey()
+                        .environmentObject(appData)
+                        .environmentObject(tabViewModel)
+                        .environmentObject(audioPlayer)
+                        .tabItem {
                         Label("Jornada", systemImage: "point.bottomleft.forward.to.point.topright.filled.scurvepath")
                     }
                     .tag(0)
-                    Diary().tabItem {
+                    Diary()
+                        .environmentObject(appData)
+                        .environmentObject(tabViewModel)
+                        .environmentObject(audioPlayer)
+                        .tabItem {
                         Label("Hoje", systemImage: "calendar")
                     }
                     
                     .tag(1)
-                    Services().tabItem {
+                    Services()
+                        .environmentObject(appData)
+                        .environmentObject(tabViewModel)
+                        .environmentObject(audioPlayer)
+                        .tabItem {
                         Label("Serviços", systemImage: "network")
                     }.tag(2)
                     
                 }
-            }.onAppear{
-                //setupTabBarAppearance(modo: true)
+            }
+            
+            .toolbarBackgroundVisibility(.visible, for: .tabBar)
+            .toolbarBackground(.bege, for: .tabBar)
+            .onAppear {
+                requestNotificationAccess { _ in
+                    
+                }
             }
         }
     }
     
+}
+
+class TabViewModel: ObservableObject {
+    @Published var selectedTab: Int = 1
+    @Published var isShowingEntrySheet: Bool = false
+    @Published var selectedDate: Date = Date.now
 }
 
 #Preview {

@@ -50,6 +50,17 @@ enum Category: Codable, CaseIterable {
         }
     }
     
+    var text: String{
+        switch self{
+        case .all: return ""
+        case .medical: return "Cuidados como acompanhamento hormonal, procedimentos de afirmação de gênero, tratamentos preventivos entre outros serviços médicos."
+        case .psychological: return "Atendimento psicológico com profissionais preparados e humanizados para lidar com pessoas trans,orientações e cuidados para lidar com a saúde mental."
+        case .judicial: return "Auxilío no processo de retificação de nome e gênero, além de fornecer orientação sobre procedimentos legais e ajuda a assegurar direitos."
+        case .protection: return "Apoio em situações de violência ou risco por meio de serviços de emergência, serviços dedicados a denúncias de crimes de LGBTQfobia e orientação sobre como buscar ajuda legal."
+        case .social: return "Serviços de acolhimento, auxílio em questões de moradia e acesso a direitos básicos, serviços de inclusão como vagas afirmativas para empregos."
+        }
+    }
+    
     static func nameToCategory(name: String) -> Category {
         for category in Category.allCases {
             if name == category.name {

@@ -7,9 +7,8 @@
 
 import Foundation
 
-struct Audio: Identifiable, Equatable, Codable {
-    let id = UUID()
+struct Audio: Codable {
     var name: String
-    var path: URL
+    var data: Data
     var length: TimeInterval
 }

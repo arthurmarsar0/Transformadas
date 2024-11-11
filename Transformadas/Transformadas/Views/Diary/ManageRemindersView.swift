@@ -31,7 +31,9 @@ struct ManageRemindersView: View {
                             .font(.system(size: 28, weight: .regular))
                         Spacer()
                     }
+                    .padding()
                     reminderTypePicker()
+                        .padding()
                     List{
                         ForEach(reminders.filter({$0.type == reminderType}).sorted(by: {$0.time < $1.time})) { reminder in
                             EditReminderComponent(reminder: reminder)
@@ -58,7 +60,6 @@ struct ManageRemindersView: View {
                         }
                     }.scrollContentBackground(.hidden)
                 }
-                .padding()
             }
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {

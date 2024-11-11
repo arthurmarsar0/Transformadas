@@ -6,7 +6,11 @@
 //
 
 enum Mood: Int, Codable, CaseIterable {
-  case excellent = 1, well, ok, moreOrLess, bad
+    case excellent = 5
+    case well = 4
+    case ok = 3
+    case moreOrLess = 2
+    case bad = 1
     
   var name: String {
     switch self {

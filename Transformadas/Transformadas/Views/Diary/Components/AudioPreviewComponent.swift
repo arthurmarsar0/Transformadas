@@ -10,7 +10,7 @@ import SwiftUI
 struct AudioPreviewComponent: View {
     var audio: Audio
     var isPreview: Bool
-    @StateObject var audioPlayer: AudioPlayer = AudioPlayer()
+    @EnvironmentObject var audioPlayer: AudioPlayer
     
     var body: some View {
         HStack (spacing: 12) {
@@ -68,10 +68,10 @@ struct AudioPreviewComponent: View {
     }
 }
 
-#Preview {
-    AudioPreviewComponent(audio: Audio(name: "", path: URL.downloadsDirectory, length: 0.0), isPreview: false)
-        .modelContainer(for: [Effect.self,
-                              User.self,
-                              Entry.self,
-                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
-}
+//#Preview {
+//    AudioPreviewComponent(audio: Audio(name: "", url: URL.documentsDirectory, length: 0.0), isPreview: false)
+//        .modelContainer(for: [Effect.self,
+//                              User.self,
+//                              Entry.self,
+//                              Reminder.self], inMemory: true, isAutosaveEnabled: false)
+//}

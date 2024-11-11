@@ -13,6 +13,7 @@ struct Services: View {
     @State var searchText: String = ""
     @State var selectedFilter: String = "Todos"
     @StateObject var viewModel = ServiceViewModel()
+    @State var isShowingSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -51,7 +52,7 @@ struct Services: View {
                     }
                     ToolbarItem(placement: .topBarTrailing){
                         Button(action: {
-                            
+                            isShowingSheet.toggle()
                         }) {
                             Image(systemName: "info.circle")
                                 .foregroundStyle(.black)
@@ -59,6 +60,9 @@ struct Services: View {
                     }
                 }
                 
+            }
+            .sheet(isPresented: $isShowingSheet) {
+                InfoSheetView()
             }
         }
     }

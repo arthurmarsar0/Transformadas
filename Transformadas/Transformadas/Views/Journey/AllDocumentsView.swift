@@ -13,6 +13,7 @@ import SwiftData
 struct AllDocumentsView: View {
     @Environment(\.presentationMode) var presentationMode
     @Query var allEntries: [Entry]
+    @State private var documentOpener = DocumentOpener()
     
     let columns = [
         GridItem(.adaptive(minimum: 80))
@@ -67,16 +68,20 @@ struct AllDocumentsView: View {
                             
                             LazyVGrid(columns: columns, spacing: 16) {
                                 ForEach(filteredEntries, id: \.self) { document in
-                                    VStack (spacing: 4){
-                                        Image(systemName: "document.fill")
-                                            .font(.system(size: 32))
-                                            .foregroundStyle(.rosaMedio)
-                                        Text(document.name)
-                                            .font(.system(size: 11, weight: .regular))
-                                            .multilineTextAlignment(.leading)
-                                            .lineLimit(1...2)
-                                            .truncationMode(.tail)
-                                            .foregroundStyle(.cinzaEscuro)
+                                    Button(action: {
+                                        openDocument(document: document)
+                                    }) {
+                                        VStack (spacing: 4){
+                                            Image(systemName: "document.fill")
+                                                .font(.system(size: 32))
+                                                .foregroundStyle(.rosaMedio)
+                                            Text(document.name)
+                                                .font(.system(size: 11, weight: .regular))
+                                                .multilineTextAlignment(.leading)
+                                                .lineLimit(1...2)
+                                                .truncationMode(.tail)
+                                                .foregroundStyle(.cinzaEscuro)
+                                        }
                                     }
                                 }
                             }
@@ -85,7 +90,7 @@ struct AllDocumentsView: View {
                     }
                 }
             }
-            .padding()
+            .padding(16)
         }
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
@@ -113,6 +118,13 @@ struct AllDocumentsView: View {
             currentMonth = Calendar.current.date(byAdding: .month, value: 1, to: currentMonth)!
         }
         return months.reversed()
+    }
+    
+    func openDocument(document: Document) {
+        if let rootVC = UIApplication.shared.firstKeyWindow?.rootViewController {
+            //presentationMode.wrappedValue.dismiss()
+            documentOpener.openDocument(at: document.url, from: rootVC)
+        }
     }
 }
 
