@@ -104,7 +104,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 93D26A3A2CCC165900AC4B90 /* Build configuration list for PBXProject "Transformadas" */;
+			buildConfigurationList = 93D26A3A2CCC165900AC4B90 /* Build configuration list for PBXProject "Morphos" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -351,7 +351,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		93D26A3A2CCC165900AC4B90 /* Build configuration list for PBXProject "Transformadas" */ = {
+		93D26A3A2CCC165900AC4B90 /* Build configuration list for PBXProject "Morphos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				93D26A532CCC165A00AC4B90 /* Debug */,
