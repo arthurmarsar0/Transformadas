@@ -15,7 +15,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		93D26A4F2CCC165A00AC4B90 /* Exceptions for "Transformadas" folder in "Transformadas" target */ = {
+		93D26A4F2CCC165A00AC4B90 /* Exceptions for "Morphos" folder in "Transformadas" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -25,12 +25,12 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		93D26A412CCC165900AC4B90 /* Transformadas */ = {
+		93D26A412CCC165900AC4B90 /* Morphos */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				93D26A4F2CCC165A00AC4B90 /* Exceptions for "Transformadas" folder in "Transformadas" target */,
+				93D26A4F2CCC165A00AC4B90 /* Exceptions for "Morphos" folder in "Transformadas" target */,
 			);
-			path = Transformadas;
+			path = Morphos;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -50,7 +50,7 @@
 		93D26A362CCC165900AC4B90 = {
 			isa = PBXGroup;
 			children = (
-				93D26A412CCC165900AC4B90 /* Transformadas */,
+				93D26A412CCC165900AC4B90 /* Morphos */,
 				93D26A402CCC165900AC4B90 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,7 +79,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				93D26A412CCC165900AC4B90 /* Transformadas */,
+				93D26A412CCC165900AC4B90 /* Morphos */,
 			);
 			name = Transformadas;
 			packageProductDependencies = (
