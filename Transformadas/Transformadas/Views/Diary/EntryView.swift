@@ -10,6 +10,7 @@ import SwiftData
 
 struct EntryView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject var audioPlayer: AudioPlayer
     
     
     var entry: Entry
@@ -55,6 +56,7 @@ struct EntryView: View {
                         }
                         if let audio = entry.audio {
                             AudioPreviewComponent(audio: audio, isPreview: false)
+                                .environmentObject(audioPlayer)
                         }
                         
                         if let weight = entry.weight {
@@ -87,6 +89,7 @@ struct EntryView: View {
                         }.sheet(isPresented: $isShowingEditEntrySheet) {
                             AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
                                 .interactiveDismissDisabled()
+                                .environmentObject(audioPlayer)
                         }
                         .font(.system(size: 17, weight: .regular))
                         .foregroundStyle(.cinzaEscuro)

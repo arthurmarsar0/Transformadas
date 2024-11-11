@@ -10,7 +10,7 @@ import SwiftUI
 struct AudioPreviewComponent: View {
     var audio: Audio
     var isPreview: Bool
-    @StateObject var audioPlayer: AudioPlayer = AudioPlayer()
+    @EnvironmentObject var audioPlayer: AudioPlayer
     
     var body: some View {
         HStack (spacing: 12) {

@@ -5,12 +5,13 @@
 //  Created by Pedro Vitor de Oliveira Monte on 03/11/24.
 //
 
-enum Mood: Codable, CaseIterable {
-  case excellent
-  case well
-  case ok
-  case moreOrLess
-  case bad
+enum Mood: Int, Codable, CaseIterable {
+    case excellent = 5
+    case well = 4
+    case ok = 3
+    case moreOrLess = 2
+    case bad = 1
+    
   var name: String {
     switch self {
       case .bad: return "Mal"

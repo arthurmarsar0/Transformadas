@@ -94,6 +94,18 @@ extension TimeInterval {
     }
 }
 
+//func getDaysPassed(_ date1: Date, _ date2: Date) -> Int {
+//
+//}
+
+extension Calendar {
+    func numberOfDays(from startDate: Date, to endDate: Date) -> Int {
+        let fromDate = startOfDay(for: startDate)
+        let toDate = startOfDay(for: endDate)
+        return dateComponents([.day], from: fromDate, to: toDate).day!
+    }
+}
+
 func getDateByDayAndTime(day: Date, time: Date) -> Date? {
     var components = Calendar.current.dateComponents([.year, .month, .day], from: day)
     components.hour = Calendar.current.component(.hour, from: time)

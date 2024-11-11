@@ -31,6 +31,16 @@ struct AddEntrySheet: View {
         }
     }
     
+    private var weightFormatter: NumberFormatter {
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            formatter.minimumFractionDigits = 2
+            formatter.maximumFractionDigits = 2
+            return formatter
+        }
+    
+    @State private var formattedWeight: String = ""
+    
     ///EFFECTS
     @State var activeEffects: [UUID: Bool] = [:]
     //@State var chosenEffects: [Bool] = []
@@ -53,7 +63,7 @@ struct AddEntrySheet: View {
     let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     @State var isShowingRecordAudioSheet = false
     @StateObject var audioRecorder = AudioRecorder()
-    @StateObject var audioPlayer = AudioPlayer()
+    @EnvironmentObject var audioPlayer: AudioPlayer
     @State var isShowingDeleteAudioConfirmation = false
     
     @State var timeElapsed: TimeInterval = 0
@@ -82,6 +92,12 @@ struct AddEntrySheet: View {
                     
                     Section("Mudanças Físicas") {
                         audioView()
+                        HStack {
+                            Text("Peso:")
+                            TextField("", value: $entry.weight, formatter: weightFormatter)
+                                .keyboardType(.decimalPad)
+                        }
+                        
                     }
                     
                     //Section {
@@ -253,7 +269,7 @@ struct AddEntrySheet: View {
     func moodView() -> some View {
         
         return HStack(alignment: .top,spacing: 20){
-            ForEach(Mood.allCases, id: \.self){ mood in
+            ForEach(Mood.allCases.reversed(), id: \.self){ mood in
                 VStack {
                     RoundedRectangle(cornerRadius: 24)
                         .stroke(entry.mood == mood ? Color.rosa : .clear, style: StrokeStyle(lineWidth: 2, lineCap: .round))

@@ -44,7 +44,8 @@ struct PhotosView: View {
             }.onAppear {
                 selectedPhoto = startingPhoto
                 
-            }
+            }.toolbarBackground(.ultrathin)
+                .toolbarBackgroundVisibility(.visible)
         }.onAppear {
             removeNavBarBackground()
         }

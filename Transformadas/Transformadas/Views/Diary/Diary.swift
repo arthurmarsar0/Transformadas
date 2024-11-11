@@ -11,6 +11,9 @@ import ShimmeringUiView
 
 struct Diary: View {
     
+    @EnvironmentObject var tabViewModel: TabViewModel
+    @EnvironmentObject var audioPlayer: AudioPlayer
+    
     // MARK: - DATA
     @Environment(\.modelContext) var modelContext
     @Query var entries: [Entry]
@@ -143,6 +146,14 @@ struct Diary: View {
                     await loadTodayReminders()
                     await loadAllReminders()
                     loadNotifications()
+                }
+            }.onChange(of: tabViewModel.isShowingEntrySheet) {
+                selectedDate = tabViewModel.selectedDate
+            }.sheet(isPresented: $tabViewModel.isShowingEntrySheet) {
+                if let entry = entries.filter({$0.date == tabViewModel.selectedDate}).first {
+                    EntryView(entry: entry, isShowingEntrySheet: $tabViewModel.isShowingEntrySheet)
+                        .presentationDragIndicator(.visible)
+                        .environmentObject(audioPlayer)
                 }
             }
         }
@@ -318,6 +329,7 @@ struct Diary: View {
         }) {
             EntryView(entry: entry, isShowingEntrySheet: $isShowingEntrySheet)
                 .presentationDragIndicator(.visible)
+                .environmentObject(audioPlayer)
         }
         
     }
@@ -349,6 +361,7 @@ struct Diary: View {
         }) {
             AddEntrySheet(isPresented: $isShowingEditEntrySheet, existingEntry: entry)
                 .interactiveDismissDisabled()
+                .environmentObject(audioPlayer)
         }
     }
     
@@ -375,6 +388,7 @@ struct Diary: View {
             
             if let audio = entry.audio {
                 AudioPreviewComponent(audio: audio, isPreview: true)
+                    .environmentObject(audioPlayer)
             }
             if let weight = entry.weight {
                 WeightPreviewComponent(weight: weight, isPreview: true)
@@ -416,6 +430,7 @@ struct Diary: View {
             }) {
                 AddEntrySheet(isPresented: $isShowingAddEntrySheet, selectedDate: selectedDate)
                     .interactiveDismissDisabled()
+                    .environmentObject(audioPlayer)
     }
     
     }

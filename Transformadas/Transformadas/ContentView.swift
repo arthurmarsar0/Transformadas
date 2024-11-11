@@ -9,7 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @State var selectedTab: Int = 1
+    @StateObject var tabViewModel: TabViewModel = TabViewModel()
+    @StateObject var audioPlayer: AudioPlayer = AudioPlayer()
     @StateObject var appData: AppData = AppData()
     @Query var effects: [Effect]
     
@@ -19,16 +20,20 @@ struct ContentView: View {
         if !appData.primeiraAbertura {
             Onboarding().environmentObject(appData)
         } else {
-            TabView (selection: $selectedTab){
+            TabView (selection: $tabViewModel.selectedTab){
                 Group {
                     Journey()
                         .environmentObject(appData)
+                        .environmentObject(tabViewModel)
+                        .environmentObject(audioPlayer)
                         .tabItem {
                         Label("Jornada", systemImage: "point.bottomleft.forward.to.point.topright.filled.scurvepath")
                     }
                     .tag(0)
                     Diary()
                         .environmentObject(appData)
+                        .environmentObject(tabViewModel)
+                        .environmentObject(audioPlayer)
                         .tabItem {
                         Label("Hoje", systemImage: "calendar")
                     }
@@ -36,6 +41,8 @@ struct ContentView: View {
                     .tag(1)
                     Services()
                         .environmentObject(appData)
+                        .environmentObject(tabViewModel)
+                        .environmentObject(audioPlayer)
                         .tabItem {
                         Label("Serviços", systemImage: "network")
                     }.tag(2)
@@ -53,6 +60,12 @@ struct ContentView: View {
         }
     }
     
+}
+
+class TabViewModel: ObservableObject {
+    @Published var selectedTab: Int = 1
+    @Published var isShowingEntrySheet: Bool = false
+    @Published var selectedDate: Date = Date.now
 }
 
 #Preview {
