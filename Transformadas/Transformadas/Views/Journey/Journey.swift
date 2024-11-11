@@ -125,7 +125,7 @@ struct Journey: View {
                 UserInfoSheetView()
                     .environmentObject(appData)
                     .interactiveDismissDisabled()
-            }
+            }.toolbarBackground(.bege, for: .tabBar)
         }
         
     }
@@ -388,7 +388,16 @@ struct Journey: View {
                     
                 }
                 
-                Chart(monthlyEffects.keys.sorted(by: {monthlyEffects[$0] ?? 0 > monthlyEffects[$1] ?? 0}).sorted().dropLast(sizeOfReturn), id: \.self) { efeito in
+                Chart(monthlyEffects.keys.sorted(by: {
+                    if let a = monthlyEffects[$0], let b = monthlyEffects[$1] {
+                        if a == b {
+                            return $0 < $1
+                        } else {
+                            return a > b
+                        }
+                    }
+                    return $0 < $1
+                }).dropLast(sizeOfReturn), id: \.self) { efeito in
                     BarMark(
                         x: .value("qntd", monthlyEffects[efeito] ?? 0),
                         y: .value("Nome", efeito)

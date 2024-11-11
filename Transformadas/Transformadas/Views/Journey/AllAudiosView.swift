@@ -94,7 +94,7 @@ struct AllAudiosView: View {
                 }){
                     HStack{
                         Image(systemName: "chevron.left")
-                        Text("Back")
+                        Text("Voltar")
                     }
                     .foregroundStyle(.preto)
                 }
